@@ -61,8 +61,9 @@ function useIsMobile() {
 }
 
 // ─── Live Price Hook ──────────────────────────────────────────────────────────
-// Fetches from GoldAPI via a proxy — swap VITE_GOLDAPI_KEY in .env
-// Falls back to hardcoded prices if API is unavailable
+// gold-api.com — completely free, no API key, no rate limits, CORS enabled
+// open.er-api.com — free FX rates, no key required
+// Both refresh every 60 seconds
 
 function useLivePrices() {
   const [prices, setPrices] = useState(FALLBACK_PRICES);
@@ -70,29 +71,21 @@ function useLivePrices() {
   const [priceError, setPriceError] = useState(null);
 
   const fetchPrices = useCallback(async () => {
-    const key = import.meta.env.VITE_GOLDAPI_KEY;
-    if (!key) return; // no key = stay on fallback, no error shown
-
     try {
-      const headers = { "x-access-token": key, "Content-Type": "application/json" };
-      const [goldRes, silverRes, platRes] = await Promise.all([
-        fetch("https://www.goldapi.io/api/XAU/USD", { headers }),
-        fetch("https://www.goldapi.io/api/XAG/USD", { headers }),
-        fetch("https://www.goldapi.io/api/XPT/USD", { headers }),
+      const [goldRes, silverRes, platRes, fxRes] = await Promise.all([
+        fetch("https://api.gold-api.com/price/XAU"),
+        fetch("https://api.gold-api.com/price/XAG"),
+        fetch("https://api.gold-api.com/price/XPT"),
+        fetch("https://open.er-api.com/v6/latest/USD"),
       ]);
-      const [gold, silver, plat] = await Promise.all([goldRes.json(), silverRes.json(), platRes.json()]);
+      const [gold, silver, plat, fx] = await Promise.all([
+        goldRes.json(), silverRes.json(), platRes.json(), fxRes.json(),
+      ]);
       setPrices({ gold: gold.price, silver: silver.price, platinum: plat.price });
+      if (fx.rates?.KRW) setKrwRate(fx.rates.KRW);
       setPriceError(null);
-
-      // KRW rate
-      const fxKey = import.meta.env.VITE_OER_APP_ID;
-      if (fxKey) {
-        const fxRes = await fetch(`https://openexchangerates.org/api/latest.json?app_id=${fxKey}&symbols=KRW`);
-        const fxData = await fxRes.json();
-        if (fxData.rates?.KRW) setKrwRate(fxData.rates.KRW);
-      }
     } catch (err) {
-      console.warn("Price API error, using fallback:", err);
+      console.warn("Price fetch failed, using fallback:", err);
       setPriceError("가격 로딩 실패 — 최근 데이터 표시 중");
     }
   }, []);
