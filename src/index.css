@@ -1,4 +1,10 @@
-/* ─── Aurum Korea — Global Reset & Base ─── */
+/* ═══════════════════════════════════════════════════════════════════════════════
+   Aurum Korea — Global Stylesheet
+   Phase 1: Button polish, input focus, page transitions, accessibility
+   Phase 2: Footer grid, ticker scroll, card depth, responsive tweaks
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Reset & Base ─── */
 *, *::before, *::after {
   box-sizing: border-box;
   margin: 0;
@@ -29,7 +35,12 @@ body {
   flex-direction: column;
 }
 
-/* ─── Global Button Polish ─── */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PHASE 1 — Global Interactive States
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Button Polish ─── */
 button {
   font-family: 'Outfit', 'Pretendard Variable', 'Pretendard', sans-serif;
   cursor: pointer;
@@ -44,7 +55,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Gold gradient CTA — hover glow */
+/* Gold gradient CTA — premium hover glow */
 button[style*="linear-gradient"]:hover:not(:disabled) {
   box-shadow: 0 0 24px rgba(197, 165, 114, 0.25), 0 4px 20px rgba(197, 165, 114, 0.12);
   filter: brightness(1.06);
@@ -55,7 +66,7 @@ button[style*="linear-gradient"]:active:not(:disabled) {
   filter: brightness(0.96);
 }
 
-/* Outline/ghost buttons — subtle hover lift */
+/* Outline/ghost buttons — brightness lift */
 button[style*="border: 1px solid"]:hover:not(:disabled),
 button[style*="border: 1.5px solid"]:hover:not(:disabled) {
   filter: brightness(1.2);
@@ -143,9 +154,62 @@ main > div {
   50% { opacity: 0.4; }
 }
 
-/* ─── Card / Container Transitions ─── */
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PHASE 2 — Structural Visual Tweaks (CSS-only, !important overrides inline)
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── Card / Container Hover Depth ─── */
+/* Smooth transitions on all dark card containers */
 div[style*="#111008"] {
   transition: border-color 0.2s ease, box-shadow 0.25s ease, transform 0.2s ease;
+}
+
+/* Clickable cards get subtle shadow lift on hover */
+div[style*="cursor: pointer"][style*="#111008"]:hover,
+div[style*="cursor:pointer"][style*="#111008"]:hover,
+button[style*="#111008"]:hover {
+  box-shadow: 0 8px 24px rgba(197, 165, 114, 0.06), 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+/* News article card links get same treatment */
+a > div[style*="#111008"]:hover {
+  box-shadow: 0 6px 20px rgba(197, 165, 114, 0.05), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Ticker: horizontal scroll on tiny screens ─── */
+/* Target the ticker's inner flex container by its unique parent gradient */
+div[style*="linear-gradient(90deg"] > div {
+  flex-wrap: nowrap !important;
+}
+
+@media (max-width: 440px) {
+  div[style*="linear-gradient(90deg"] > div {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    justify-content: flex-start !important;
+    gap: 16px !important;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  div[style*="linear-gradient(90deg"] > div::-webkit-scrollbar {
+    display: none;
+  }
+  div[style*="linear-gradient(90deg"] > div {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* ─── Footer: 2-column grid on mobile ─── */
+@media (max-width: 767px) {
+  footer > div:first-child {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  /* Company info block spans full width */
+  footer > div:first-child > div:first-child {
+    grid-column: 1 / -1;
+  }
 }
 
 /* ─── Scrollbar ─── */
@@ -172,7 +236,7 @@ div[style*="#111008"] {
   }
 }
 
-/* ─── Small Screen Tweaks ─── */
+/* ─── Very Small Screen ─── */
 @media (max-width: 375px) {
   h1 {
     letter-spacing: -0.02em;
