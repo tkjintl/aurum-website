@@ -2,7 +2,9 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useIsMobile, useInView, useLivePrices, useToast, calcPrice, fUSD, fKRW, fDateLong, PRODUCTS, MOCK_HOLDINGS, MOCK_ORDERS_INIT, AUDIT_TRAIL_INIT, API } from "./lib.jsx";
 import { ToastContainer, Ticker, Nav, LoginModal } from "./BaseUI.jsx";
 import { Home, Shop, ProductPage, CartPage, Checkout } from "./ShopPages.jsx";
-import { OrderHistoryPage, AccountPage, KYCFlowPage, WhyGold, Storage, Learn } from "./UserPages.jsx";
+import { OrderHistoryPage, AccountPage, KYCFlowPage, WhyGold, Learn } from "./UserPages.jsx";
+import { Storage } from "./StoragePage.jsx";
+import { AGP, AGPBackingReport } from "./AGPPage.jsx";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // VAULT DASHBOARD — Enhanced
@@ -408,7 +410,7 @@ function Footer({ lang, navigate }) {
         </div>
         {[
           { title: lang === "ko" ? "매장" : "Shop", items: [{ ko: "금 바", en: "Gold Bars", fn: () => navigate("shop") }, { ko: "금 코인", en: "Gold Coins", fn: () => navigate("shop") }, { ko: "은", en: "Silver", fn: () => navigate("shop") }] },
-          { title: lang === "ko" ? "정보" : "Info", items: [{ ko: "보관", en: "Storage", fn: () => navigate("storage") }, { ko: "왜 금인가", en: "Why Gold", fn: () => navigate("why") }, { ko: "교육", en: "Learn", fn: () => navigate("learn") }] },
+          { title: lang === "ko" ? "정보" : "Info", items: [{ ko: "보관", en: "Storage", fn: () => navigate("storage") }, { ko: "AGP 저축 플랜", en: "AGP Savings Plan", fn: () => navigate("agp") }, { ko: "왜 금인가", en: "Why Gold", fn: () => navigate("why") }, { ko: "교육", en: "Learn", fn: () => navigate("learn") }] },
           { title: lang === "ko" ? "법률" : "Legal", items: [{ ko: "이용약관", en: "Terms", fn: () => {} }, { ko: "개인정보", en: "Privacy", fn: () => {} }, { ko: "AML/KYC", en: "AML/KYC", fn: () => {} }] },
         ].map((col, ci) => (
           <div key={ci}>
@@ -489,7 +491,9 @@ export default function App() {
         {page === "account" && <AccountPage lang={lang} navigate={navigate} user={user} setUser={setUser} toast={toast} />}
         {page === "kyc" && <KYCFlowPage lang={lang} navigate={navigate} user={user} setUser={setUser} toast={toast} />}
         {page === "why" && <WhyGold lang={lang} navigate={navigate} />}
-        {page === "storage" && <Storage lang={lang} />}
+        {page === "storage" && <Storage lang={lang} navigate={navigate} />}
+        {page === "agp" && <AGP lang={lang} navigate={navigate} />}
+        {page === "agp-report" && <AGPBackingReport lang={lang} navigate={navigate} />}
         {page === "learn" && <Learn lang={lang} navigate={navigate} />}
         {page === "dashboard" && <Dashboard lang={lang} navigate={navigate} prices={prices} krwRate={krwRate} user={user} orders={orders} holdings={holdings} toast={toast} />}
         {page === "sell" && <SellFlowPage lang={lang} navigate={navigate} prices={prices} krwRate={krwRate} holdings={holdings} toast={toast} />}
