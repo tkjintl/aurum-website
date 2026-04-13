@@ -577,4 +577,4 @@ function Learn({ lang, navigate }) {
 
 
 
-export { OrderHistoryPage, AccountPage, KYCFlowPage, WhyGold, Storage, Learn };
+export { OrderHistoryPage, AccountPage, KYCFlowPage, WhyGold, Learn };
