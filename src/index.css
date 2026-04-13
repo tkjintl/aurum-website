@@ -1,9 +1,4 @@
-/* ═══════════════════════════════════════════════════════════════════════════════
-   Aurum Korea — Global Stylesheet
-   Phase 1: Button polish, input focus, page transitions, accessibility
-   Phase 2: Footer grid, ticker scroll, card depth, responsive tweaks
-   Phase 3: Colour contrast fix — strip amber-brown tint, WCAG compliance
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* Aurum Korea — Global Stylesheet */
 
 /* ─── Reset & Base ─── */
 *, *::before, *::after {
@@ -37,9 +32,7 @@ body {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   PHASE 1 — Global Interactive States
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* PHASE 1 — Global Interactive States */
 
 /* ─── Button Polish ─── */
 button {
@@ -156,30 +149,24 @@ main > div {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   PHASE 2 — Structural Visual Tweaks (CSS-only, !important overrides inline)
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* PHASE 2 — Structural Visual Tweaks (CSS-only, !important overrides inline) */
 
 /* ─── Card / Container Hover Depth ─── */
-/* Smooth transitions on all dark card containers */
 div[style*="#111008"] {
   transition: border-color 0.2s ease, box-shadow 0.25s ease, transform 0.2s ease;
 }
 
-/* Clickable cards get subtle shadow lift on hover */
 div[style*="cursor: pointer"][style*="#111008"]:hover,
 div[style*="cursor:pointer"][style*="#111008"]:hover,
 button[style*="#111008"]:hover {
   box-shadow: 0 8px 24px rgba(197, 165, 114, 0.06), 0 2px 8px rgba(0, 0, 0, 0.25);
 }
 
-/* News article card links get same treatment */
 a > div[style*="#111008"]:hover {
   box-shadow: 0 6px 20px rgba(197, 165, 114, 0.05), 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* ─── Ticker: horizontal scroll on tiny screens ─── */
-/* Target the ticker's inner flex container by its unique parent gradient */
 div[style*="linear-gradient(90deg"] > div {
   flex-wrap: nowrap !important;
 }
@@ -207,7 +194,6 @@ div[style*="linear-gradient(90deg"] > div {
   footer > div:first-child {
     grid-template-columns: 1fr 1fr !important;
   }
-  /* Company info block spans full width */
   footer > div:first-child > div:first-child {
     grid-column: 1 / -1;
   }
@@ -245,62 +231,80 @@ div[style*="linear-gradient(90deg"] > div {
 }
 
 
-/* ═══════════════════════════════════════════════════════════════════════════════
-   PHASE 3 — Colour Contrast Fix (2026-04-13)
-   Strips amber-brown tint: neutral darks + WCAG-compliant text colours.
-   Gold accent #c5a572 stays — everything else goes neutral.
-   ═══════════════════════════════════════════════════════════════════════════════ */
+/* PHASE 4 — Colour Fix + Desktop Zoom (2026-04-13) */
 
-/* ─── 🔴 P1 CTA buttons: black text → white (WCAG AA fix) ─── */
-/* #0a0a0a on #8a6914 gradient = 3.9:1 (fail). White = 5.1:1 (pass). */
+/* ─── Desktop Zoom: scale entire page to match ~115% browser zoom ─── */
+@media (min-width: 1024px) {
+  html { zoom: 1.15; }
+}
+
+/* ─── CTA button text: #fff on gold gradient (WCAG AA) ─── */
 button[style*="linear-gradient"] {
   color: #ffffff !important;
 }
 
-/* ─── 🔴 P1 Muted text: #555 → #6b6b6b (hard WCAG fail fix) ─── */
-/* #555 on #0a0a0a = 2.6:1. #6b6b6b = 4.6:1 (passes AA). */
-[style*="color: #555"],
-[style*="color:#555"] {
-  color: #6b6b6b !important;
-}
-
-/* ─── 🟡 P2 Card backgrounds: #111008 → #141414 (neutral dark) ─── */
+/* ─── Main panel bg: #111008 → #1c1c1c ─── */
+/* hex (Safari) */
 [style*="background: #111008"],
 [style*="background:#111008"] {
-  background: #141414 !important;
+  background: #1c1c1c !important;
+}
+/* rgb normalized (Chrome/FF) */
+[style*="background: rgb(17, 16, 8)"],
+[style*="background:rgb(17, 16, 8)"] {
+  background: #1c1c1c !important;
 }
 
-/* ─── 🟡 P2 Fine borders: #1a1510 → #1e1e1e ─── */
-[style*="border: 1px solid #1a1510"],
-[style*="border: 1.5px solid #1a1510"],
-[style*="border-bottom: 1px solid #1a1510"],
-[style*="border-top: 1px solid #1a1510"],
-[style*="border-left: 3px solid #1a1510"],
-[style*="overflow: hidden"][style*="#1a1510"] {
-  border-color: #1e1e1e !important;
+/* ─── Deep panel / table header bg: #0d0b08, #0d0c08 → #111111 ─── */
+[style*="background: #0d0b08"],[style*="background:#0d0b08"],
+[style*="background: #0d0c08"],[style*="background:#0d0c08"],
+[style*="background: rgb(13, 11, 8)"],
+[style*="background: rgb(13, 12, 8)"] {
+  background: #111111 !important;
 }
 
-/* Background panels using #1a1510 */
-[style*="background: #1a1510"],
-[style*="background:#1a1510"] {
-  background: #1e1e1e !important;
+/* ─── Footer bg: #050505 → #0f0f0f ─── */
+[style*="background: #050505"],[style*="background:#050505"],
+[style*="background: rgb(5, 5, 5)"] {
+  background: #0f0f0f !important;
 }
 
-/* ─── 🟡 P2 Heavy borders / disabled states: #2a2318 → #282828 ─── */
-[style*="border: 1px solid #2a2318"],
-[style*="border: 1.5px solid #2a2318"],
-[style*="border: 2px solid #2a2318"],
-[style*="border: 2px dashed #2a2318"] {
-  border-color: #282828 !important;
+/* ─── Step indicator inactive: #3a3028 → #2a2a2a ─── */
+[style*="background: #3a3028"],[style*="background:#3a3028"],
+[style*="background: rgb(58, 48, 40)"] {
+  background: #2a2a2a !important;
 }
 
-[style*="background: #2a2318"],
-[style*="background:#2a2318"] {
-  background: #282828 !important;
+/* ─── Primary borders: #1a1510 → #2a2a2a ─── */
+[style*="solid #1a1510"],
+[style*="solid rgb(26, 21, 16)"] {
+  border-color: #2a2a2a !important;
+}
+[style*="background: #1a1510"],[style*="background:#1a1510"],
+[style*="background: rgb(26, 21, 16)"] {
+  background: #2a2a2a !important;
 }
 
-/* ─── 🟡 P2 Secondary text: #8a7d6b → #a09080 ─── */
-[style*="color: #8a7d6b"],
-[style*="color:#8a7d6b"] {
-  color: #a09080 !important;
+/* ─── Heavy borders / disabled: #2a2318 → #333333 ─── */
+[style*="solid #2a2318"],[style*="dashed #2a2318"],
+[style*="solid rgb(42, 35, 24)"],[style*="dashed rgb(42, 35, 24)"] {
+  border-color: #333333 !important;
+}
+[style*="background: #2a2318"],[style*="background:#2a2318"],
+[style*="background: rgb(42, 35, 24)"] {
+  background: #333333 !important;
+}
+
+/* ─── Secondary text: #8a7d6b → #a0a0a0 ─── */
+[style*="color: #8a7d6b"],[style*="color:#8a7d6b"],
+[style*="color: rgb(138, 125, 107)"] {
+  color: #a0a0a0 !important;
+}
+
+/* ─── Muted text: #555 / #6b6b6b → #888 ─── */
+[style*="color: #555"],[style*="color:#555"],
+[style*="color: #6b6b6b"],[style*="color:#6b6b6b"],
+[style*="color: rgb(85, 85, 85)"],
+[style*="color: rgb(107, 107, 107)"] {
+  color: #888888 !important;
 }
