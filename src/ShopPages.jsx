@@ -36,6 +36,9 @@ function Home({ lang, navigate, prices, krwRate }) {
             <button onClick={() => navigate("why")} style={{ background: "transparent", color: "#c5a572", border: "1px solid #c5a572", padding: isMobile ? "14px" : "14px 36px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 6, cursor: "pointer" }}>
               {lang === "ko" ? "왜 금인가?" : "Why Gold?"}
             </button>
+            <button onClick={() => navigate("agp")} style={{ background: "transparent", color: "#8a7d6b", border: "1px solid #2a2318", padding: isMobile ? "14px" : "14px 36px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 6, cursor: "pointer" }}>
+              {lang === "ko" ? "💰 AGP 저축 플랜 시작하기" : "💰 Start AGP savings plan"}
+            </button>
           </div>
         </div>
       </div>
