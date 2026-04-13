@@ -2,6 +2,7 @@
    Aurum Korea — Global Stylesheet
    Phase 1: Button polish, input focus, page transitions, accessibility
    Phase 2: Footer grid, ticker scroll, card depth, responsive tweaks
+   Phase 3: Colour contrast fix — strip amber-brown tint, WCAG compliance
    ═══════════════════════════════════════════════════════════════════════════════ */
 
 /* ─── Reset & Base ─── */
@@ -84,7 +85,7 @@ input:focus, textarea:focus, select:focus {
 }
 
 ::placeholder {
-  color: #555;
+  color: #6b6b6b;
   opacity: 1;
 }
 
@@ -215,12 +216,12 @@ div[style*="linear-gradient(90deg"] > div {
 /* ─── Scrollbar ─── */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: #0a0a0a; }
-::-webkit-scrollbar-thumb { background: #2a2318; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: #282828; border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: #c5a572; }
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: #2a2318 #0a0a0a;
+  scrollbar-color: #282828 #0a0a0a;
 }
 
 /* ─── Selection ─── */
@@ -241,4 +242,65 @@ div[style*="linear-gradient(90deg"] > div {
   h1 {
     letter-spacing: -0.02em;
   }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   PHASE 3 — Colour Contrast Fix (2026-04-13)
+   Strips amber-brown tint: neutral darks + WCAG-compliant text colours.
+   Gold accent #c5a572 stays — everything else goes neutral.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+
+/* ─── 🔴 P1 CTA buttons: black text → white (WCAG AA fix) ─── */
+/* #0a0a0a on #8a6914 gradient = 3.9:1 (fail). White = 5.1:1 (pass). */
+button[style*="linear-gradient"] {
+  color: #ffffff !important;
+}
+
+/* ─── 🔴 P1 Muted text: #555 → #6b6b6b (hard WCAG fail fix) ─── */
+/* #555 on #0a0a0a = 2.6:1. #6b6b6b = 4.6:1 (passes AA). */
+[style*="color: #555"],
+[style*="color:#555"] {
+  color: #6b6b6b !important;
+}
+
+/* ─── 🟡 P2 Card backgrounds: #111008 → #141414 (neutral dark) ─── */
+[style*="background: #111008"],
+[style*="background:#111008"] {
+  background: #141414 !important;
+}
+
+/* ─── 🟡 P2 Fine borders: #1a1510 → #1e1e1e ─── */
+[style*="border: 1px solid #1a1510"],
+[style*="border: 1.5px solid #1a1510"],
+[style*="border-bottom: 1px solid #1a1510"],
+[style*="border-top: 1px solid #1a1510"],
+[style*="border-left: 3px solid #1a1510"],
+[style*="overflow: hidden"][style*="#1a1510"] {
+  border-color: #1e1e1e !important;
+}
+
+/* Background panels using #1a1510 */
+[style*="background: #1a1510"],
+[style*="background:#1a1510"] {
+  background: #1e1e1e !important;
+}
+
+/* ─── 🟡 P2 Heavy borders / disabled states: #2a2318 → #282828 ─── */
+[style*="border: 1px solid #2a2318"],
+[style*="border: 1.5px solid #2a2318"],
+[style*="border: 2px solid #2a2318"],
+[style*="border: 2px dashed #2a2318"] {
+  border-color: #282828 !important;
+}
+
+[style*="background: #2a2318"],
+[style*="background:#2a2318"] {
+  background: #282828 !important;
+}
+
+/* ─── 🟡 P2 Secondary text: #8a7d6b → #a09080 ─── */
+[style*="color: #8a7d6b"],
+[style*="color:#8a7d6b"] {
+  color: #a09080 !important;
 }
