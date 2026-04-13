@@ -153,6 +153,7 @@ function LoginModal({ show, onClose, onLogin, lang }) {
 
   const inp = { width: "100%", background: "#0a0a0a", border: "1px solid #2a2318", borderRadius: 6, color: "#f5f0e8", padding: "11px 13px", fontSize: 14, outline: "none", fontFamily: "'Outfit',sans-serif", boxSizing: "border-box", transition: "border-color 0.15s" };
 
+  // ─── Demo Auth: accepts any email/password. Test account: wsl@aurum.com / 1234 (KYC verified) ───
   const submit = async (e) => {
     e.preventDefault();
     if (!email) { setErr(lang === "ko" ? "이메일을 입력하세요." : "Enter your email."); return; }
@@ -162,17 +163,33 @@ function LoginModal({ show, onClose, onLogin, lang }) {
       if (!terms) { setErr(lang === "ko" ? "이용약관에 동의하세요." : "Please accept terms."); return; }
     }
     setLoading(true); setErr("");
+    await new Promise(r => setTimeout(r, 450));
     try {
-      const u = tab === "login" ? await API.auth.login(email) : await API.auth.register({ email, name, phone });
+      const isTest = email.trim().toLowerCase() === "wsl@aurum.com" && pw === "1234";
+      const u = {
+        id: `user_${Date.now()}`,
+        email: email.trim().toLowerCase(),
+        name: isTest ? "WSL" : (tab === "register" ? name : email.split("@")[0]),
+        phone: phone || "",
+        kycStatus: isTest ? "verified" : "unverified",
+      };
       onLogin(u);
-    } catch { setErr(lang === "ko" ? "오류가 발생했습니다. 다시 시도하세요." : "An error occurred. Please try again."); }
-    finally { setLoading(false); }
+    } catch {
+      setErr(lang === "ko" ? "오류가 발생했습니다. 다시 시도하세요." : "An error occurred. Please try again.");
+    } finally { setLoading(false); }
   };
 
   const socialLogin = async (provider) => {
     setLoading(true);
-    const u = await API.auth.login(`${provider}@user.kr`);
-    onLogin({ ...u, name: provider === "kakao" ? "카카오 사용자" : "네이버 사용자" });
+    await new Promise(r => setTimeout(r, 400));
+    const u = {
+      id: `user_${Date.now()}`,
+      email: `${provider}@user.kr`,
+      name: provider === "kakao" ? "카카오 사용자" : "네이버 사용자",
+      phone: "",
+      kycStatus: "unverified",
+    };
+    onLogin(u);
     setLoading(false);
   };
 
@@ -208,7 +225,7 @@ function LoginModal({ show, onClose, onLogin, lang }) {
         <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {tab === "register" && <input value={name} onChange={e => setName(e.target.value)} placeholder={lang === "ko" ? "이름 (실명)" : "Full Name"} style={inp} />}
           <input value={email} onChange={e => setEmail(e.target.value)} type="email" placeholder={lang === "ko" ? "이메일 주소" : "Email address"} style={inp} />
-          <input value={pw} onChange={e => setPw(e.target.value)} type="password" placeholder={lang === "ko" ? "비밀번호 (8자 이상)" : "Password (8+ chars)"} style={inp} />
+          <input value={pw} onChange={e => setPw(e.target.value)} type="password" placeholder={lang === "ko" ? "비밀번호" : "Password"} style={inp} />
           {tab === "register" && <input value={phone} onChange={e => setPhone(e.target.value)} placeholder={lang === "ko" ? "휴대폰 번호 (선택사항)" : "Phone number (optional)"} style={inp} />}
           {tab === "register" && (
             <label style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer", marginTop: 4 }}>
@@ -226,8 +243,12 @@ function LoginModal({ show, onClose, onLogin, lang }) {
         {tab === "login" && <p style={{ textAlign: "center", marginTop: 14, fontSize: 12, color: "#555", fontFamily: "'Outfit',sans-serif" }}>
           <span style={{ color: "#c5a572", cursor: "pointer" }}>{lang === "ko" ? "비밀번호를 잊으셨나요?" : "Forgot password?"}</span>
         </p>}
-        <p style={{ textAlign: "center", marginTop: 10, fontSize: 11, color: "#444", fontFamily: "'Outfit',sans-serif" }}>
-          {lang === "ko" ? "KYC 인증 후 구매가 가능합니다." : "KYC verification required before first purchase."}
+        {/* ── Dev test hint ── */}
+        <p style={{ textAlign: "center", marginTop: 10, fontSize: 11, color: "#444", fontFamily: "'JetBrains Mono',monospace", letterSpacing: 0.3 }}>
+          🔧 test: wsl@aurum.com / 1234
+        </p>
+        <p style={{ textAlign: "center", marginTop: 4, fontSize: 11, color: "#333", fontFamily: "'Outfit',sans-serif" }}>
+          {lang === "ko" ? "어떤 이메일/비밀번호로도 로그인 가능 (데모)" : "Any email + password works (demo mode)"}
         </p>
       </div>
     </div>
