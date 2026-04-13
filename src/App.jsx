@@ -2,9 +2,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useIsMobile, useInView, useLivePrices, useToast, calcPrice, fUSD, fKRW, fDateLong, PRODUCTS, MOCK_HOLDINGS, MOCK_ORDERS_INIT, AUDIT_TRAIL_INIT, API } from "./lib.jsx";
 import { ToastContainer, Ticker, Nav, LoginModal } from "./BaseUI.jsx";
 import { Home, Shop, ProductPage, CartPage, Checkout } from "./ShopPages.jsx";
-import { OrderHistoryPage, AccountPage, KYCFlowPage, WhyGold, Learn } from "./UserPages.jsx";
-import { Storage } from "./StoragePage.jsx";
-import { AGP, AGPBackingReport } from "./AGPPage.jsx";
+import { OrderHistoryPage, AccountPage, KYCFlowPage, WhyGold, Learn, Storage, AGP, AGPBackingReport } from "./UserPages.jsx";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // VAULT DASHBOARD — Enhanced
@@ -199,7 +197,7 @@ function SellFlowPage({ lang, navigate, prices, krwRate, holdings, toast }) {
   const [step, setStep] = useState(1);
   const [payout, setPayout] = useState("krw");
   const [submitting, setSubmitting] = useState(false);
-  const bidFactor = 0.995; // spot - 0.5% bid spread
+  const bidFactor = 0.995;
 
   const toggle = (id) => setSelected(s => s.includes(id) ? s.filter(x => x !== id) : [...s, id]);
   const selHoldings = holdings.filter(h => selected.includes(h.id));
@@ -438,7 +436,7 @@ export default function App() {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useState([]);
   const [orders, setOrders] = useState(MOCK_ORDERS_INIT);
-  const [holdings] = useState(MOCK_HOLDINGS); // TODO: fetch from vault API on login
+  const [holdings] = useState(MOCK_HOLDINGS);
   const { prices, krwRate, priceError } = useLivePrices();
   const { toasts, show: toast } = useToast();
 
