@@ -64,6 +64,7 @@ function Nav({ page, navigate, lang, setLang, user, setUser, setShowLogin, cart 
     { key: "shop", ko: "매장", en: "Shop" },
     { key: "why", ko: "왜 금인가", en: "Why Gold" },
     { key: "storage", ko: "보관", en: "Storage" },
+    { key: "agp", ko: "AGP (아름 골드 플랜)", en: "AGP (아름 골드 플랜)" },
     { key: "learn", ko: "교육", en: "Learn" },
   ];
   const Logo = () => (
