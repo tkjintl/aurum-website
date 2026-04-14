@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useIsMobile, useInView, fUSD, fKRW, fDateLong, fDate, WHY_GOLD_REASONS, WHY_GOLD_STATS, EDUCATION_ARTICLES, EDUCATION_CATEGORIES, MOCK_ORDERS_INIT, API } from "./lib.jsx";
+import { useIsMobile, useInView, fUSD, fKRW, fDateLong, fDate, WHY_GOLD_REASONS, WHY_GOLD_STATS, WHY_SILVER_STATS, WHY_SILVER_REASONS, EDUCATION_ARTICLES, EDUCATION_CATEGORIES, MOCK_ORDERS_INIT, API } from "./lib.jsx";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ORDER HISTORY
@@ -418,9 +418,59 @@ function WhyGold({ lang, navigate }) {
           </div>
         </div>
       </div>
+
+      {/* ── WHY SILVER — appended below WhyGold per brief Task 2 ── */}
+      <div style={{ background: "#111008", borderTop: "1px solid #1a1510", padding: isMobile ? "44px 16px" : "64px 80px" }}>
+        <div style={{ padding: isMobile ? "0 0 32px" : "0 0 48px", textAlign: "center" }}>
+          <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#c5a572", letterSpacing: 4, textTransform: "uppercase", marginBottom: 12 }}>🥈 {lang === "ko" ? "왜 은인가 — 2026" : "Why Silver — 2026"}</div>
+          <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 28 : 40, color: "#f5f0e8", fontWeight: 300, margin: "0 0 14px", lineHeight: 1.2 }}>
+            {lang === "ko" ? "2026년 왜 은인가" : "Why Silver in 2026"}
+          </h2>
+          <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 15, color: "#8a7d6b", maxWidth: 560, margin: "0 auto", lineHeight: 1.75 }}>
+            {lang === "ko" ? "6년 연속 공급 부족. 산업 수요 급증. 한국 은행 재고 고갈. 실물 은에 접근하는 가장 합리적인 방법." : "6th consecutive supply deficit. Industrial demand surging. Korean bank stock depleted. The most rational way to access physical silver."}
+          </p>
+        </div>
+        {/* Silver stats bar */}
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", borderRadius: 12, overflow: "hidden", border: "1px solid #1a1510", marginBottom: isMobile ? 28 : 48 }}>
+          {WHY_SILVER_STATS.map((s, i) => (
+            <div key={i} style={{ background: "#0a0a0a", padding: isMobile ? "18px 10px" : "26px 22px", textAlign: "center", borderRight: i < WHY_SILVER_STATS.length - 1 ? "1px solid #1a1510" : "none" }}>
+              <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 20 : 26, fontWeight: 600, color: "#c5a572", marginBottom: 4 }}>{s.value}</div>
+              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 9 : 11, color: "#8a7d6b", lineHeight: 1.4 }}>{lang === "ko" ? (i === 0 ? "2026년 연간 공급 부족" : i === 1 ? "연속 공급 부족 연수" : i === 2 ? "산업·기술 수요 비중" : "한국 은행 은 공급 현황") : s.label}</div>
+            </div>
+          ))}
+        </div>
+        {/* Silver reason cards */}
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3,1fr)", gap: isMobile ? 14 : 20, marginBottom: isMobile ? 32 : 48 }}>
+          {WHY_SILVER_REASONS.map((r, i) => (
+            <div key={i} style={{ background: "#0a0a0a", border: "1px solid #1a1510", borderRadius: 12, padding: isMobile ? 20 : 28 }}>
+              <div style={{ fontSize: isMobile ? 26 : 30, marginBottom: 14 }}>{r.icon}</div>
+              <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 20 : 23, color: "#f5f0e8", fontWeight: 500, margin: "0 0 2px" }}>{lang === "ko" ? r.titleKo : r.titleEn}</h3>
+              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#c5a572", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{lang === "ko" ? r.titleEn : r.titleKo}</div>
+              <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 14, color: "#8a7d6b", lineHeight: 1.75, margin: 0 }}>{r.body}</p>
+              {r.stat && (
+                <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px solid #1a1510" }}>
+                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 20 : 24, color: "#c5a572", fontWeight: 700 }}>{r.stat}</div>
+                  <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#555", marginTop: 3 }}>{r.statLabel}</div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+        {/* Silver CTAs */}
+        <div style={{ textAlign: "center" }}>
+          <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 14, color: "#8a7d6b", marginBottom: 22 }}>
+            {lang === "ko" ? "싱가포르 보관 실물 은 — 국제 현물가로, 한국 은행 프리미엄 없이" : "Physical silver in Singapore storage — at international spot, without Korean bank premiums"}
+          </p>
+          <div style={{ display: "flex", gap: 14, justifyContent: "center", flexDirection: isMobile ? "column" : "row", maxWidth: 480, margin: "0 auto" }}>
+            <button onClick={() => navigate("shop")} style={{ flex: 1, background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#ffffff", border: "none", padding: "14px 28px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 700, borderRadius: 30, cursor: "pointer" }}>{lang === "ko" ? "실물 은 구매하기 →" : "Buy Physical Silver →"}</button>
+            <button onClick={() => navigate("agp")} style={{ flex: 1, background: "transparent", color: "#c5a572", border: "1px solid rgba(197,165,114,0.4)", padding: "14px 28px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 30, cursor: "pointer" }}>{lang === "ko" ? "AGP로 은 저축 →" : "Silver in AGP →"}</button>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
+
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -1082,14 +1132,14 @@ function AGP({ lang, navigate }) {
       <div style={{ padding: isMobile ? "64px 20px 48px" : "96px 80px 72px", textAlign: "center", borderBottom: `1px solid ${T.border}` }}>
         <SectionLabel>{ko ? "아름 골드 플랜 (AGP)" : "Aurum Gold Plan (AGP)"}</SectionLabel>
         <h1 style={{ fontFamily: T.serif, fontSize: isMobile ? 30 : 52, color: T.textPrimary, fontWeight: 300, margin: "0 0 14px", maxWidth: 800, marginLeft: "auto", marginRight: "auto" }}>
-          {ko ? "월 10만원부터 시작하는 싱가포르 실물 금 저축" : "Save in physical gold, stored in Singapore, starting from KRW 100,000/month."}
+          {ko ? "실물 금과 은을 싱가포르에 — 월 20만원부터 저축하세요." : "Save in Real Physical Gold and Silver — Stored in Singapore, from KRW 200,000/month."}
         </h1>
         <p style={{ fontSize: isMobile ? 14 : 16, color: T.textSecondary, fontFamily: T.sans, maxWidth: 680, margin: "0 auto 20px", lineHeight: 1.75 }}>
-          {ko ? "그램 단위로 실물 금을 꾸준히 적립하세요. Malca-Amit 싱가포르 금고에 100% 실물 백업. 언제든 완전한 바로 전환 가능. 싱가포르 보관 중에는 한국 VAT 없음." : "Accumulate real physical gold by the gram. 100% physically backed at Malca-Amit Singapore. Convert to a full bar anytime. No Korean VAT while stored offshore."}
+          {ko ? "그램 단위로 적립하세요. Malca-Amit에서 100% 실물 백업. 언제든 완전한 바로 전환 가능. 구조적 공급 부족 속의 은 — 한국 은행 프리미엄 없이 접근 가능." : "Accumulate by the gram. 100% physically backed at Malca-Amit. Convert to a full bar anytime. Silver in structural deficit — now accessible in Korea without bank premiums."}
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginBottom: 32 }}>
           {[
-            { icon: "💯", label: ko ? "100% 실물 백업, 매일 공개 감사 / 100% physical backing, audited daily" : "100% physical backing, audited daily" },
+            { icon: "💯", label: ko ? "100% 실물 백업 — 금, 은 & 백금 — 매일 공개 감사" : "100% physically backed — Gold, Silver & Platinum — audited daily" },
             { icon: "🥇", label: ko ? "100g 또는 1kg 도달 시 PAMP·Heraeus 바로 무료 전환 / Free conversion to PAMP or Heraeus bars at 100g or 1kg" : "Free conversion to PAMP or Heraeus bars at 100g or 1kg" },
             { icon: "🇰🇷", label: ko ? "한국어 서비스 + 토스뱅크 자동이체 지원 / Korean-language service, Toss Bank auto-debit" : "Korean-language service, Toss Bank auto-debit" },
           ].map((chip, i) => (
