@@ -308,3 +308,40 @@ button[style*="linear-gradient"] {
 [style*="color: rgb(107, 107, 107)"] {
   color: #888888 !important;
 }
+
+
+/* PHASE 5 — New Section Visibility Fixes (2026-04-14) */
+
+/* ─── Override the #1c1c1c panel override BACK to readable dark for new sections ─── */
+/* Why Silver stat strip uses bg #0a0a0a inside #111008 wrapper — keep as-is */
+/* Generational Wealth uses rgba(197,165,114,0.04) — CSS selector won't match, safe */
+
+/* ─── Ensure new full-width section wrappers are always visible (display:block) ─── */
+main > div > div {
+  display: block;
+}
+
+/* ─── Why Silver stat grid: ensure grid renders on all browsers ─── */
+div[style*="repeat(4,1fr)"] {
+  display: grid !important;
+}
+
+div[style*="1fr 1fr"] {
+  display: grid !important;
+}
+
+/* ─── Generational Wealth gold-left-border strip ─── */
+div[style*="borderLeft: \"3px solid #c5a572\""],
+div[style*="border-left: 3px solid #c5a572"] {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* ─── Keep desktop zoom from Phase 4 ─── */
+/* zoom: 1.15 is set in Phase 4 above and stays */
+
+/* ─── Smooth page-level fade stays but ensure full sections render before fade ─── */
+main > div {
+  animation: fadeInUp 0.3s ease-out both;
+}
