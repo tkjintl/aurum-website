@@ -12,52 +12,115 @@ function Home({ lang, navigate, prices, krwRate }) {
   const savings = krxPrice - aurumPrice;
   return (
     <div>
-      {/* Hero */}
+
+      {/* ── 1a. HERO — rewritten headline, subhead, eyebrow, CTAs ── */}
       <div style={{ position: "relative", minHeight: isMobile ? 420 : 540, background: "linear-gradient(135deg,#0a0a0a,#1a1510 40%,#0d0b08)", display: "flex", alignItems: "center", padding: isMobile ? "40px 16px" : "0 80px", overflow: "hidden" }}>
         <div style={{ position: "absolute", inset: 0, opacity: 0.035, backgroundImage: "repeating-linear-gradient(45deg,#c5a572 0,#c5a572 1px,transparent 1px,transparent 40px)", pointerEvents: "none" }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: isMobile ? "100%" : 660 }}>
+          {/* Eyebrow — updated */}
           <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 10 : 12, color: "#c5a572", letterSpacing: isMobile ? 2 : 4, textTransform: "uppercase", marginBottom: isMobile ? 14 : 20 }}>
-            {lang === "ko" ? "싱가포르 볼트 보관 · 글로벌 현물가 · 한국 고객 전용" : "Singapore Vaulted · Global Pricing · Korea Focused"}
+            {lang === "ko" ? "배분 보관 · 국제 현물가 · 한국 투자자 전용" : "Allocated Vault Storage · International Spot Pricing · Korean Investors"}
           </div>
+          {/* H1 — updated */}
           <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 34 : 54, fontWeight: 300, color: "#f5f0e8", lineHeight: 1.12, margin: "0 0 20px" }}>
             {lang === "ko"
-              ? <><span style={{ color: "#c5a572", fontWeight: 600 }}>김치 프리미엄</span> 없이<br />금을 소유하세요</>
-              : <>Own Gold<br /><span style={{ color: "#c5a572", fontWeight: 600 }}>Without the</span><br />Kimchi Premium</>}
+              ? <><span style={{ color: "#c5a572", fontWeight: 600 }}>진짜 금. 진짜 은.</span><br />진짜 소유.</>
+              : <>Real Gold. Real Silver.<br /><span style={{ color: "#c5a572", fontWeight: 600 }}>Real Ownership.</span></>}
           </h1>
+          {/* Subhead — updated */}
           <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 14 : 16, color: "#8a7d6b", lineHeight: 1.75, margin: "0 0 30px" }}>
             {lang === "ko"
-              ? "글로벌 현물가에 실물 금·은을 구매하고 세계 최고 수준의 싱가포르 볼트에 안전하게 보관하세요. 한국 VAT·관세 면제."
-              : "Buy physical gold and silver at global spot prices. Stored securely in world-class Singapore vaults. No Korean VAT or customs duties."}
+              ? "은행 통장도 아니고, KRX 계좌도 아닙니다. 싱가포르 Malca-Amit 금고에 귀하의 이름으로 등록된 실물 금속 — 국제 현물가 기준."
+              : "Not a bank passbook. Not a KRX account. Allocated physical metal — registered in your name at Malca-Amit Singapore — priced at international spot."}
           </p>
+          {/* CTAs — updated labels */}
           <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
-            <button onClick={() => navigate("shop")} style={{ background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#0a0a0a", border: "none", padding: isMobile ? "14px" : "14px 36px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 700, borderRadius: 6, cursor: "pointer", letterSpacing: 0.5 }}>
-              {lang === "ko" ? "매장 둘러보기 →" : "Browse Shop →"}
+            <button onClick={() => navigate("shop")} style={{ background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#ffffff", border: "none", padding: isMobile ? "14px" : "14px 36px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 700, borderRadius: 6, cursor: "pointer", letterSpacing: 0.5 }}>
+              {lang === "ko" ? "지금 배분 시작 →" : "Start Allocating →"}
             </button>
-            <button onClick={() => navigate("why")} style={{ background: "transparent", color: "#c5a572", border: "1px solid #c5a572", padding: isMobile ? "14px" : "14px 36px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 6, cursor: "pointer" }}>
-              {lang === "ko" ? "왜 금인가?" : "Why Gold?"}
+            <button onClick={() => navigate("shop")} style={{ background: "transparent", color: "#c5a572", border: "1px solid #c5a572", padding: isMobile ? "14px" : "14px 36px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 6, cursor: "pointer" }}>
+              {lang === "ko" ? "실물 금·은 구매" : "Own Real Metal"}
             </button>
             <button onClick={() => navigate("agp")} style={{ background: "transparent", color: "#8a7d6b", border: "1px solid #2a2318", padding: isMobile ? "14px" : "14px 36px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 6, cursor: "pointer" }}>
-              {lang === "ko" ? "💰 AGP 저축 플랜 시작하기" : "💰 Start AGP savings plan"}
+              {lang === "ko" ? "AGP — 월 20만원부터" : "AGP — From KRW 200,000/month"}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Kimchi Premium Comparison — 2-panel on desktop, stacked on mobile */}
-      <div style={{ background: "#111008", padding: isMobile ? "24px 16px" : "32px 80px", borderTop: "1px solid #1a1510", borderBottom: "1px solid #1a1510" }}>
+      {/* ── 1c. PAPER vs PHYSICAL — new section after hero ── */}
+      <div style={{ background: "#111008", padding: isMobile ? "36px 16px" : "56px 80px", borderTop: "1px solid #1a1510", borderBottom: "1px solid #1a1510" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 28 : 40 }}>
+          <div style={{ fontSize: 10, color: "#c5a572", letterSpacing: 3, textTransform: "uppercase", marginBottom: 8, fontFamily: "'Outfit',sans-serif" }}>
+            {lang === "ko" ? "근본적인 차이" : "THE FUNDAMENTAL DIFFERENCE"}
+          </div>
+          <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 26 : 32, color: "#f5f0e8", fontWeight: 300, margin: 0 }}>
+            {lang === "ko" ? "금을 소유하는 두 가지 방법. 진짜는 하나입니다." : "You Can Own Gold Two Ways. Only One Is Real."}
+          </h2>
+        </div>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 14 : 24 }}>
-          {/* Left panel: Kimchi Premium sign */}
-          <div style={{ background: "#0a0a0a", border: "1px solid #1a1510", borderRadius: 10, padding: isMobile ? "20px 18px" : "28px 28px" }}>
+          {/* Left: Paper Gold — red accent */}
+          <div style={{ background: "#0a0a0a", border: "1px solid #2a2318", borderRadius: 10, padding: isMobile ? "20px 18px" : "28px 28px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#f87171", flexShrink: 0 }} />
+              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#f87171", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>
+                {lang === "ko" ? "페이퍼 금·은" : "Paper Gold / Silver"}
+              </div>
+            </div>
+            <ul style={{ margin: 0, padding: "0 0 0 18px" }}>
+              {(lang === "ko" ? [
+                "은행 금통장, KRX 계좌, 또는 펀드",
+                "귀하는 계약상 청구권을 보유 — 실물 금속이 아닙니다",
+                "상대방 리스크. 법적 소유권 없음. 일련번호 없음."
+              ] : [
+                "Bank passbook, KRX account, or fund",
+                "You own a contractual claim — not the metal",
+                "Counterparty risk. No legal title. No serial number."
+              ]).map((b, i) => (
+                <li key={i} style={{ fontSize: 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", marginBottom: 8, lineHeight: 1.6 }}>{b}</li>
+              ))}
+            </ul>
+          </div>
+          {/* Right: Physical Allocated — green accent */}
+          <div style={{ background: "#0a0a0a", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 10, padding: isMobile ? "20px 18px" : "28px 28px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16 }}>
+              <div style={{ width: 8, height: 8, borderRadius: "50%", background: "#4ade80", flexShrink: 0 }} />
+              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#4ade80", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>
+                {lang === "ko" ? "실물 배분 금속" : "Physical Allocated"}
+              </div>
+            </div>
+            <ul style={{ margin: 0, padding: "0 0 0 18px" }}>
+              {(lang === "ko" ? [
+                "실물 금속. 귀하의 이름. 귀하의 일련번호.",
+                "완전 분리 보관 — 어떤 은행의 대차대조표에도 없음",
+                "법적 소유권은 첫날부터 귀하의 것"
+              ] : [
+                "Real metal. Your name. Your serial number.",
+                "Segregated, never pooled, never on any bank's balance sheet",
+                "Legal title is yours from day one"
+              ]).map((b, i) => (
+                <li key={i} style={{ fontSize: 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", marginBottom: 8, lineHeight: 1.6 }}>{b}</li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Physical Premium Comparison — labels updated, numbers kept ── */}
+      <div style={{ background: "#0a0a0a", padding: isMobile ? "24px 16px" : "32px 80px", borderBottom: "1px solid #1a1510" }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 14 : 24 }}>
+          {/* Left panel */}
+          <div style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 10, padding: isMobile ? "20px 18px" : "28px 28px" }}>
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#8a7d6b", letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>
-              {lang === "ko" ? "김치 프리미엄 비교" : "Kimchi Premium Comparison"}
+              {lang === "ko" ? "실물 프리미엄 비교" : "Physical Premium Comparison"}
             </div>
             <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 20 : 26, color: "#f5f0e8", marginBottom: 22, lineHeight: 1.2 }}>
               {lang === "ko" ? "왜 Aurum인가?" : "Why Aurum?"}
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 0 }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
               <div style={{ flex: 1, textAlign: "center", padding: "12px 0" }}>
                 <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 30 : 40, color: "#f87171", fontWeight: 700, lineHeight: 1 }}>10%</div>
-                <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#8a7d6b", marginTop: 6 }}>{lang === "ko" ? "KRX 프리미엄" : "KRX Premium"}</div>
+                <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#8a7d6b", marginTop: 6 }}>{lang === "ko" ? "KRX 실물 프리미엄" : "KRX Premium"}</div>
               </div>
               <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 20, color: "#333", padding: "0 8px" }}>vs</div>
               <div style={{ flex: 1, textAlign: "center", padding: "12px 0" }}>
@@ -66,8 +129,8 @@ function Home({ lang, navigate, prices, krwRate }) {
               </div>
             </div>
           </div>
-          {/* Right panel: Current market price + savings */}
-          <div style={{ background: "#0a0a0a", border: "1px solid #1a1510", borderRadius: 10, padding: isMobile ? "20px 18px" : "28px 28px" }}>
+          {/* Right panel */}
+          <div style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 10, padding: isMobile ? "20px 18px" : "28px 28px" }}>
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#8a7d6b", letterSpacing: 2, textTransform: "uppercase", marginBottom: 10 }}>
               {lang === "ko" ? "1온스 금 구매 시 절약 금액" : "Your Savings on 1oz Gold"}
             </div>
@@ -90,57 +153,116 @@ function Home({ lang, navigate, prices, krwRate }) {
         </div>
       </div>
 
-      {/* Partners / Trust Badges */}
-      <div style={{ background: "#0a0a0a", padding: isMobile ? "20px 16px" : "28px 80px", display: "flex", justifyContent: "center", gap: isMobile ? 18 : 52, flexWrap: "wrap" }}>
-        {[["🏦", "Malca-Amit"], ["📜", "LBMA"], ["🛡️", lang === "ko" ? "완전 보험" : "Insured"], ["🔐", lang === "ko" ? "완전 배분" : "Allocated"], ["🇸🇬", "Singapore FTZ"]].map(([icon, label], i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: isMobile ? 13 : 15, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif" }}>
-            <span style={{ fontSize: isMobile ? 22 : 26 }}>{icon}</span>{label}
+      {/* ── 1d. WHY SILVER — new section after premium comparison ── */}
+      <div style={{ background: "#111008", padding: isMobile ? "36px 16px" : "56px 80px", borderBottom: "1px solid #1a1510" }}>
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 28 : 40 }}>
+          <div style={{ fontSize: 10, color: "#c5a572", letterSpacing: 3, textTransform: "uppercase", marginBottom: 8, fontFamily: "'Outfit',sans-serif" }}>
+            {lang === "ko" ? "🥈 2026년 은에 주목해야 하는 이유" : "🥈 WHY SILVER IN 2026"}
+          </div>
+          <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 26 : 34, color: "#f5f0e8", fontWeight: 300, margin: "0 0 8px" }}>
+            {lang === "ko"
+              ? "은: 공급 부족은 현실입니다. 프리미엄은 오르고 있습니다."
+              : "Silver: The Deficit Is Real. The Supply Is Tightening. The Premium Is Rising."}
+          </h2>
+        </div>
+        {/* Stat strip */}
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: 0, marginBottom: isMobile ? 28 : 40, background: "#0a0a0a", border: "1px solid #1a1510", borderRadius: 10, overflow: "hidden" }}>
+          {[
+            { val: "67 Moz", en: "2026 Supply Deficit", ko: "2026년 공급 부족" },
+            { val: "6th Year", en: "Consecutive Annual Deficit", ko: "연속 공급 부족 연도" },
+            { val: ">60%", en: "Industrial Demand Share", ko: "산업용 글로벌 수요 비중" },
+            { val: "Scarce", en: "Korean Bank Availability", ko: "한국 은행 은 공급 부족" },
+          ].map((s, i) => (
+            <div key={i} style={{ textAlign: "center", padding: isMobile ? "18px 10px" : "26px 10px", borderRight: (!isMobile && i < 3) ? "1px solid #1a1510" : "none", borderBottom: (isMobile && i < 2) ? "1px solid #1a1510" : "none" }}>
+              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 22 : 28, color: "#c5a572", fontWeight: 700, lineHeight: 1, marginBottom: 6 }}>{s.val}</div>
+              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#8a7d6b", lineHeight: 1.4 }}>{lang === "ko" ? s.ko : s.en}</div>
+            </div>
+          ))}
+        </div>
+        {/* Body */}
+        <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 15, color: "#8a7d6b", lineHeight: 1.8, maxWidth: 760, margin: "0 auto 32px", textAlign: "center" }}>
+          {lang === "ko"
+            ? "글로벌 은 수요의 60% 이상이 태양광 패널, 전기차, AI 데이터센터, 방위산업에서 발생합니다. 공급은 구조적으로 타이트해지고 있습니다. 중국은 2026년 1월 은 수출에 엄격한 허가제를 도입했습니다. 한국에서는 실물 은에 대한 접근이 만성적으로 어렵고, 은행들은 공급 부족으로 은바 판매를 반복적으로 중단해왔습니다."
+            : "Over 60% of global silver demand now comes from solar panels, electric vehicles, AI data centres, and defence systems. Supply is structurally tightening: China imposed strict export licensing controls in January 2026. In Korea, physical silver is chronically difficult to access — Korean banks have repeatedly suspended silver bar sales due to shortages."}
+        </p>
+        {/* Silver CTAs */}
+        <div style={{ display: "flex", gap: 12, justifyContent: "center", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "center" }}>
+          <button onClick={() => navigate("shop")} style={{ background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#ffffff", border: "none", padding: isMobile ? "14px" : "14px 36px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 700, borderRadius: 6, cursor: "pointer", letterSpacing: 0.5 }}>
+            {lang === "ko" ? "실물 은 구매하기 →" : "Buy Physical Silver →"}
+          </button>
+          <button onClick={() => navigate("agp")} style={{ background: "transparent", color: "#c5a572", border: "1px solid #c5a572", padding: isMobile ? "14px" : "14px 36px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 6, cursor: "pointer" }}>
+            {lang === "ko" ? "AGP로 은 저축 시작 →" : "Silver in AGP →"}
+          </button>
+        </div>
+      </div>
+
+      {/* ── 1b. TRUST BADGES — 2 new chips: Transparent Premium + Gold & Silver ── */}
+      <div style={{ background: "#0a0a0a", padding: isMobile ? "20px 16px" : "28px 80px", display: "flex", justifyContent: "center", gap: isMobile ? 14 : 36, flexWrap: "wrap" }}>
+        {[
+          ["🏦", "Malca-Amit"],
+          ["📜", "LBMA"],
+          ["🛡️", lang === "ko" ? "완전 보험" : "Insured"],
+          ["🔐", lang === "ko" ? "완전 배분" : "Allocated"],
+          ["🇸🇬", "Singapore FTZ"],
+          ["💰", lang === "ko" ? "현물가 + 투명한 프리미엄" : "Spot + Transparent Premium"],
+          ["🥇🥈", lang === "ko" ? "금·은" : "Gold & Silver"],
+        ].map(([icon, label], i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: 7, fontSize: isMobile ? 12 : 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif" }}>
+            <span style={{ fontSize: isMobile ? 18 : 20 }}>{icon}</span>{label}
           </div>
         ))}
       </div>
 
-      {/* 왜 싱가포르인가 */}
+      {/* ── 1f. WHY SINGAPORE — compressed: 3 chips + 1 paragraph ── */}
       <div style={{ background: "#111008", borderTop: "1px solid #1a1510", borderBottom: "1px solid #1a1510", padding: isMobile ? "36px 16px" : "56px 80px" }}>
-        <div style={{ textAlign: "center", marginBottom: isMobile ? 28 : 40 }}>
-          <div style={{ fontSize: 10, color: "#c5a572", letterSpacing: 3, textTransform: "uppercase", marginBottom: 8, fontFamily: "'Outfit',sans-serif" }}>{lang === "ko" ? "왜 싱가포르인가" : "Why Singapore"}</div>
-          <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 26 : 34, color: "#f5f0e8", fontWeight: 300, margin: 0 }}>
-            {lang === "ko" ? "Asia의 귀금속 허브" : "Asia's Precious Metals Hub"}
+        <div style={{ textAlign: "center", marginBottom: isMobile ? 24 : 36 }}>
+          <div style={{ fontSize: 10, color: "#c5a572", letterSpacing: 3, textTransform: "uppercase", marginBottom: 8, fontFamily: "'Outfit',sans-serif" }}>
+            {lang === "ko" ? "왜 싱가포르인가" : "Why Singapore"}
+          </div>
+          <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 26 : 34, color: "#f5f0e8", fontWeight: 300, margin: "0 0 28px" }}>
+            {lang === "ko" ? "싱가포르: 아시아 최고의 보관 관할지" : "Singapore: Asia's Most Trusted Vault Jurisdiction"}
           </h2>
         </div>
-        <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {/* 3 trust chips */}
+        <div style={{ display: "flex", justifyContent: "center", gap: isMobile ? 8 : 14, flexWrap: "wrap", marginBottom: isMobile ? 24 : 32 }}>
           {[
-            {
-              title: lang === "ko" ? "Asia의 귀금속 허브 / Asia's Precious Metals Hub" : "Asia's Precious Metals Hub",
-              body: lang === "ko"
-                ? "싱가포르는 아시아 어느 관할권보다 많은 민간 금고 내 금을 보유합니다. Le Freeport와 기타 FTZ 금고에 추정 400톤 이상이 보관되어 있습니다."
-                : "Singapore holds more gold in private vaults than any other Asian jurisdiction. Le Freeport and other FTZ vaults together store an estimated 400+ tonnes."
-            },
-            {
-              title: lang === "ko" ? "국가 신용등급 AAA / AAA Sovereign Credit Rating" : "AAA Sovereign Credit Rating",
-              body: lang === "ko"
-                ? "Moody's, S&P, Fitch 모두 싱가포르를 AAA로 평가. 한국은 AA (두 단계 낮음). 정치적 안정성이 현저히 높습니다."
-                : "Moody's, S&P, and Fitch all rate Singapore AAA. Korea is AA — two notches lower. Political stability is materially higher."
-            },
-            {
-              title: lang === "ko" ? "정부 정책 우호적 / Government Policy Tailwind" : "Government Policy Tailwind",
-              body: lang === "ko"
-                ? "싱가포르는 2012년 투자용 금에 대한 GST를 완전 면제하여 금고 보관업을 적극 유치해왔습니다. 정책은 13년 이상 유지되고 있습니다."
-                : "Singapore exempted investment-grade gold from GST in 2012 specifically to attract vault storage business. The policy has held for 13+ years."
-            },
-            {
-              title: lang === "ko" ? "Aurum 맥락에서 / In the Aurum Context" : "In the Aurum Context",
-              body: lang === "ko"
-                ? "한국 원화 변동성 헤지와 국내 정책·과세·압수 리스크 분산 효과. 해외 보관은 도피가 아니라 분산입니다."
-                : "Hedge against Korean won volatility and diversification away from domestic policy, tax, or seizure risk. Storing abroad is not an escape — it is diversification."
-            },
-          ].map((item, i) => (
-            <div key={i} style={{ display: "flex", gap: 14, padding: "16px 18px", background: "#0a0a0a", border: "1px solid #1a1510", borderRadius: 8, borderLeft: "3px solid #c5a572" }}>
-              <div>
-                <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "#c5a572", fontWeight: 600, marginBottom: 5 }}>{item.title}</div>
-                <p style={{ margin: 0, fontSize: 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", lineHeight: 1.7 }}>{item.body}</p>
-              </div>
+            { icon: "🏅", en: "AAA Sovereign Credit Rating (Moody's · S&P · Fitch)", ko: "AAA 국가 신용등급 (Moody's · S&P · Fitch)" },
+            { icon: "🚫", en: "Investment-Grade Gold & Silver: Fully GST-Exempt", ko: "투자용 금·은 GST 완전 면제" },
+            { icon: "⚖️", en: "Strong Rule of Law · Stable Policy for 13+ Years", ko: "강력한 법치주의 · 13년 이상 일관된 정책" },
+          ].map((chip, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 8, background: "#0a0a0a", border: "1px solid #1e1e1e", borderRadius: 20, padding: isMobile ? "8px 14px" : "10px 20px", fontSize: isMobile ? 11 : 12, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>
+              <span style={{ fontSize: 14 }}>{chip.icon}</span>
+              {lang === "ko" ? chip.ko : chip.en}
             </div>
           ))}
+        </div>
+        {/* Single paragraph */}
+        <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 15, color: "#8a7d6b", lineHeight: 1.8, maxWidth: 720, margin: "0 auto", textAlign: "center" }}>
+          {lang === "ko"
+            ? "싱가포르는 아시아 어느 관할권보다 많은 민간 금고 내 금을 보유합니다. 싱가포르 통화청(MAS)은 PSPM Act 2019에 따라 귀금속 딜러를 규제합니다. 싱가포르 보관은 지리적 분산이며, 세금 회피가 아닙니다. 귀하의 금속은 한국의 규제·세금·통화 리스크 밖에 위치하면서도, 언제든 귀하가 직접 접근할 수 있습니다."
+            : "Singapore holds more private vault gold than any other Asian jurisdiction. The Monetary Authority of Singapore regulates precious metals dealers under the PSPM Act 2019. Storing metal here is geographic diversification — not a tax scheme. Your metal stays outside Korean regulatory, tax, and currency risk while remaining fully accessible to you at any time."}
+        </p>
+      </div>
+
+      {/* ── 1e. GENERATIONAL WEALTH MODULE — new strip after Why Singapore ── */}
+      <div style={{ background: "#0a0a0a", padding: isMobile ? "36px 16px" : "56px 80px", borderBottom: "1px solid #1a1510" }}>
+        <div style={{ background: "rgba(197,165,114,0.04)", border: "1px solid rgba(197,165,114,0.12)", borderLeft: "3px solid #c5a572", borderRadius: 8, padding: isMobile ? "24px 20px" : "36px 44px", maxWidth: 860, margin: "0 auto" }}>
+          <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 26 : 30, color: "#f5f0e8", fontWeight: 300, margin: "0 0 18px" }}>
+            {lang === "ko" ? "세대를 이어 보존하는 자산" : "Built to Last Generations"}
+          </h2>
+          <ul style={{ margin: 0, padding: "0 0 0 18px" }}>
+            {(lang === "ko" ? [
+              "금과 은은 수 세기 동안 구매력을 유지했으며, 법정화폐는 반복적으로 가치를 잃었습니다.",
+              "법적 소유권이 명확한 배분 금속은 상속인에게 이전하기 가장 간단한 자산 중 하나입니다.",
+              "복잡한 상속 절차 없음. 금융기관 의존 없음. 다음 세대를 위한 상대방 리스크 없음."
+            ] : [
+              "Gold and silver have preserved purchasing power across centuries while fiat currencies lost value.",
+              "Allocated bullion with clear legal title is one of the simplest assets to pass to heirs.",
+              "No complex probate. No reliance on financial institutions. No counterparty risk for your family."
+            ]).map((b, i) => (
+              <li key={i} style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "#8a7d6b", lineHeight: 1.7, marginBottom: 8 }}>{b}</li>
+            ))}
+          </ul>
         </div>
       </div>
 
