@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useIsMobile, useInView, fUSD, fKRW, fDateLong, fDate, WHY_GOLD_REASONS, WHY_GOLD_STATS, EDUCATION_ARTICLES, EDUCATION_CATEGORIES, MOCK_ORDERS_INIT, API } from "./lib.jsx";
+import { useIsMobile, useInView, fUSD, fKRW, fDateLong, fDate, WHY_GOLD_REASONS, WHY_GOLD_STATS, EDUCATION_ARTICLES, EDUCATION_CATEGORIES, EDUCATION_CATEGORY_LABELS, T, MOCK_ORDERS_INIT, API } from "./lib.jsx";
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // ORDER HISTORY
@@ -372,7 +372,7 @@ function WhyGold({ lang, navigate }) {
           {WHY_GOLD_STATS.map((s, i) => (
             <div key={i} style={{ background: "#111008", padding: isMobile ? "18px 10px" : "26px 22px", textAlign: "center", borderRight: i < WHY_GOLD_STATS.length - 1 ? "1px solid #1a1510" : "none" }}>
               <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 20 : 26, fontWeight: 600, color: "#c5a572", marginBottom: 4 }}>{s.value}</div>
-              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 9 : 11, color: "#8a7d6b", lineHeight: 1.4 }}>{s.label}</div>
+              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 10 : 12, color: "#8a7d6b", lineHeight: 1.4 }}>{lang === "ko" ? s.labelKo : s.labelEn}</div>
             </div>
           ))}
         </div>
@@ -383,11 +383,11 @@ function WhyGold({ lang, navigate }) {
               <div style={{ fontSize: isMobile ? 26 : 30, marginBottom: 14 }}>{r.icon}</div>
               <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 20 : 23, color: "#f5f0e8", fontWeight: 500, margin: "0 0 2px" }}>{lang === "ko" ? r.titleKo : r.titleEn}</h3>
               <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#c5a572", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>{lang === "ko" ? r.titleEn : r.titleKo}</div>
-              <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 14, color: "#8a7d6b", lineHeight: 1.75, margin: 0 }}>{r.body}</p>
+              <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 14, color: "#8a7d6b", lineHeight: 1.75, margin: 0 }}>{lang === "ko" ? r.bodyKo : r.bodyEn}</p>
               {r.stat && (
                 <div style={{ marginTop: 18, paddingTop: 16, borderTop: "1px solid #1a1510" }}>
                   <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 20 : 24, color: "#c5a572", fontWeight: 700 }}>{r.stat}</div>
-                  <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#555", marginTop: 3 }}>{r.statLabel}</div>
+                  <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 10 : 11, color: "#666", marginTop: 3 }}>{lang === "ko" ? r.statLabelKo : r.statLabelEn}</div>
                 </div>
               )}
             </div>
@@ -424,19 +424,9 @@ function WhyGold({ lang, navigate }) {
 
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// DESIGN TOKENS & SHARED COMPONENTS (used by Storage, AGP, AGPBackingReport)
+// SHARED COMPONENTS (used by Storage, AGP, AGPBackingReport)
+// Design tokens (T) are imported from lib.jsx
 // ═══════════════════════════════════════════════════════════════════════════════
-const T = {
-  bg: "#0a0a0a",
-  panel: "#111008",
-  border: "#1a1510",
-  accent: "#C5A572",
-  textPrimary: "#f5f0e8",
-  textSecondary: "#8a7d6b",
-  serif: "'Cormorant Garamond',serif",
-  sans: "'Outfit',sans-serif",
-  mono: "'JetBrains Mono',monospace",
-};
 
 function SectionLabel({ children }) {
   return (
@@ -534,43 +524,43 @@ function Storage({ lang, navigate }) {
 
   const faqItems = [
     {
-      q: ko ? "Q1. 최소 구매 금액은? / What is the minimum purchase?" : "Q1. What is the minimum purchase?",
+      q: ko ? "Q1. 최소 구매 금액은?" : "Q1. What is the minimum purchase?",
       a: ko ? "일회성 실물 바 구매는 최소 1온스(약 USD 3,100~3,500) 수준부터 시작합니다. 더 작은 단위로 시작하고 싶다면 Aurum Gold Plan(AGP)을 통해 월 KRW 100,000(약 USD 73)부터 1g 단위로 저축할 수 있습니다." : "One-off bar purchases start at roughly 1 oz (USD 3,100–3,500). If you want to begin smaller, the Aurum Gold Plan (AGP) lets you save in 1-gram increments from KRW 100,000 (~USD 73) per month."
     },
     {
-      q: ko ? "Q2. 카드로 결제 가능한가요? / Can I pay with a Korean credit card?" : "Q2. Can I pay with a Korean credit card?",
+      q: ko ? "Q2. 카드로 결제 가능한가요?" : "Q2. Can I pay with a Korean credit card?",
       a: ko ? "네. 토스페이를 통해 신용카드 또는 체크카드 결제 가능합니다. 카드 결제 시 프리미엄 5.5%(토스 수수료 포함)이며, 전신환 결제 시 2.5%, 암호화폐 결제 시 2.0%입니다." : "Yes. You can pay via Toss Pay using a Korean credit or debit card. Card premium is 5.5% (includes Toss processing); wire premium is 2.5%; crypto premium is 2.0%."
     },
     {
-      q: ko ? "Q3. 한국으로 금을 가져올 때 세금은? / What tax applies when bringing gold to Korea?" : "Q3. What tax applies when bringing gold to Korea?",
+      q: ko ? "Q3. 한국으로 금을 가져올 때 세금은?" : "Q3. What tax applies when bringing gold to Korea?",
       a: ko ? "한국 수입 시 관세 3%와 부가가치세 10%, 합계 약 13%가 금속 가액에 부과됩니다. 금을 싱가포르에 계속 보관하는 동안은 한국 세금이 발생하지 않습니다. 개별 상황은 공인 세무사와 상담하세요." : "Importing into Korea triggers 3% customs + 10% VAT on metal value, totaling ~13%. No Korean taxes apply while metal remains in Singapore. Consult a certified Korean tax advisor for your specific situation."
     },
     {
-      q: ko ? "Q4. Aurum이 망하면 내 금은? / What happens to my gold if Aurum goes bankrupt?" : "Q4. What happens to my gold if Aurum goes bankrupt?",
+      q: ko ? "Q4. Aurum이 망하면 내 금은?" : "Q4. What happens to my gold if Aurum goes bankrupt?",
       a: ko ? "귀하의 금은 Aurum 명의가 아닌 귀하 명의로 Malca-Amit 금고에 배분·보관됩니다. Aurum 재무 상태와 완전히 분리되어 있으며, Aurum이 파산하더라도 수탁자인 Malca-Amit이 직접 귀하에게 반환합니다." : "Your gold is allocated in your name at Malca-Amit, not Aurum's. It is fully segregated from Aurum's balance sheet. In the event of Aurum's insolvency, Malca-Amit returns the metal directly to you."
     },
     {
-      q: ko ? "Q5. 싱가포르 금고를 직접 방문할 수 있나요? / Can I visit the Singapore vault in person?" : "Q5. Can I visit the Singapore vault in person?",
+      q: ko ? "Q5. 싱가포르 금고를 직접 방문할 수 있나요?" : "Q5. Can I visit the Singapore vault in person?",
       a: ko ? "가능합니다. 온라인으로 사전 예약하시면 본인 보유 자산을 직접 실사할 수 있습니다. 여권과 구매 증명서 지참이 필요하며, 현장 감사 수수료는 회당 SGD 500입니다." : "Yes. Book an online appointment and you can inspect your own holdings in person. Bring your passport and invoice. On-site audit fee is SGD 500 per visit."
     },
     {
-      q: ko ? "Q6. 보관료는 어떻게 차감되나요? / How are storage fees deducted?" : "Q6. How are storage fees deducted?",
+      q: ko ? "Q6. 보관료는 어떻게 차감되나요?" : "Q6. How are storage fees deducted?",
       a: ko ? "일일 보관료는 SGT 00:01 기준 현물가로 계산되며, 매년 3월 1일 또는 전액 매도·인출 시점에 일괄 청구됩니다. Aurum 계정 현금 잔액에서 자동 차감되거나 등록 카드로 청구됩니다." : "Daily storage is calculated at 00:01 SGT spot and billed once per year on 1 March, or when you fully sell/withdraw. Fees are auto-deducted from your Aurum cash balance or charged to your card on file."
     },
     {
-      q: ko ? "Q7. 매도 시 원화 수취는 얼마나 걸리나요? / How long to receive KRW when selling?" : "Q7. How long to receive KRW when selling?",
+      q: ko ? "Q7. 매도 시 원화 수취는 얼마나 걸리나요?" : "Q7. How long to receive KRW when selling?",
       a: ko ? "온라인 매도 주문 체결 후 2영업일 이내에 연결된 한국 은행 계좌로 원화가 입금됩니다. USD, SGD 수취도 가능합니다." : "After executing an online sell order, KRW is credited to your linked Korean bank account within 2 business days. USD and SGD payouts are also available."
     },
     {
-      q: ko ? "Q8. 해외금융계좌 신고 대상인가요? / Does this trigger Korean overseas financial account reporting?" : "Q8. Does this trigger Korean overseas financial account reporting?",
+      q: ko ? "Q8. 해외금융계좌 신고 대상인가요?" : "Q8. Does this trigger Korean overseas financial account reporting?",
       a: ko ? "한국 거주자로서 연중 어느 하루라도 해외 금융계좌 잔액 합계가 5억 원을 초과하면 다음 해 6월 1일~30일 사이에 국세청에 신고해야 합니다. Aurum은 NTS 양식에 맞춘 연말 잔고 증명서를 제공합니다. 세무사 상담 권장." : "Korean residents with aggregate offshore financial account balances exceeding KRW 500M at any point in the year must report to the NTS between June 1–30 the following year. Aurum provides year-end statements in NTS-compliant format. Consult a tax advisor."
     },
     {
-      q: ko ? "Q9. AGP와 실물 보관의 차이는? / AGP vs allocated bullion — what's the difference?" : "Q9. AGP vs allocated bullion — what's the difference?",
+      q: ko ? "Q9. AGP와 실물 보관의 차이는?" : "Q9. AGP vs allocated bullion — what's the difference?",
       a: ko ? "실물 보관은 구매 즉시 고유 일련번호를 가진 특정 바가 귀하에게 배정됩니다. AGP는 1g 단위로 적립하다가 누적 100g 또는 1kg에 도달하면 실물 PAMP·Heraeus 바로 무료 전환할 수 있는 저축 상품입니다. AGP도 100% 실물 금으로 백업되며 매일 보유량이 공개됩니다." : "Allocated storage assigns a specific serial-numbered bar to you at purchase. AGP is a savings product where you accumulate by the gram and, at 100g or 1kg threshold, convert to a real PAMP or Heraeus bar for free. AGP is also 100% physically backed with daily public backing reports."
     },
     {
-      q: ko ? "Q10. 상속 시 처리는? / What happens in case of inheritance?" : "Q10. What happens in case of inheritance?",
+      q: ko ? "Q10. 상속 시 처리는?" : "Q10. What happens in case of inheritance?",
       a: ko ? "싱가포르 법률에 따라 귀하의 법정 상속인에게 이전 가능합니다. 고객 대시보드에서 수익자(beneficiary)를 사전 등록할 수 있으며, 상세 프로세스는 계정 개설 시 안내됩니다. 한국 상속세 관련 사항은 별도 전문가 상담이 필요합니다." : "Under Singapore law, your holdings transfer to your legal heirs. You may pre-register a beneficiary in your customer dashboard. Details are provided at account opening. Korean estate tax implications should be discussed with a qualified professional."
     },
   ];
@@ -623,12 +613,12 @@ function Storage({ lang, navigate }) {
           )}
           <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
             {[
-              { icon: "🖥️", title: ko ? "온라인 대시보드 / Online Dashboard" : "Online Dashboard", body: ko ? "실시간 USD·KRW 평가금액, 구매 이력, 개별 바 일련번호, 누적 보관료 확인 / Real-time USD and KRW valuation, purchase history, individual bar serial numbers, storage fees accrued to date." : "Real-time USD and KRW valuation, purchase history, individual bar serial numbers, storage fees accrued to date." },
-              { icon: "📸", title: ko ? "실물 사진 확인 / Photo Verification" : "Photo Verification", body: ko ? "모든 바를 일련번호가 보이도록 촬영하여 업로드. 신규 업로드 시 이메일·카카오톡 알림" : "Every bar photographed with serial number visible. Email and KakaoTalk alert when new photos are uploaded." },
-              { icon: "📋", title: ko ? "볼트 증명서 / Vault Certificate" : "Vault Certificate", body: ko ? "고객 명의로 보관된 모든 바 목록이 기재된 PDF. 거래 발생 시 자동 업데이트. 자산관리·상속·담보대출 시 활용 가능" : "Downloadable PDF listing all bars held in your name. Auto-updated after every transaction. Useful for wealth planning, estate documentation, or loan collateral." },
-              { icon: "💱", title: ko ? "원클릭 매도 / One-Click Sell" : "One-Click Sell", body: ko ? "실시간 매수호가에 Aurum으로 매도. 연결된 한국 은행 계좌로 KRW 2영업일 내 수취" : "Sell to Aurum at live bid price. KRW settlement to your linked Korean bank within 2 business days." },
-              { icon: "🔄", title: ko ? "계정 내 현금·실물 동시 보유 / Cash + Bullion in One Account" : "Cash + Bullion in One Account", body: ko ? "USD, SGD, KRW 잔액을 Aurum 계정에 보유하여 신속한 매매와 평균단가 관리" : "Hold USD, SGD, or KRW balances inside your Aurum account for faster trades and price-averaging." },
-              { icon: "🌐", title: ko ? "한국어 전담 고객지원 / Korean-Language Support" : "Korean-Language Support", body: ko ? "카카오톡·전화·이메일로 실시간 대응. 영업시간 KST, 긴급 상담 24/7" : "Real-time support via KakaoTalk, phone, and email. KST business hours with 24/7 emergency line." },
+              { icon: "🖥️", title: ko ? "온라인 대시보드" : "Online Dashboard", body: ko ? "실시간 USD·KRW 평가금액, 구매 이력, 개별 바 일련번호, 누적 보관료 확인" : "Real-time USD and KRW valuation, purchase history, individual bar serial numbers, storage fees accrued to date." },
+              { icon: "📸", title: ko ? "실물 사진 확인" : "Photo Verification", body: ko ? "모든 바를 일련번호가 보이도록 촬영하여 업로드. 신규 업로드 시 이메일·카카오톡 알림" : "Every bar photographed with serial number visible. Email and KakaoTalk alert when new photos are uploaded." },
+              { icon: "📋", title: ko ? "볼트 증명서" : "Vault Certificate", body: ko ? "고객 명의로 보관된 모든 바 목록이 기재된 PDF. 거래 발생 시 자동 업데이트. 자산관리·상속·담보대출 시 활용 가능" : "Downloadable PDF listing all bars held in your name. Auto-updated after every transaction. Useful for wealth planning, estate documentation, or loan collateral." },
+              { icon: "💱", title: ko ? "원클릭 매도" : "One-Click Sell", body: ko ? "실시간 매수호가에 Aurum으로 매도. 연결된 한국 은행 계좌로 KRW 2영업일 내 수취" : "Sell to Aurum at live bid price. KRW settlement to your linked Korean bank within 2 business days." },
+              { icon: "🔄", title: ko ? "계정 내 현금·실물 동시 보유" : "Cash + Bullion in One Account", body: ko ? "USD, SGD, KRW 잔액을 Aurum 계정에 보유하여 신속한 매매와 평균단가 관리" : "Hold USD, SGD, or KRW balances inside your Aurum account for faster trades and price-averaging." },
+              { icon: "🌐", title: ko ? "한국어 전담 고객지원" : "Korean-Language Support", body: ko ? "카카오톡·전화·이메일로 실시간 대응. 영업시간 KST, 긴급 상담 24/7" : "Real-time support via KakaoTalk, phone, and email. KST business hours with 24/7 emergency line." },
             ].map((item, i) => (
               <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "16px 18px", display: "flex", gap: 14 }}>
                 <span style={{ fontSize: 24, flexShrink: 0 }}>{item.icon}</span>
@@ -671,11 +661,11 @@ function Storage({ lang, navigate }) {
         {lead("주문 즉시 Malca-Amit 금고에 배정됩니다. 5단계, 5분 소요.", "Assigned to the Malca-Amit vault the moment you order. 5 steps, 5 minutes.")}
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           {[
-            { num: 1, icon: "🛒", title: ko ? "구매 / Purchase" : "Purchase", body: ko ? "Aurum 웹사이트에서 실시간 현물가 + 투명한 프리미엄으로 주문" : "Order on the Aurum website at live spot price plus transparent premium." },
-            { num: 2, icon: "💳", title: ko ? "결제 / Pay" : "Pay", body: ko ? "토스페이(카드·계좌이체) 또는 국제 전신환" : "Toss Pay (card or bank transfer) or international wire transfer." },
-            { num: 3, icon: "🏭", title: ko ? "공급 / Supplier Execution" : "Supplier Execution", body: ko ? "결제 확인 후 수분 이내 LBMA 승인 정련소 네트워크와 물량 체결" : "Aurum executes with the LBMA-approved refiner network within minutes of payment confirmation." },
-            { num: 4, icon: "🏛️", title: ko ? "금고 배정 / Vault Allocation" : "Vault Allocation", body: ko ? "고유 일련번호를 가진 특정 바가 귀하의 계정으로 Malca-Amit Singapore FTZ에 배정" : "A specific, serial-numbered bar is assigned to your account at Malca-Amit Singapore FTZ." },
-            { num: 5, icon: "📸", title: ko ? "확인 / Confirmation" : "Confirmation", body: ko ? "48시간 이내 사진·증명서·카카오톡 알림 발송" : "Photos, certificate, and KakaoTalk notification sent within 48 hours." },
+            { num: 1, icon: "🛒", title: ko ? "구매" : "Purchase", body: ko ? "Aurum 웹사이트에서 실시간 현물가 + 투명한 프리미엄으로 주문" : "Order on the Aurum website at live spot price plus transparent premium." },
+            { num: 2, icon: "💳", title: ko ? "결제" : "Pay", body: ko ? "토스페이(카드·계좌이체) 또는 국제 전신환" : "Toss Pay (card or bank transfer) or international wire transfer." },
+            { num: 3, icon: "🏭", title: ko ? "공급" : "Supplier Execution", body: ko ? "결제 확인 후 수분 이내 LBMA 승인 정련소 네트워크와 물량 체결" : "Aurum executes with the LBMA-approved refiner network within minutes of payment confirmation." },
+            { num: 4, icon: "🏛️", title: ko ? "금고 배정" : "Vault Allocation", body: ko ? "고유 일련번호를 가진 특정 바가 귀하의 계정으로 Malca-Amit Singapore FTZ에 배정" : "A specific, serial-numbered bar is assigned to your account at Malca-Amit Singapore FTZ." },
+            { num: 5, icon: "📸", title: ko ? "확인" : "Confirmation", body: ko ? "48시간 이내 사진·증명서·카카오톡 알림 발송" : "Photos, certificate, and KakaoTalk notification sent within 48 hours." },
           ].map(s => <StepCard key={s.num} {...s} />)}
         </div>
         <div style={{ marginTop: 24, padding: "14px 18px", background: "rgba(197,165,114,0.05)", border: `1px solid rgba(197,165,114,0.2)`, borderRadius: 8 }}>
@@ -690,9 +680,9 @@ function Storage({ lang, navigate }) {
         {h2("보관 혜택", "Storage Benefits")}
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 16 }}>
           <BenefitTile icon="🔐" title={ko ? "Allocated / 완전 배분" : "Allocated"} bullets={[
-            ko ? "고유 일련번호로 귀하의 이름 하에 개별 등록 / Registered under your name with a unique serial number" : "Registered under your name with a unique serial number",
-            ko ? "다른 고객과 혼합 보관(unallocated)하지 않음 / Never pooled or commingled" : "Never pooled or commingled with other customers' metal",
-            ko ? "Aurum 파산 시에도 고객 자산 완전 분리 — 법적 소유권은 항상 고객 / Segregated from Aurum's balance sheet" : "Segregated from Aurum's balance sheet — you retain legal title at all times",
+            ko ? "고유 일련번호로 귀하의 이름 하에 개별 등록" : "Registered under your name with a unique serial number",
+            ko ? "다른 고객과 혼합 보관(unallocated)하지 않음" : "Never pooled or commingled with other customers' metal",
+            ko ? "Aurum 파산 시에도 고객 자산 완전 분리 — 법적 소유권은 항상 고객" : "Segregated from Aurum's balance sheet — you retain legal title at all times",
           ]} />
           <BenefitTile icon="🛡️" title={ko ? "Insured / 완전 보험" : "Insured"} bullets={[
             ko ? "Marsh 브로커를 통한 Lloyd's of London 신디케이트 언더라이팅" : "Underwritten by Lloyd's of London syndicates via Marsh",
@@ -757,11 +747,11 @@ function Storage({ lang, navigate }) {
         <p style={{ fontSize: isMobile ? 13 : 14, color: T.textSecondary, fontFamily: T.sans, lineHeight: 1.8, margin: "0 0 20px" }}>{ko ? "신뢰를 부탁드리지 않습니다. 다섯 가지 방법으로 증명합니다." : "We don't ask you to trust us. We prove it, five different ways."}</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {[
-            { num: "1", title: ko ? "제3자 감사 (Bureau Veritas) / Third-Party Audit" : "Third-Party Audit (Bureau Veritas)", bullets: ko ? ["LBMA 승인 독립 감사기관", "연 2회 실물 카운트 및 중량 검증", "무작위 샘플 일련번호 대조", "고객 대시보드에서 감사 보고서 다운로드"] : ["LBMA-approved independent auditor", "Bi-annual physical counts and weight verification", "Random-sample serial number matching", "Audit reports downloadable from the customer dashboard"] },
-            { num: "2", title: ko ? "실시간 감사 리포트 / Live Audit Report" : "Live Audit Report", bullets: ko ? ["전체 고객 자산 목록 실시간 공개 (익명 처리)", "고객은 본인 보유 내역이 실시간 목록에 포함되어 있는지 직접 확인 가능", "입고·출고 발생 시 즉시 업데이트"] : ["Anonymized real-time vault inventory visible to all customers", "Customers verify their own holdings appear in the live list", "Updated in real time with every deposit and withdrawal"] },
-            { num: "3", title: ko ? "고객 현장 감사 / Customer On-Site Audit" : "Customer On-Site Audit", bullets: ko ? ["싱가포르 금고에서 본인 보유 자산 직접 실사 가능", "사전 예약 필수, 회당 SGD 500 수수료", "바 실물 확인 및 일련번호 대조 포함"] : ["Physical on-site inspection at the Singapore vault", "Appointment required, SGD 500 fee per visit", "Hand inspection of bars matched to serial records"] },
-            { num: "4", title: ko ? "내부 감사 / Internal Audit" : "Internal Audit", bullets: ko ? ["운영팀이 월간 내부 정기 점검 수행", "Marsh·Lloyd's 보험 계약 의무사항", "7년간 기록 보관"] : ["Monthly internal reconciliation by the operations team", "Required under the Marsh / Lloyd's insurance policy", "Documented and retained for 7 years"] },
-            { num: "5", title: ko ? "재무 감사 / Financial Audit" : "Financial Audit", bullets: ko ? ["Aurum Korea Pte Ltd는 싱가포르 회사법에 따라 매년 감사", "싱가포르 등록 회계법인 감사", "연차보고서 공개"] : ["Aurum Korea Pte Ltd is audited annually under the Singapore Companies Act", "Audited by a licensed Singapore auditing firm", "Annual report published"] },
+            { num: "1", title: ko ? "제3자 감사 (Bureau Veritas)" : "Third-Party Audit (Bureau Veritas)", bullets: ko ? ["LBMA 승인 독립 감사기관", "연 2회 실물 카운트 및 중량 검증", "무작위 샘플 일련번호 대조", "고객 대시보드에서 감사 보고서 다운로드"] : ["LBMA-approved independent auditor", "Bi-annual physical counts and weight verification", "Random-sample serial number matching", "Audit reports downloadable from the customer dashboard"] },
+            { num: "2", title: ko ? "실시간 감사 리포트" : "Live Audit Report", bullets: ko ? ["전체 고객 자산 목록 실시간 공개 (익명 처리)", "고객은 본인 보유 내역이 실시간 목록에 포함되어 있는지 직접 확인 가능", "입고·출고 발생 시 즉시 업데이트"] : ["Anonymized real-time vault inventory visible to all customers", "Customers verify their own holdings appear in the live list", "Updated in real time with every deposit and withdrawal"] },
+            { num: "3", title: ko ? "고객 현장 감사" : "Customer On-Site Audit", bullets: ko ? ["싱가포르 금고에서 본인 보유 자산 직접 실사 가능", "사전 예약 필수, 회당 SGD 500 수수료", "바 실물 확인 및 일련번호 대조 포함"] : ["Physical on-site inspection at the Singapore vault", "Appointment required, SGD 500 fee per visit", "Hand inspection of bars matched to serial records"] },
+            { num: "4", title: ko ? "내부 감사" : "Internal Audit", bullets: ko ? ["운영팀이 월간 내부 정기 점검 수행", "Marsh·Lloyd's 보험 계약 의무사항", "7년간 기록 보관"] : ["Monthly internal reconciliation by the operations team", "Required under the Marsh / Lloyd's insurance policy", "Documented and retained for 7 years"] },
+            { num: "5", title: ko ? "재무 감사" : "Financial Audit", bullets: ko ? ["Aurum Korea Pte Ltd는 싱가포르 회사법에 따라 매년 감사", "싱가포르 등록 회계법인 감사", "연차보고서 공개"] : ["Aurum Korea Pte Ltd is audited annually under the Singapore Companies Act", "Audited by a licensed Singapore auditing firm", "Annual report published"] },
           ].map((card, i) => (
             <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "18px 20px", display: "flex", gap: 16 }}>
               <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#c5a572,#8a6914)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -785,15 +775,15 @@ function Storage({ lang, navigate }) {
         {h2("소유권과 분리 보관 원칙", "Your Bullion Is Yours — Legally and Physically")}
         {[
           {
-            title: ko ? "법적 소유권 / Legal Ownership" : "Legal Ownership",
+            title: ko ? "법적 소유권" : "Legal Ownership",
             body: ko ? "배분된 순간부터 귀하의 금은 귀하의 명의로 등록되며, 법적 이름이 기재된 볼트 증명서가 발행됩니다. Aurum Korea Pte Ltd는 중개인 및 보관 조정자 역할을 수행할 뿐 귀하의 금속에 대한 소유자가 아닙니다. 귀하는 항상 완전한 법적 소유권을 보유합니다." : "From the moment of allocation your bullion is registered in your name, with a vault certificate issued under your legal name. Aurum Korea Pte Ltd acts as broker and storage coordinator — not as owner. You retain full legal title at all times."
           },
           {
-            title: ko ? "Aurum 자산과 완전 분리 / Segregated From Aurum's Balance Sheet" : "Segregated From Aurum's Balance Sheet",
+            title: ko ? "Aurum 자산과 완전 분리" : "Segregated From Aurum's Balance Sheet",
             body: ko ? "귀하의 금은 Aurum의 대차대조표에 포함되지 않습니다. Malca-Amit에서 귀하의 이름으로 분리된 서브 계정에 보관됩니다. 만에 하나 Aurum이 지급불능 상태에 빠지더라도, 귀하의 금은 회사 자산이 되지 않고 수탁자로부터 직접 귀하에게 반환됩니다." : "Your bullion is not on Aurum's balance sheet. It is held in a segregated sub-account under your name at Malca-Amit. If Aurum were to enter insolvency, your metal does not become a company asset — it is returned to you directly by the custodian."
           },
           {
-            title: ko ? "Malca-Amit의 역할 / Malca-Amit as Independent Custodian" : "Malca-Amit as Independent Custodian",
+            title: ko ? "Malca-Amit의 역할" : "Malca-Amit as Independent Custodian",
             body: ko ? "Malca-Amit은 1963년 설립된 62년 역사의 귀금속 수탁 전문기업으로 싱가포르, 홍콩, 런던, 취리히, 뉴욕, 상하이에 금고를 운영합니다. 싱가포르 통화청(MAS) 규제를 받으며 ISO 9001:2015 인증을 보유합니다. 수탁자의 선관주의 의무는 금속 소유자인 귀하에게 있으며, Aurum에게 있지 않습니다." : "Malca-Amit is a 62-year-old precious metals custodian (founded 1963) operating vaults in Singapore, Hong Kong, London, Zurich, New York, and Shanghai. Regulated by the Monetary Authority of Singapore (MAS) and certified to ISO 9001:2015. Their fiduciary duty runs to the bullion owner — you — not to Aurum."
           },
         ].map((item, i) => (
@@ -819,8 +809,8 @@ function Storage({ lang, navigate }) {
             <tbody>
               {[
                 ["< USD 50,000", "0.80%", "USD 12/month"],
-                ["USD 50,000 – 250,000", "0.65%", ko ? "면제 / Waived" : "Waived"],
-                ["> USD 250,000", "0.50%", ko ? "면제 / Waived" : "Waived"],
+                ["USD 50,000 – 250,000", "0.65%", ko ? "면제" : "Waived"],
+                ["> USD 250,000", "0.50%", ko ? "면제" : "Waived"],
               ].map((row, i) => (
                 <tr key={i}>
                   {row.map((cell, j) => (
@@ -834,10 +824,10 @@ function Storage({ lang, navigate }) {
         <div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "16px 20px", marginBottom: 24 }}>
           <div style={{ fontFamily: T.sans, fontSize: 13, color: T.textPrimary, fontWeight: 600, marginBottom: 10 }}>{ko ? "수수료 계산 방식" : "Fee Calculation"}</div>
           {[
-            ko ? "일일 기준 금 현물가(SGT 00:01)로 계산 / Calculated daily based on metal spot price at 00:01 SGT" : "Calculated daily based on metal spot price at 00:01 SGT",
-            ko ? "매년 3월 1일 또는 전액 매도·인출 시점에 청구 / Invoiced on 1 March each year, or upon full withdrawal/sale" : "Invoiced on 1 March each year, or upon full withdrawal/sale",
-            ko ? "Aurum 계정 현금 잔액에서 차감 또는 등록 카드 청구 / Paid from cash balance or card on file" : "Paid from cash balance in your Aurum account, or invoiced to card on file",
-            ko ? "AGP 그램 보관료 별도 — Aurum Gold Plan 섹션 참고 / No fees for AGP grams — see AGP section" : "No fees for AGP grams — see Aurum Gold Plan section",
+            ko ? "일일 기준 금 현물가(SGT 00:01)로 계산" : "Calculated daily based on metal spot price at 00:01 SGT",
+            ko ? "매년 3월 1일 또는 전액 매도·인출 시점에 청구" : "Invoiced on 1 March each year, or upon full withdrawal/sale",
+            ko ? "Aurum 계정 현금 잔액에서 차감 또는 등록 카드 청구" : "Paid from cash balance in your Aurum account, or invoiced to card on file",
+            ko ? "AGP 그램 보관료 별도 — Aurum Gold Plan 섹션 참고" : "No fees for AGP grams — see Aurum Gold Plan section",
           ].map((line, i) => (
             <div key={i} style={{ fontSize: 12, color: T.textSecondary, fontFamily: T.sans, marginBottom: 6, lineHeight: 1.6 }}>• {line}</div>
           ))}
@@ -848,9 +838,9 @@ function Storage({ lang, navigate }) {
             {ko ? "1 kg 금바(2026년 4월 기준 ~USD 153,000)를 싱가포르 금고에 보관하는 경우:" : "Customer holds a 1 kg gold bar (~USD 153,000 at April 2026 spot) in the Singapore vault:"}
           </p>
           {[
-            [ko ? "연간 보관료 / Annual fee" : "Annual fee", "0.65% × USD 153,000 = USD 994.50/yr"],
-            [ko ? "일일 환산 / Daily" : "Daily", "~USD 2.72/day"],
-            [ko ? "월간 환산 / Monthly" : "Monthly", ko ? "~0.054% — 6자릿수 금 보유 기준 세계 최저 수준" : "~0.054% — one of the lowest safe-keeping rates worldwide for six-figure gold holdings"],
+            [ko ? "연간 보관료" : "Annual fee", "0.65% × USD 153,000 = USD 994.50/yr"],
+            [ko ? "일일 환산" : "Daily", "~USD 2.72/day"],
+            [ko ? "월간 환산" : "Monthly", ko ? "~0.054% — 6자릿수 금 보유 기준 세계 최저 수준" : "~0.054% — one of the lowest safe-keeping rates worldwide for six-figure gold holdings"],
           ].map(([l, v], i) => (
             <div key={i} style={{ display: "flex", justifyContent: "space-between", borderBottom: i < 2 ? `1px solid ${T.border}` : "none", padding: "6px 0" }}>
               <span style={{ fontSize: 12, color: T.textSecondary, fontFamily: T.sans }}>{l}</span>
@@ -871,9 +861,9 @@ function Storage({ lang, navigate }) {
             <tbody>
               {[
                 ["Aurum Korea", "0.50–0.80%/yr", "Lloyd's, 100%", "Singapore FTZ"],
-                [ko ? "국내 은행 금예금 / Korean bank gold deposit" : "Korean bank gold deposit", "~0.80%/yr", ko ? "없음 (장부상)" : "None (paper only)", "Korea"],
-                [ko ? "국내 은행 대여금고 / Korean safe deposit box" : "Korean safe deposit box", ko ? "~0.50%/yr + 보증금" : "~0.50%/yr + deposit", ko ? "없음" : "None", "Korea"],
-                [ko ? "가정 금고 + 보험 / Home safe + insurance" : "Home safe + insurance", "1.0–1.5%/yr est.", ko ? "제한적" : "Limited", "Korea"],
+                [ko ? "국내 은행 금예금" : "Korean bank gold deposit", "~0.80%/yr", ko ? "없음 (장부상)" : "None (paper only)", "Korea"],
+                [ko ? "국내 은행 대여금고" : "Korean safe deposit box", ko ? "~0.50%/yr + 보증금" : "~0.50%/yr + deposit", ko ? "없음" : "None", "Korea"],
+                [ko ? "가정 금고 + 보험" : "Home safe + insurance", "1.0–1.5%/yr est.", ko ? "제한적" : "Limited", "Korea"],
               ].map((row, i) => (
                 <tr key={i}>
                   {row.map((cell, j) => (
@@ -891,9 +881,9 @@ function Storage({ lang, navigate }) {
         {h2("규제 및 컴플라이언스", "Compliance & Regulation")}
         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
           {[
-            ko ? "Singapore PSPM Act 2019 등록 귀금속 딜러 / Registered precious metals dealer under the Singapore PSPM Act 2019" : "Registered precious metals dealer under the Singapore PSPM Act 2019",
-            ko ? "PDPA(싱가포르 개인정보보호법) + 한국 PIPA 준수 / PDPA (Singapore) and Korean PIPA compliant" : "PDPA (Singapore) and Korean PIPA compliant",
-            ko ? "MAS Notice PSM-N01에 따른 AML/CFT KYC / AML/CFT KYC per MAS Notice PSM-N01" : "AML/CFT KYC per MAS Notice PSM-N01",
+            ko ? "Singapore PSPM Act 2019 등록 귀금속 딜러" : "Registered precious metals dealer under the Singapore PSPM Act 2019",
+            ko ? "PDPA(싱가포르 개인정보보호법) + 한국 PIPA 준수" : "PDPA (Singapore) and Korean PIPA compliant",
+            ko ? "MAS Notice PSM-N01에 따른 AML/CFT KYC" : "AML/CFT KYC per MAS Notice PSM-N01",
             ko ? "한국 해외금융계좌 신고: 연중 어느 하루라도 잔액이 5억 원을 초과할 경우 다음 해 6월 30일까지 국세청에 신고. Aurum은 NTS 신고 양식에 부합하는 연말 잔고 증명서 제공." : "Korean Foreign Financial Account Reporting: if aggregate offshore balance exceeds KRW 500M at any point during the year, report to the National Tax Service by June 30 of the following year. Aurum provides year-end statements in NTS-compliant format.",
           ].map((item, i) => (
             <div key={i} style={{ display: "flex", gap: 10, padding: "12px 16px", background: T.panel, border: `1px solid ${T.border}`, borderRadius: 7 }}>
@@ -913,10 +903,10 @@ function Storage({ lang, navigate }) {
           {navigate && (
             <>
               <button onClick={() => navigate("shop")} style={{ background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#0a0a0a", border: "none", padding: "15px 36px", fontSize: 15, fontWeight: 700, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>
-                🥇 {ko ? "지금 첫 바 구매하기 / Buy your first bar now" : "Buy your first bar now"}
+                🥇 {ko ? "지금 첫 바 구매하기" : "Buy your first bar now"}
               </button>
               <button onClick={() => navigate("agp")} style={{ background: "transparent", color: T.accent, border: `1px solid ${T.accent}`, padding: "15px 36px", fontSize: 15, fontWeight: 600, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>
-                💰 {ko ? "AGP 저축 플랜 시작하기 / Start AGP savings plan" : "Start AGP savings plan"}
+                💰 {ko ? "AGP 저축 플랜 시작하기" : "Start AGP savings plan"}
               </button>
             </>
           )}
@@ -931,10 +921,21 @@ function Storage({ lang, navigate }) {
 // ═══════════════════════════════════════════════════════════════════════════════
 function Learn({ lang, navigate }) {
   const isMobile = useIsMobile();
+  const ko = lang === "ko";
   const [cat, setCat] = useState("전체");
   const [openId, setOpenId] = useState(null);
   const [visible, setVisible] = useState(false);
-  const filtered = cat === "전체" ? EDUCATION_ARTICLES : EDUCATION_ARTICLES.filter(a => a.category === cat);
+
+  // Pick fields by language
+  const t = (a, field) => ko ? a[`${field}Ko`] : a[`${field}En`];
+  const sText = (s, field) => ko ? s[`${field}Ko`] : s[`${field}En`];
+
+  // Featured articles (the 4 new HNW pieces) always shown first
+  const baseList = cat === "전체" ? EDUCATION_ARTICLES : EDUCATION_ARTICLES.filter(a => a.category === cat);
+  const featured = baseList.filter(a => a.featured);
+  const rest = baseList.filter(a => !a.featured);
+  const filtered = [...featured, ...rest];
+
   const article = EDUCATION_ARTICLES.find(a => a.id === openId);
   const openModal = (id) => { setOpenId(id); setVisible(true); document.body.style.overflow = "hidden"; };
   const closeModal = () => { setVisible(false); document.body.style.overflow = ""; setTimeout(() => setOpenId(null), 180); };
@@ -943,69 +944,104 @@ function Learn({ lang, navigate }) {
     window.addEventListener("keydown", h);
     return () => window.removeEventListener("keydown", h);
   }, []);
-  const catLabels = { "전체": lang === "ko" ? "전체" : "All", "기초": lang === "ko" ? "기초" : "Basics", "가격": lang === "ko" ? "가격" : "Pricing", "구매": lang === "ko" ? "구매" : "Buying", "보관": lang === "ko" ? "보관" : "Storage", "세금·법률": lang === "ko" ? "세금·법률" : "Tax & Legal", "용어집": lang === "ko" ? "용어집" : "Glossary" };
+
+  const catLabel = (c) => {
+    const entry = EDUCATION_CATEGORY_LABELS[c];
+    return entry ? (ko ? entry.ko : entry.en) : c;
+  };
+
+  const readLabel = ko ? "읽기" : "read";
+  const totalCount = EDUCATION_ARTICLES.length;
+
   return (
     <div style={{ background: "#0a0a0a", minHeight: "80vh" }}>
-      <div style={{ background: "linear-gradient(135deg,#0a0a0a,#1a1510 50%,#0a0a0a)", padding: isMobile ? "44px 16px 28px" : "60px 80px 36px", textAlign: "center", borderBottom: "1px solid #1a1510" }}>
-        <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#c5a572", letterSpacing: 4, textTransform: "uppercase", marginBottom: 12 }}>{lang === "ko" ? "교육 허브" : "Education Hub"}</div>
-        <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 30 : 44, color: "#f5f0e8", fontWeight: 300, margin: "0 0 14px" }}>{lang === "ko" ? "금 투자 교육" : "Gold Investment Education"}</h1>
-        <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 15, color: "#8a7d6b", maxWidth: 480, margin: "0 auto 24px", lineHeight: 1.7 }}>{lang === "ko" ? "실물 금·은 투자에 필요한 모든 지식을 무료로 제공합니다." : "Everything you need to know about physical gold and silver investing — free."}</p>
+      {/* Hero */}
+      <div style={{ background: "linear-gradient(135deg,#0a0a0a,#1a1510 50%,#0a0a0a)", padding: isMobile ? "44px 16px 28px" : "64px 80px 40px", textAlign: "center", borderBottom: "1px solid #1a1510" }}>
+        <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 10 : 11, color: "#c5a572", letterSpacing: 4, textTransform: "uppercase", marginBottom: 12 }}>{ko ? "교육 허브" : "Education Hub"}</div>
+        <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 30 : 46, color: "#f5f0e8", fontWeight: 300, margin: "0 0 14px", lineHeight: 1.2 }}>{ko ? "정교한 투자자를 위한 금·은 가이드" : "The Investor's Guide to Gold and Silver"}</h1>
+        <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 15, color: "#8a7d6b", maxWidth: 620, margin: "0 auto 24px", lineHeight: 1.75 }}>{ko ? "종이 청구권과 실물 소유의 차이. 은의 구조적 기회. 세대를 잇는 자산 보호. 한국 투자자가 반드시 알아야 할 핵심 주제들." : "The difference between a paper claim and real ownership. The structural case for silver. Preserving wealth across generations. The essential topics for sophisticated Korean investors."}</p>
         <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
-          {[["📖", lang === "ko" ? "6개 심층 가이드" : "6 In-Depth Guides"], ["🎓", lang === "ko" ? "초보자부터 전문가까지" : "Beginner to Advanced"], ["🆓", lang === "ko" ? "완전 무료" : "Completely Free"]].map(([icon, text], i) => (
-            <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", background: "#111008", border: "1px solid #1a1510", padding: "6px 14px", borderRadius: 20 }}><span>{icon}</span>{text}</div>
+          {[["📖", ko ? `${totalCount}개 심층 가이드` : `${totalCount} In-Depth Guides`], ["🎓", ko ? "초보자부터 HNW 투자자까지" : "Beginner to HNW investor"], ["🆓", ko ? "완전 무료" : "Completely free"]].map(([icon, text], i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: isMobile ? 11 : 12, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", background: "#111008", border: "1px solid #1a1510", padding: "6px 14px", borderRadius: 20 }}><span>{icon}</span>{text}</div>
           ))}
         </div>
       </div>
-      <div style={{ padding: isMobile ? "20px 16px 0" : "24px 80px 0", borderBottom: "1px solid #1a1510" }}>
+
+      {/* Featured banner — only on "전체" view */}
+      {cat === "전체" && featured.length > 0 && (
+        <div style={{ padding: isMobile ? "28px 16px 8px" : "36px 80px 12px" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+            <div style={{ width: 3, height: 16, background: "#c5a572", borderRadius: 2 }} />
+            <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 10 : 11, color: "#c5a572", letterSpacing: 3, textTransform: "uppercase", fontWeight: 600 }}>{ko ? "에디터 추천 — 투자 논리의 핵심" : "Editor's Picks — Core Investment Thesis"}</div>
+          </div>
+        </div>
+      )}
+
+      {/* Category filter */}
+      <div style={{ padding: isMobile ? "8px 16px 0" : "12px 80px 0", borderBottom: "1px solid #1a1510" }}>
         <div style={{ display: "flex", gap: 8, flexWrap: "wrap", paddingBottom: 20 }}>
           {EDUCATION_CATEGORIES.map(c => (
-            <button key={c} onClick={() => setCat(c)} style={{ background: cat === c ? "#c5a572" : "transparent", color: cat === c ? "#0a0a0a" : "#8a7d6b", border: `1px solid ${cat === c ? "#c5a572" : "#2a2318"}`, padding: "7px 18px", borderRadius: 20, cursor: "pointer", fontSize: 12, fontFamily: "'Outfit',sans-serif", fontWeight: cat === c ? 600 : 400 }}>{catLabels[c] || c}</button>
+            <button key={c} onClick={() => setCat(c)} style={{ background: cat === c ? "#c5a572" : "transparent", color: cat === c ? "#0a0a0a" : "#8a7d6b", border: `1px solid ${cat === c ? "#c5a572" : "#2a2318"}`, padding: isMobile ? "6px 14px" : "8px 18px", borderRadius: 20, cursor: "pointer", fontSize: isMobile ? 11 : 12, fontFamily: "'Outfit',sans-serif", fontWeight: cat === c ? 600 : 400 }}>{catLabel(c)}</button>
           ))}
         </div>
       </div>
-      <div style={{ padding: isMobile ? "24px 16px 56px" : "32px 80px 64px" }}>
+
+      {/* Article grid */}
+      <div style={{ padding: isMobile ? "24px 16px 56px" : "32px 80px 72px" }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill,minmax(290px,1fr))", gap: isMobile ? 12 : 20 }}>
           {filtered.map(a => (
-            <button key={a.id} onClick={() => openModal(a.id)} style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 12, padding: isMobile ? 20 : 24, cursor: "pointer", textAlign: "left", width: "100%", transition: "border-color 0.2s" }}
-              onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(197,165,114,0.4)"}
-              onMouseLeave={e => e.currentTarget.style.borderColor = "#1a1510"}>
+            <button key={a.id} onClick={() => openModal(a.id)} style={{ background: "#111008", border: `1px solid ${a.featured ? "rgba(197,165,114,0.3)" : "#1a1510"}`, borderRadius: 12, padding: isMobile ? 20 : 24, cursor: "pointer", textAlign: "left", width: "100%", transition: "border-color 0.2s", position: "relative" }}
+              onMouseEnter={e => e.currentTarget.style.borderColor = "rgba(197,165,114,0.5)"}
+              onMouseLeave={e => e.currentTarget.style.borderColor = a.featured ? "rgba(197,165,114,0.3)" : "#1a1510"}>
+              {a.featured && (
+                <div style={{ position: "absolute", top: 14, right: 14, background: "rgba(197,165,114,0.12)", border: "1px solid rgba(197,165,114,0.3)", borderRadius: 4, padding: "2px 8px", fontSize: 9, color: "#c5a572", fontFamily: "'Outfit',sans-serif", letterSpacing: 1, textTransform: "uppercase", fontWeight: 600 }}>{ko ? "추천" : "Featured"}</div>
+              )}
               <div style={{ fontSize: isMobile ? 32 : 36, marginBottom: 14 }}>{a.emoji}</div>
-              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#c5a572", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{catLabels[a.category] || a.category} · {a.readTime} {lang === "ko" ? "읽기" : "read"}</div>
-              <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 19 : 21, color: "#f5f0e8", fontWeight: 500, margin: "0 0 8px", lineHeight: 1.3 }}>{a.title}</h3>
-              <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#8a7d6b", margin: "0 0 16px", lineHeight: 1.5 }}>{a.subtitle}</p>
-              <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, color: "#c5a572", fontFamily: "'Outfit',sans-serif" }}>{lang === "ko" ? "읽기" : "Read"} →</div>
+              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 10 : 11, color: "#c5a572", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8, fontWeight: 600 }}>{catLabel(a.category)} · {t(a, "readTime")} {readLabel}</div>
+              <h3 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 19 : 21, color: "#f5f0e8", fontWeight: 500, margin: "0 0 8px", lineHeight: 1.3 }}>{t(a, "title")}</h3>
+              <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 12 : 13, color: "#8a7d6b", margin: "0 0 16px", lineHeight: 1.55 }}>{t(a, "subtitle")}</p>
+              <div style={{ display: "flex", alignItems: "center", gap: 4, fontSize: isMobile ? 12 : 13, color: "#c5a572", fontFamily: "'Outfit',sans-serif" }}>{ko ? "읽기" : "Read"} →</div>
             </button>
           ))}
         </div>
       </div>
+
+      {/* Article modal */}
       {article && (
         <div onClick={closeModal} style={{ position: "fixed", inset: 0, zIndex: 1000, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(4px)", display: "flex", alignItems: "flex-start", justifyContent: "center", padding: isMobile ? 12 : "40px 20px", overflowY: "auto", opacity: visible ? 1 : 0, transition: "opacity 0.2s" }}>
-          <div onClick={e => e.stopPropagation()} style={{ background: "#111008", border: "1px solid #2a2318", borderRadius: 16, maxWidth: 720, width: "100%", transform: visible ? "translateY(0)" : "translateY(20px)", transition: "transform 0.25s", boxShadow: "0 32px 80px rgba(0,0,0,0.7)" }}>
-            <div style={{ padding: isMobile ? "24px 18px 18px" : "30px 32px 22px", borderBottom: "1px solid #1a1510", display: "flex", justifyContent: "space-between", gap: 16 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: "#111008", border: "1px solid #2a2318", borderRadius: 16, maxWidth: 760, width: "100%", transform: visible ? "translateY(0)" : "translateY(20px)", transition: "transform 0.25s", boxShadow: "0 32px 80px rgba(0,0,0,0.7)" }}>
+            <div style={{ padding: isMobile ? "24px 18px 18px" : "32px 36px 22px", borderBottom: "1px solid #1a1510", display: "flex", justifyContent: "space-between", gap: 16 }}>
               <div style={{ flex: 1 }}>
                 <div style={{ fontSize: isMobile ? 36 : 42, marginBottom: 12 }}>{article.emoji}</div>
-                <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#c5a572", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>{catLabels[article.category]} · {article.readTime} {lang === "ko" ? "읽기" : "read"}</div>
-                <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 22 : 27, color: "#f5f0e8", fontWeight: 500, margin: "0 0 6px", lineHeight: 1.3 }}>{article.title}</h2>
-                <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, color: "#8a7d6b", margin: 0 }}>{article.subtitle}</p>
+                <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 10 : 11, color: "#c5a572", letterSpacing: 2, textTransform: "uppercase", marginBottom: 8 }}>{catLabel(article.category)} · {t(article, "readTime")} {readLabel}</div>
+                <h2 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 22 : 28, color: "#f5f0e8", fontWeight: 500, margin: "0 0 6px", lineHeight: 1.3 }}>{t(article, "title")}</h2>
+                <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 12 : 13, color: "#8a7d6b", margin: 0, lineHeight: 1.55 }}>{t(article, "subtitle")}</p>
               </div>
               <button onClick={closeModal} style={{ background: "#1a1510", border: "1px solid #2a2318", color: "#8a7d6b", width: 34, height: 34, borderRadius: "50%", cursor: "pointer", fontSize: 16, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>✕</button>
             </div>
-            <div style={{ padding: isMobile ? "20px 18px" : "28px 32px", maxHeight: "58vh", overflowY: "auto" }}>
-              {article.sections.map((s, si) => (
-                <div key={si} style={{ marginBottom: 26 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                    <div style={{ width: 3, height: 18, background: "#c5a572", borderRadius: 2, flexShrink: 0 }} />
-                    <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 14 : 15, color: "#f5f0e8", fontWeight: 600, margin: 0 }}>{s.heading}</h3>
+            <div style={{ padding: isMobile ? "20px 18px" : "28px 36px", maxHeight: "58vh", overflowY: "auto" }}>
+              {article.sections.map((s, si) => {
+                const body = sText(s, "body");
+                const bullets = sText(s, "bullets");
+                const highlight = sText(s, "highlight");
+                const heading = sText(s, "heading");
+                return (
+                  <div key={si} style={{ marginBottom: 28 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                      <div style={{ width: 3, height: 18, background: "#c5a572", borderRadius: 2, flexShrink: 0 }} />
+                      <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 14 : 15, color: "#f5f0e8", fontWeight: 600, margin: 0 }}>{heading}</h3>
+                    </div>
+                    {body && <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 14, color: "#8a7d6b", lineHeight: 1.75, margin: "0 0 8px", paddingLeft: 13 }}>{body}</p>}
+                    {bullets && <ul style={{ margin: "8px 0 0", padding: 0, listStyle: "none", paddingLeft: 13 }}>{bullets.map((b, bi) => <li key={bi} style={{ display: "flex", gap: 10, fontSize: isMobile ? 12 : 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", lineHeight: 1.65, marginBottom: 6 }}><span style={{ color: "#c5a572", flexShrink: 0 }}>▸</span><span>{b}</span></li>)}</ul>}
+                    {highlight && <div style={{ marginTop: 12, background: "rgba(197,165,114,0.06)", border: "1px solid rgba(197,165,114,0.18)", borderRadius: 8, padding: "12px 14px", marginLeft: 13 }}><p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 12 : 13, color: "#c5a572", margin: 0, lineHeight: 1.6 }}>💡 {highlight}</p></div>}
                   </div>
-                  {s.body && <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 13 : 14, color: "#8a7d6b", lineHeight: 1.75, margin: "0 0 8px", paddingLeft: 13 }}>{s.body}</p>}
-                  {s.bullets && <ul style={{ margin: "8px 0 0", padding: 0, listStyle: "none", paddingLeft: 13 }}>{s.bullets.map((b, bi) => <li key={bi} style={{ display: "flex", gap: 10, fontSize: isMobile ? 12 : 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", lineHeight: 1.65, marginBottom: 6 }}><span style={{ color: "#c5a572", flexShrink: 0 }}>▸</span><span>{b}</span></li>)}</ul>}
-                  {s.highlight && <div style={{ marginTop: 12, background: "rgba(197,165,114,0.06)", border: "1px solid rgba(197,165,114,0.18)", borderRadius: 8, padding: "12px 14px", marginLeft: 13 }}><p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 12 : 13, color: "#c5a572", margin: 0, lineHeight: 1.6 }}>💡 {s.highlight}</p></div>}
-                </div>
-              ))}
+                );
+              })}
             </div>
-            <div style={{ padding: isMobile ? "16px 18px 20px" : "18px 32px 26px", borderTop: "1px solid #1a1510", display: "flex", gap: 10, flexDirection: isMobile ? "column" : "row" }}>
-              <button onClick={() => { closeModal(); navigate("shop"); }} style={{ flex: 1, background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#0a0a0a", border: "none", padding: "12px", fontSize: 14, fontFamily: "'Outfit',sans-serif", fontWeight: 700, borderRadius: 8, cursor: "pointer" }}>{lang === "ko" ? "지금 구매하기" : "Shop Now"}</button>
-              <button onClick={closeModal} style={{ flex: 1, background: "transparent", color: "#8a7d6b", border: "1px solid #2a2318", padding: "12px", fontSize: 14, fontFamily: "'Outfit',sans-serif", borderRadius: 8, cursor: "pointer" }}>{lang === "ko" ? "닫기" : "Close"}</button>
+            <div style={{ padding: isMobile ? "16px 18px 20px" : "18px 36px 26px", borderTop: "1px solid #1a1510", display: "flex", gap: 10, flexDirection: isMobile ? "column" : "row" }}>
+              <button onClick={() => { closeModal(); navigate("shop"); }} style={{ flex: 1, background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#0a0a0a", border: "none", padding: "12px", fontSize: 14, fontFamily: "'Outfit',sans-serif", fontWeight: 700, borderRadius: 8, cursor: "pointer" }}>{ko ? "지금 구매하기" : "Shop Now"}</button>
+              <button onClick={() => { closeModal(); navigate("agp"); }} style={{ flex: 1, background: "transparent", color: "#c5a572", border: "1px solid rgba(197,165,114,0.4)", padding: "12px", fontSize: 14, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 8, cursor: "pointer" }}>{ko ? "AGP 알아보기" : "Learn AGP"}</button>
+              <button onClick={closeModal} style={{ flex: isMobile ? 1 : 0.6, background: "transparent", color: "#8a7d6b", border: "1px solid #2a2318", padding: "12px", fontSize: 14, fontFamily: "'Outfit',sans-serif", borderRadius: 8, cursor: "pointer" }}>{ko ? "닫기" : "Close"}</button>
             </div>
           </div>
         </div>
@@ -1044,36 +1080,36 @@ function AGP({ lang, navigate }) {
 
   const faqItems = [
     {
-      q: ko ? "Q1. AGP 그램은 실제 금입니까? / Are AGP grams real physical gold?" : "Q1. Are AGP grams real physical gold?",
+      q: ko ? "Q1. AGP 그램은 실제 금입니까?" : "Q1. Are AGP grams real physical gold?",
       a: ko ? "네. 모든 AGP 그램은 Malca-Amit 싱가포르 금고에 보관된 실물 금·은·백금으로 100% 백업됩니다. 매일 공개 감사 리포트로 백업 비율을 확인하실 수 있으며, Bureau Veritas가 연 2회 실물 검증을 수행합니다." : "Yes. Every AGP gram is 100% backed by physical gold, silver, or platinum held at Malca-Amit Singapore. You can verify the backing ratio in the daily public audit report, and Bureau Veritas performs physical verification twice per year."
     },
     {
-      q: ko ? "Q2. 최소 얼마부터 시작할 수 있나요? / What is the minimum starting amount?" : "Q2. What is the minimum starting amount?",
+      q: ko ? "Q2. 최소 얼마부터 시작할 수 있나요?" : "Q2. What is the minimum starting amount?",
       a: ko ? "단일 입금 최소는 1g(현재 시세로 약 USD 153 / KRW 210,000 수준)입니다. 월간 자동이체 최소는 KRW 100,000부터 설정 가능합니다." : "The minimum single purchase is 1 gram (~USD 153 / KRW 210,000 at current spot). The minimum monthly auto-debit is KRW 100,000."
     },
     {
-      q: ko ? "Q3. 토스뱅크 자동이체 설정은 어떻게 하나요? / How do I set up Toss Bank auto-debit?" : "Q3. How do I set up Toss Bank auto-debit?",
+      q: ko ? "Q3. 토스뱅크 자동이체 설정은 어떻게 하나요?" : "Q3. How do I set up Toss Bank auto-debit?",
       a: ko ? "Aurum 계정 개설 후 대시보드의 '자동이체 설정'에서 토스뱅크 계정 연결. 이체 금액, 주기(주간·월간), 시작일 선택 후 저장. 초기 버전은 수동 이체 방식이며, API 연동은 향후 업데이트됩니다." : "After Aurum account setup, go to Dashboard → Auto-Debit Setup and connect your Toss Bank account. Choose amount, frequency (weekly/monthly), and start date. Initial version uses manual transfer; API integration is a planned upgrade."
     },
     {
-      q: ko ? "Q4. 언제든 실물 바로 전환할 수 있나요? / Can I convert to physical bar anytime?" : "Q4. Can I convert to physical bar anytime?",
+      q: ko ? "Q4. 언제든 실물 바로 전환할 수 있나요?" : "Q4. Can I convert to a physical bar anytime?",
       a: ko ? "전환 기준점(금 100g·1kg, 은 1kg, 백금 100g)에 도달하면 언제든 무료로 전환 가능합니다. 전환 요청 후 공급업체 체결 및 배정까지 5~10영업일이 소요됩니다." : "Once you hit the conversion threshold (100g or 1,000g gold, 1,000g silver, 100g platinum), you may convert anytime for free. Conversion takes 5–10 business days for supplier fulfillment and allocation."
     },
     {
-      q: ko ? "Q5. 전환할 때 추가 비용이 있나요? / Are there conversion fees?" : "Q5. Are there conversion fees?",
+      q: ko ? "Q5. 전환할 때 추가 비용이 있나요?" : "Q5. Are there conversion fees?",
       a: ko ? "전환 수수료는 없습니다. 전환된 실물 바는 배분 보관 요율(0.50~0.80%/년)이 적용됩니다. 한국 배송을 선택할 경우 13% 관세·VAT와 운송·보험료가 별도 부과됩니다." : "No conversion fees. Converted bars move to allocated storage rate (0.50–0.80%/yr). If you choose to ship to Korea, 13% import duties and shipping/insurance fees apply separately."
     },
     {
-      q: ko ? "Q6. 세금은 어떻게 처리되나요? / How are taxes handled?" : "Q6. How are taxes handled?",
+      q: ko ? "Q6. 세금은 어떻게 처리되나요?" : "Q6. How are taxes handled?",
       a: ko ? "싱가포르 보관 중에는 한국 세금이 발생하지 않습니다. 매도 시 발생한 차익은 기타소득으로 과세될 수 있으며, 실물을 한국으로 반입할 경우 13% 관세·VAT가 부과됩니다. 해외금융계좌 잔액이 연중 5억원을 초과한 경우 신고 의무. 본 내용은 법률·세무 조언이 아니므로 반드시 공인 세무사와 상담하세요." : "No Korean taxes apply while stored in Singapore. Gains upon sale may be taxable as other income. Importing physical into Korea triggers 13% duties. Offshore balances exceeding KRW 500M aggregate in a year trigger reporting. This is not tax advice — consult a certified Korean tax professional."
     },
     {
-      q: ko ? "Q7. Aurum 파산 시 내 AGP 그램은 어떻게 되나요? / What if Aurum goes bankrupt?" : "Q7. What if Aurum goes bankrupt?",
+      q: ko ? "Q7. Aurum 파산 시 내 AGP 그램은 어떻게 되나요?" : "Q7. What if Aurum goes bankrupt?",
       a: ko ? "AGP 그램을 뒷받침하는 실물 금속은 Malca-Amit에 AGP 전용 풀로 보관되며 Aurum 대차대조표와 분리되어 있습니다. Aurum 파산 시 수탁자인 Malca-Amit이 AGP 그램 비율에 따라 고객에게 직접 반환합니다." : "The physical metal backing AGP grams is held in a dedicated AGP pool at Malca-Amit, segregated from Aurum's balance sheet. In Aurum's insolvency, Malca-Amit returns metal to customers directly, proportional to their AGP gram holdings."
     },
     {
-      q: ko ? "Q8. NH투자증권 + 토스뱅크 금 적립과 뭐가 다른가요? / How is this different from NH Investment + Toss Bank gold savings?" : "Q8. How is this different from NH Investment + Toss Bank gold savings?",
-      a: ko ? "NH + 토스는 KRX 금시장에서 운용되는 한국 국내 서비스입니다. 실물 인출 시 10% VAT가 발생하고, KRX 가격(김치 프리미엄 포함)으로 거래됩니다. AGP는 싱가포르 자유무역지대에 보관되는 해외 실물이며, 국제 현물가로 거래되고, 전환 시 한국 VAT가 발생하지 않습니다(실물을 한국으로 반입하지 않는 한). 두 상품은 서로 다른 카테고리입니다 — 국내 페이퍼·한국 과세 vs. 해외 실물·세제 최적화." : "NH + Toss is a domestic Korean service operating on the KRX gold market. Physical withdrawal triggers 10% Korean VAT, and pricing is in KRX (which includes kimchi premium). AGP is offshore physical stored in Singapore's Free Trade Zone, priced at international spot, with no Korean VAT on conversion (as long as you don't ship into Korea). The two products are different categories — domestic paper with Korean taxation vs. offshore physical with tax optimization."
+      q: ko ? "Q8. NH투자증권 + 토스뱅크 금 적립과 뭐가 다른가요?" : "Q8. How is this different from NH Investment + Toss Bank gold savings?",
+      a: ko ? "NH + 토스는 KRX 금시장에서 운용되는 한국 국내 서비스입니다. 실물 인출 시 10% VAT가 발생하고, KRX 가격(국내 실물 프리미엄 포함)으로 거래됩니다. AGP는 싱가포르 자유무역지대에 보관되는 해외 실물이며, 국제 현물가로 거래되고, 전환 시 한국 VAT가 발생하지 않습니다(실물을 한국으로 반입하지 않는 한). 두 상품은 서로 다른 카테고리입니다 — 국내 페이퍼·한국 과세 vs. 해외 실물·세제 최적화." : "NH + Toss is a domestic Korean service operating on the KRX gold market. Physical withdrawal triggers 10% Korean VAT, and pricing is in KRX (which includes the domestic physical premium). AGP is offshore physical stored in Singapore's Free Trade Zone, priced at international spot, with no Korean VAT on conversion (as long as you don't ship into Korea). The two products are different categories — domestic paper with Korean taxation vs. offshore physical with tax optimization."
     },
   ];
 
@@ -1089,25 +1125,25 @@ function AGP({ lang, navigate }) {
         </p>
         <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginBottom: 32 }}>
           {[
-            { icon: "💯", label: ko ? "100% 실물 백업, 매일 공개 감사 / 100% physical backing, audited daily" : "100% physical backing, audited daily" },
-            { icon: "🥇", label: ko ? "100g 또는 1kg 도달 시 PAMP·Heraeus 바로 무료 전환 / Free conversion to PAMP or Heraeus bars at 100g or 1kg" : "Free conversion to PAMP or Heraeus bars at 100g or 1kg" },
-            { icon: "🇰🇷", label: ko ? "한국어 서비스 + 토스뱅크 자동이체 지원 / Korean-language service, Toss Bank auto-debit" : "Korean-language service, Toss Bank auto-debit" },
+            { icon: "💯", label: ko ? "100% 실물 백업, 매일 공개 감사" : "100% physical backing, audited daily" },
+            { icon: "🥇", label: ko ? "100g 또는 1kg 도달 시 PAMP·Heraeus 바로 무료 전환" : "Free conversion to PAMP or Heraeus bars at 100g or 1kg" },
+            { icon: "🇰🇷", label: ko ? "한국어 서비스 + 토스뱅크 자동이체 지원" : "Korean-language service, Toss Bank auto-debit" },
           ].map((chip, i) => (
             <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "10px 16px", display: "flex", alignItems: "center", gap: 8, maxWidth: isMobile ? "100%" : 340 }}>
               <span style={{ fontSize: 18, flexShrink: 0 }}>{chip.icon}</span>
-              <span style={{ fontSize: 11, color: T.textSecondary, fontFamily: T.sans, lineHeight: 1.5 }}>{chip.label}</span>
+              <span style={{ fontSize: isMobile ? 11 : 12, color: T.textSecondary, fontFamily: T.sans, lineHeight: 1.5 }}>{chip.label}</span>
             </div>
           ))}
         </div>
         <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-          <button style={{ background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#0a0a0a", border: "none", padding: "15px 36px", fontSize: 15, fontWeight: 700, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>🚀 {ko ? "AGP 가입하기 / Start AGP" : "Start AGP"}</button>
+          <button style={{ background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#0a0a0a", border: "none", padding: "15px 36px", fontSize: 15, fontWeight: 700, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>🚀 {ko ? "AGP 가입하기" : "Start AGP"}</button>
           {navigate && (
-            <button onClick={() => navigate("agp-report")} style={{ background: "transparent", color: T.accent, border: `1px solid ${T.accent}`, padding: "15px 36px", fontSize: 15, fontWeight: 600, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>📊 {ko ? "오늘의 백업 리포트 / Today's Backing Report" : "Today's Backing Report"}</button>
+            <button onClick={() => navigate("agp-report")} style={{ background: "transparent", color: T.accent, border: `1px solid ${T.accent}`, padding: "15px 36px", fontSize: 15, fontWeight: 600, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>📊 {ko ? "오늘의 백업 리포트" : "Today's Backing Report"}</button>
           )}
         </div>
       </div>
-      {section(<><br/>{h2("AGP는 이렇게 작동합니다", "How Aurum Gold Plan Works")}<div style={{ display: "flex", flexDirection: "column", gap: 24 }}><StepCard num={1} icon="✍️" title={ko ? "가입 / Enroll" : "Enroll"} body={ko ? "10분 내 온라인 가입 및 한국 표준 KYC 완료" : "10-minute online signup with Korean-standard KYC"} /><StepCard num={2} icon="💰" title={ko ? "입금 / Fund" : "Fund"} body={ko ? "토스뱅크·한국 은행에서 일회 또는 월간 자동이체" : "One-time or recurring auto-debit from Toss Bank or any Korean bank"} /><StepCard num={3} icon="⚖️" title={ko ? "그램 적립 / Accumulate" : "Accumulate"} body={ko ? "입금액이 실시간 현물가 + 2.0% 프리미엄으로 AGP 그램으로 전환" : "Each deposit converts to AGP grams at live spot plus 2.0% premium"} /><StepCard num={4} icon="📊" title={ko ? "관리 / Monitor" : "Monitor"} body={ko ? "대시보드에서 그램, KRW 가치, 손익, 보관료, 전환 기준 진행률 확인" : "Dashboard shows grams, KRW value, P&L, storage fees, and progress to conversion threshold"} /><StepCard num={5} icon="🥇" title={ko ? "전환 / Convert" : "Convert"} body={ko ? "100g(또는 1kg 기준) 도달 시 실물 바로 무료 전환 또는 언제든 KRW 매도" : "At 100g (or 1kg for flagship), convert to a physical bar for free — or sell back for KRW anytime"} /></div></>)}
-      {section(<><br/>{h2("AGP vs 국내 금 투자 상품", "AGP vs Other Korean Gold Savings Options")}{lead("한국 은행과 증권사가 금 저축 상품을 출시하고 있는 것은 반가운 변화입니다. 하지만 모든 국내 상품은 한 가지 공통된 한계를 가지고 있습니다. 금이 한국 안에 있다는 것. AGP는 싱가포르 자유무역지대에 보관되는 진짜 실물 금, 국제 현물가 기준, 원하는 때 PAMP·Heraeus 바로 무료 전환 가능한 상품입니다.", "Korean banks and brokerages now offer gold savings products. But every domestic option has the same limitation: the gold sits in Korea. That means 10% VAT on withdrawal and kimchi-premium pricing. AGP is the offshore counterpart — real physical gold in Singapore's Free Trade Zone, priced at international spot.")}<div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}><thead><tr style={{ background: "#0d0b08" }}>{[ko ? "특징" : "Feature", "Aurum AGP", "NH + Toss", "Kbank / KRX", ko ? "국내 은행 적금" : "Korean Bank Passbook"].map((h, i) => <th key={i} style={{ padding: "12px 14px", textAlign: "left", color: i === 1 ? T.accent : T.textSecondary, fontSize: 10, letterSpacing: 1, textTransform: "uppercase", fontFamily: T.sans, border: `1px solid ${T.border}` }}>{h}</th>)}</tr></thead><tbody>{[[ko?"실물 백업":"Physical backing",ko?"✅ 100% 완전 배분":"✅ 100% allocated",ko?"⚠️ KRX 수탁":"⚠️ KRX custody",ko?"⚠️ KRX 수탁":"⚠️ KRX custody",ko?"❌ 은행 장부상":"❌ Bank paper"],[ko?"관할":"Jurisdiction","🇸🇬 Singapore FTZ","🇰🇷 Korea","🇰🇷 Korea","🇰🇷 Korea"],[ko?"실물 전환":"Convert to bar",ko?"✅ 100g/1kg 무료":"✅ Free @ 100g/1kg",ko?"⚠️ 10% VAT 발생":"⚠️ 10% VAT triggered",ko?"⚠️ 10% VAT 발생":"⚠️ 10% VAT triggered",ko?"❌ 불가":"❌ Not available"],[ko?"보관료":"Storage fee","0.30%/yr","~0%/yr (paper)","~0%/yr (paper)",ko?"은행 수수료":"Bank fees"]].map((row,i)=><tr key={i}>{row.map((cell,j)=><td key={j} style={{ padding: "11px 14px", fontFamily: T.sans, fontSize: 12, color: j===1?T.textPrimary:T.textSecondary, border: `1px solid ${T.border}`, background: j===1?"rgba(197,165,114,0.04)":T.panel, fontWeight: j===1?500:400 }}>{cell}</td>)}</tr>)}</tbody></table></div></>)}
+      {section(<><br/>{h2("AGP는 이렇게 작동합니다", "How Aurum Gold Plan Works")}<div style={{ display: "flex", flexDirection: "column", gap: 24 }}><StepCard num={1} icon="✍️" title={ko ? "가입" : "Enroll"} body={ko ? "10분 내 온라인 가입 및 한국 표준 KYC 완료" : "10-minute online signup with Korean-standard KYC"} /><StepCard num={2} icon="💰" title={ko ? "입금" : "Fund"} body={ko ? "토스뱅크·한국 은행에서 일회 또는 월간 자동이체" : "One-time or recurring auto-debit from Toss Bank or any Korean bank"} /><StepCard num={3} icon="⚖️" title={ko ? "그램 적립" : "Accumulate"} body={ko ? "입금액이 실시간 현물가 + 2.0% 프리미엄으로 AGP 그램으로 전환" : "Each deposit converts to AGP grams at live spot plus 2.0% premium"} /><StepCard num={4} icon="📊" title={ko ? "관리" : "Monitor"} body={ko ? "대시보드에서 그램, KRW 가치, 손익, 보관료, 전환 기준 진행률 확인" : "Dashboard shows grams, KRW value, P&L, storage fees, and progress to conversion threshold"} /><StepCard num={5} icon="🥇" title={ko ? "전환" : "Convert"} body={ko ? "100g(또는 1kg 기준) 도달 시 실물 바로 무료 전환 또는 언제든 KRW 매도" : "At 100g (or 1kg for flagship), convert to a physical bar for free — or sell back for KRW anytime"} /></div></>)}
+      {section(<><br/>{h2("AGP vs 국내 금 투자 상품", "AGP vs Other Korean Gold Savings Options")}{lead("한국 은행과 증권사가 금 저축 상품을 출시하고 있는 것은 반가운 변화입니다. 하지만 모든 국내 상품은 한 가지 공통된 한계를 가지고 있습니다. 금이 한국 안에 있다는 것. AGP는 싱가포르 자유무역지대에 보관되는 진짜 실물 금, 국제 현물가 기준, 원하는 때 PAMP·Heraeus 바로 무료 전환 가능한 상품입니다.", "Korean banks and brokerages now offer gold savings products. But every domestic option has the same limitation: the gold sits in Korea. That means 10% VAT on withdrawal and domestic physical-premium pricing. AGP is the offshore counterpart — real physical gold in Singapore's Free Trade Zone, priced at international spot.")}<div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}><thead><tr style={{ background: "#0d0b08" }}>{[ko ? "특징" : "Feature", "Aurum AGP", "NH + Toss", "Kbank / KRX", ko ? "국내 은행 적금" : "Korean Bank Passbook"].map((h, i) => <th key={i} style={{ padding: "12px 14px", textAlign: "left", color: i === 1 ? T.accent : T.textSecondary, fontSize: 10, letterSpacing: 1, textTransform: "uppercase", fontFamily: T.sans, border: `1px solid ${T.border}` }}>{h}</th>)}</tr></thead><tbody>{[[ko?"실물 백업":"Physical backing",ko?"✅ 100% 완전 배분":"✅ 100% allocated",ko?"⚠️ KRX 수탁":"⚠️ KRX custody",ko?"⚠️ KRX 수탁":"⚠️ KRX custody",ko?"❌ 은행 장부상":"❌ Bank paper"],[ko?"관할":"Jurisdiction","🇸🇬 Singapore FTZ","🇰🇷 Korea","🇰🇷 Korea","🇰🇷 Korea"],[ko?"실물 전환":"Convert to bar",ko?"✅ 100g/1kg 무료":"✅ Free @ 100g/1kg",ko?"⚠️ 10% VAT 발생":"⚠️ 10% VAT triggered",ko?"⚠️ 10% VAT 발생":"⚠️ 10% VAT triggered",ko?"❌ 불가":"❌ Not available"],[ko?"보관료":"Storage fee","0.30%/yr","~0%/yr (paper)","~0%/yr (paper)",ko?"은행 수수료":"Bank fees"]].map((row,i)=><tr key={i}>{row.map((cell,j)=><td key={j} style={{ padding: "11px 14px", fontFamily: T.sans, fontSize: 12, color: j===1?T.textPrimary:T.textSecondary, border: `1px solid ${T.border}`, background: j===1?"rgba(197,165,114,0.04)":T.panel, fontWeight: j===1?500:400 }}>{cell}</td>)}</tr>)}</tbody></table></div></>)}
       {section(<><br/>{h2("민준씨의 금 저축 여정", "Min-jun's Gold Savings Journey")}<div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 12, padding: isMobile?"20px":"28px 32px" }}>{[{milestone:ko?"Month 1":"Month 1",text:ko?"AGP 계정 개설, 토스뱅크 자동이체 50만원/월 설정":"Opens AGP account, sets Toss Bank auto-debit at KRW 500,000/month"},{milestone:ko?"12개월":"Month 12",text:ko?"약 28g 적립 완료. 첫 연간 스테이트먼트 수신":"~28g accumulated. Receives first annual statement"},{milestone:ko?"4년":"Year 4",text:ko?"약 114g 적립, 100g 전환 기준점 돌파":"~114g accumulated — crosses 100g conversion threshold"},{milestone:ko?"4년 마일스톤":"Year 4 milestone",text:ko?"100g를 실물 PAMP 100g 바로 전환(무료). 남은 14g는 AGP 계속 적립":"Converts 100g to a real PAMP 100g bar for free. 14g stays in AGP.",highlight:true},{milestone:ko?"10년":"Year 10",text:ko?"약 280g 실물 바 + 약 60g AGP 그램 = 총 ~340g 실물 금 보유":"~280g in allocated bars + ~60g in AGP = ~340g total gold ownership"}].map((item,i)=><div key={i} style={{ display:"flex",gap:16,padding:"14px 0",borderBottom:i<4?`1px solid ${T.border}`:"none" }}><div style={{ minWidth:isMobile?60:100,flexShrink:0 }}><span style={{ fontFamily:T.mono,fontSize:11,color:T.accent,fontWeight:600 }}>{item.milestone}</span></div><p style={{ margin:0,fontSize:13,color:item.highlight?T.textPrimary:T.textSecondary,fontFamily:T.sans,lineHeight:1.6,fontWeight:item.highlight?500:400 }}>{item.text}</p></div>)}</div></>)}
       {section(<><br/>{h2("가격과 수수료", "Pricing & Fees")}<div style={{ overflowX:"auto",marginBottom:28 }}><table style={{ width:"100%",borderCollapse:"collapse",minWidth:500 }}><thead><tr style={{ background:"#0d0b08" }}>{[ko?"상품":"Product",ko?"최소":"Minimum",ko?"프리미엄":"Premium over spot",ko?"보관료":"Storage fee"].map((h,i)=><th key={i} style={{ padding:"12px 16px",textAlign:"left",color:T.textSecondary,fontSize:10,letterSpacing:1.5,textTransform:"uppercase",fontFamily:T.sans,border:`1px solid ${T.border}` }}>{h}</th>)}</tr></thead><tbody>{[[ko?"AGP 금 그램":"AGP Gold grams","1g","2.0%","0.30%/yr"],[ko?"AGP 은 그램":"AGP Silver grams","10g","3.5%","0.50%/yr"],[ko?"AGP 백금 그램":"AGP Platinum grams","1g","2.5%","0.40%/yr"]].map((row,i)=><tr key={i}>{row.map((cell,j)=><td key={j} style={{ padding:"12px 16px",fontFamily:j===2||j===3?T.mono:T.sans,fontSize:13,color:j===2||j===3?T.accent:T.textPrimary,border:`1px solid ${T.border}`,background:T.panel }}>{cell}</td>)}</tr>)}</tbody></table></div><div style={{ background:T.panel,border:`1px solid ${T.border}`,borderRadius:10,padding:"20px 22px" }}><div style={{ fontFamily:T.sans,fontSize:14,color:T.accent,fontWeight:600,marginBottom:12 }}>{ko?"전환 기준점 (수수료 없음)":"Conversion Thresholds (free)"}</div>{[[ko?"금":"Gold",ko?"100g → PAMP/Heraeus 100g 바; 1,000g → 1kg 바":"100g → PAMP/Heraeus 100g bar; 1,000g → 1kg bar"],[ko?"은":"Silver",ko?"1,000g → 1kg 바":"1,000g → 1kg bar"],[ko?"백금":"Platinum",ko?"100g → 100g 바":"100g → 100g bar"]].map(([metal,rule],i)=><div key={i} style={{ display:"flex",gap:14,padding:"8px 0",borderBottom:i<2?`1px solid ${T.border}`:"none" }}><span style={{ fontFamily:T.sans,fontSize:13,color:T.accent,fontWeight:600,minWidth:70,flexShrink:0 }}>{metal}</span><span style={{ fontFamily:T.sans,fontSize:13,color:T.textSecondary }}>{rule}</span></div>)}</div></>)}
       {section(<><br/>{h2("자주 묻는 질문", "Frequently Asked Questions")}<FAQAccordion items={faqItems} /></>)}
@@ -1154,7 +1190,7 @@ function AGPBackingReport({ lang, navigate }) {
             </div>
           ))}
         </div>
-        {[{metal:ko?"금 / Gold":"Gold",icon:"🥇",data:reportData.gold},{metal:ko?"은 / Silver":"Silver",icon:"🥈",data:reportData.silver},{metal:ko?"백금 / Platinum":"Platinum",icon:"🔵",data:reportData.platinum}].map(({metal,icon,data},i)=>(
+        {[{metal:ko ? "금" :"Gold",icon:"🥇",data:reportData.gold},{metal:ko ? "은" :"Silver",icon:"🥈",data:reportData.silver},{metal:ko ? "백금" :"Platinum",icon:"🔵",data:reportData.platinum}].map(({metal,icon,data},i)=>(
           <div key={i} style={{ background:T.panel, border:`1px solid ${T.border}`, borderRadius:12, padding:"20px 24px", marginBottom:16 }}>
             <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:16 }}>
               <div style={{ display:"flex", gap:10, alignItems:"center" }}>
