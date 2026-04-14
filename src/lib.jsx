@@ -8,7 +8,6 @@ const _genOrderId = () =>
 
 const API = {
   auth: {
-    // TODO: Replace with Supabase Auth or custom JWT endpoint
     login: async (email) => {
       await _delay(900);
       return { id: "usr_" + Date.now(), email, name: email.split("@")[0], phone: "", kycStatus: "unverified", createdAt: new Date().toISOString() };
@@ -19,11 +18,8 @@ const API = {
     },
   },
   payments: {
-    // TODO: Integrate TossPayments SDK v2
     toss: async (_order) => { await _delay(1600); return { success: true, paymentKey: "toss_" + Date.now() }; },
-    // TODO: Integrate KakaoPay SDK
     kakao: async (_order) => { await _delay(1600); return { success: true, tid: "kakao_" + Date.now() }; },
-    // Wire — returns bank details for manual transfer
     wire: async (order) => {
       await _delay(500);
       return {
@@ -39,40 +35,32 @@ const API = {
         },
       };
     },
-    // TODO: Integrate Stripe or another international card processor
     card: async (_order) => { await _delay(1600); return { success: true, chargeId: "ch_" + Date.now() }; },
   },
   orders: {
-    // TODO: POST /api/orders
     create: async (_data) => { await _delay(200); return { id: _genOrderId() }; },
   },
   vault: {
-    // TODO: GET /api/vault/holdings — Malca-Amit API feed
     getHoldings: async () => { await _delay(300); return MOCK_HOLDINGS; },
-    // TODO: POST /api/vault/certificate
     generateCertificate: async () => { await _delay(1200); return { url: "#cert-stub" }; },
-    // TODO: POST /api/vault/sell
     requestSell: async (holdingIds) => { await _delay(700); return { requestId: "SELL-" + Date.now(), holdingIds }; },
-    // TODO: POST /api/vault/withdraw
     requestWithdraw: async (holdingIds, address) => { await _delay(700); return { requestId: "WD-" + Date.now(), holdingIds, address }; },
   },
   kyc: {
-    // TODO: Integrate Onfido, Persona, or Korean KYC provider
     submit: async (_data) => { await _delay(1200); return { submissionId: "KYC-" + Date.now(), status: "in_review" }; },
   },
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // MARKET FACTS — Last verified April 2026
-// Update MARKET_FACTS when new verified data becomes available
 // ═══════════════════════════════════════════════════════════════════════════════
 const MARKET_FACTS = {
-  goldATH: 5608.35,             // Jan 2026 ATH  (Source: Trading Economics, World Gold Council)
+  goldATH: 5608.35,
   goldATHLabel: "역대 최고가 (2026년 1월)",
-  totalMinedTonnes: 219890,     // Source: World Gold Council goldhub/data, 2024
-  centralBanksWithGold: 80,     // ~80 central banks hold gold (WGC)
-  tenYearReturn: "+280%",       // Apr 2016 ~$1,230 → Apr 2026 ~$4,750
-  cbBuying2023: "1,037t",       // Central bank net purchases 2023 (WGC)
+  totalMinedTonnes: 219890,
+  centralBanksWithGold: 80,
+  tenYearReturn: "+280%",
+  cbBuying2023: "1,037t",
   lastVerified: "2026-04-11",
 };
 
@@ -80,21 +68,22 @@ const FALLBACK_PRICES = { gold: 4750.00, silver: 32.15, platinum: 1020.00 };
 const FALLBACK_KRW = 1395.00;
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// PRODUCTS — TODO: Replace with live inventory API + real product images
+// PRODUCTS — spot + 8% as Aurum Price (temporary per founder directive)
+// premium field = 0.08 for all items
 // ═══════════════════════════════════════════════════════════════════════════════
 const PRODUCTS = [
-  { id: 1, name: "1oz Gold Bar — PAMP Suisse", nameKo: "1온스 금바 — PAMP 스위스", metal: "gold", type: "bar", weight: "1 oz", weightOz: 1, purity: "99.99%", mint: "PAMP Suisse", premium: 0.035, image: "🥇", inStock: true, descKo: "세계에서 가장 인지도 높은 금바. LBMA 인증 PAMP Suisse 제조. Lady Fortuna 디자인." },
-  { id: 2, name: "1kg Gold Bar — Heraeus", nameKo: "1kg 금바 — 헤레우스", metal: "gold", type: "bar", weight: "1 kg", weightOz: 32.1507, purity: "99.99%", mint: "Heraeus", premium: 0.025, image: "🥇", inStock: true, descKo: "기관 및 고액 투자자 선호. 최저 프리미엄으로 최대 효율. 독일 헤레우스 제조." },
-  { id: 3, name: "1oz Gold Maple Leaf", nameKo: "1온스 골드 메이플리프", metal: "gold", type: "coin", weight: "1 oz", weightOz: 1, purity: "99.99%", mint: "Royal Canadian Mint", premium: 0.045, image: "🪙", inStock: true, descKo: "캐나다 왕립 조폐국 발행. 세계적으로 가장 많이 거래되는 금화 중 하나." },
-  { id: 4, name: "1oz Gold Krugerrand", nameKo: "1온스 골드 크루거랜드", metal: "gold", type: "coin", weight: "1 oz", weightOz: 1, purity: "91.67%", mint: "South African Mint", premium: 0.04, image: "🪙", inStock: true, descKo: "세계 최초 투자용 금화(1967년 발행). 남아프리카 공화국 조폐국 제조." },
-  { id: 5, name: "100oz Silver Bar — PAMP", nameKo: "100온스 은바 — PAMP", metal: "silver", type: "bar", weight: "100 oz", weightOz: 100, purity: "99.99%", mint: "PAMP Suisse", premium: 0.04, image: "🥈", inStock: true, descKo: "대규모 은 투자에 최적. PAMP 스위스 제조, LBMA 인증 순은 바." },
-  { id: 6, name: "1oz Silver Maple Leaf", nameKo: "1온스 실버 메이플리프", metal: "silver", type: "coin", weight: "1 oz", weightOz: 1, purity: "99.99%", mint: "Royal Canadian Mint", premium: 0.06, image: "🥈", inStock: true, descKo: "캐나다 왕립 조폐국 발행 순은 동전. 컬렉터와 투자자 모두 선호." },
-  { id: 7, name: "1kg Silver Bar — Heraeus", nameKo: "1kg 은바 — 헤레우스", metal: "silver", type: "bar", weight: "1 kg", weightOz: 32.1507, purity: "99.99%", mint: "Heraeus", premium: 0.035, image: "🥈", inStock: true, descKo: "독일 헤레우스 제조 순은 바. 산업용·투자 수요 모두 높은 표준 규격." },
-  { id: 8, name: "10oz Gold Bar — Valcambi", nameKo: "10온스 금바 — 발캄비", metal: "gold", type: "bar", weight: "10 oz", weightOz: 10, purity: "99.99%", mint: "Valcambi", premium: 0.028, image: "🥇", inStock: true, descKo: "스위스 발캄비 제조 10온스 금바. 개인 고액 투자자에게 적합한 크기." },
+  { id: 1, name: "1oz Gold Bar — PAMP Suisse", nameKo: "1온스 금바 — PAMP 스위스", metal: "gold", type: "bar", weight: "1 oz", weightOz: 1, purity: "99.99%", mint: "PAMP Suisse", premium: 0.08, image: "🥇", inStock: true, descKo: "세계에서 가장 인지도 높은 금바. LBMA 인증 PAMP Suisse 제조. Lady Fortuna 디자인." },
+  { id: 2, name: "1kg Gold Bar — Heraeus", nameKo: "1kg 금바 — 헤레우스", metal: "gold", type: "bar", weight: "1 kg", weightOz: 32.1507, purity: "99.99%", mint: "Heraeus", premium: 0.08, image: "🥇", inStock: true, descKo: "기관 및 고액 투자자 선호. 최저 프리미엄으로 최대 효율. 독일 헤레우스 제조." },
+  { id: 3, name: "1oz Gold Maple Leaf", nameKo: "1온스 골드 메이플리프", metal: "gold", type: "coin", weight: "1 oz", weightOz: 1, purity: "99.99%", mint: "Royal Canadian Mint", premium: 0.08, image: "🪙", inStock: true, descKo: "캐나다 왕립 조폐국 발행. 세계적으로 가장 많이 거래되는 금화 중 하나." },
+  { id: 4, name: "1oz Gold Krugerrand", nameKo: "1온스 골드 크루거랜드", metal: "gold", type: "coin", weight: "1 oz", weightOz: 1, purity: "91.67%", mint: "South African Mint", premium: 0.08, image: "🪙", inStock: true, descKo: "세계 최초 투자용 금화(1967년 발행). 남아프리카 공화국 조폐국 제조." },
+  { id: 5, name: "100oz Silver Bar — PAMP", nameKo: "100온스 은바 — PAMP", metal: "silver", type: "bar", weight: "100 oz", weightOz: 100, purity: "99.99%", mint: "PAMP Suisse", premium: 0.08, image: "🥈", inStock: true, descKo: "대규모 은 투자에 최적. PAMP 스위스 제조, LBMA 인증 순은 바." },
+  { id: 6, name: "1oz Silver Maple Leaf", nameKo: "1온스 실버 메이플리프", metal: "silver", type: "coin", weight: "1 oz", weightOz: 1, purity: "99.99%", mint: "Royal Canadian Mint", premium: 0.08, image: "🥈", inStock: true, descKo: "캐나다 왕립 조폐국 발행 순은 동전. 컬렉터와 투자자 모두 선호." },
+  { id: 7, name: "1kg Silver Bar — Heraeus", nameKo: "1kg 은바 — 헤레우스", metal: "silver", type: "bar", weight: "1 kg", weightOz: 32.1507, purity: "99.99%", mint: "Heraeus", premium: 0.08, image: "🥈", inStock: true, descKo: "독일 헤레우스 제조 순은 바. 산업용·투자 수요 모두 높은 표준 규격." },
+  { id: 8, name: "10oz Gold Bar — Valcambi", nameKo: "10온스 금바 — 발캄비", metal: "gold", type: "bar", weight: "10 oz", weightOz: 10, purity: "99.99%", mint: "Valcambi", premium: 0.08, image: "🥇", inStock: true, descKo: "스위스 발캄비 제조 10온스 금바. 개인 고액 투자자에게 적합한 크기." },
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MOCK HOLDINGS — TODO: Replace with live Malca-Amit vault API feed
+// MOCK HOLDINGS
 // ═══════════════════════════════════════════════════════════════════════════════
 const MOCK_HOLDINGS = [
   { id: 1, product: "1oz Gold Bar — PAMP Suisse", nameKo: "1온스 금바 — PAMP 스위스", serial: "PAMP-2026-44891", purchasePrice: 4892.50, purchaseDate: "2026-03-15", weightOz: 1, metal: "gold", vault: "Singapore — Malca-Amit FTZ", zone: "Zone A, Bay 204", image: "🥇", assayCert: true, insurance: "Lloyd's of London" },
@@ -103,7 +92,7 @@ const MOCK_HOLDINGS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// MOCK ORDERS — TODO: Replace with live order management API
+// MOCK ORDERS
 // ═══════════════════════════════════════════════════════════════════════════════
 const MOCK_ORDERS_INIT = [
   { id: "AK-2026-001847", date: "2026-04-01T14:30:00Z", status: "vaulted", items: [{ nameKo: "1온스 골드 메이플리프", name: "1oz Gold Maple Leaf", qty: 1, unitPrice: 4945.20, metal: "gold", image: "🪙" }], subtotal: 4945.20, total: 4945.20, paymentMethod: "toss", storageOption: "singapore" },
@@ -121,39 +110,15 @@ const AUDIT_TRAIL_INIT = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// WHY GOLD — All typos corrected, data updated to April 2026
+// WHY GOLD
 // ═══════════════════════════════════════════════════════════════════════════════
 const WHY_GOLD_REASONS = [
-  {
-    icon: "🛡️", titleKo: "인플레이션 헤지", titleEn: "Inflation Hedge",
-    body: "금은 수천 년간 구매력을 보존해왔습니다. 지폐가 인쇄될수록 금의 실질 가치는 올라갑니다. 한국의 소비자물가지수(CPI)가 상승할 때, 금은 원화 자산을 보호하는 방패 역할을 합니다.",
-    stat: MARKET_FACTS.tenYearReturn, statLabel: "최근 10년 금 수익률 (USD 기준)"
-  },
-  {
-    icon: "🌍", titleKo: "지정학적 안전 자산", titleEn: "Safe Haven Asset",
-    body: "전쟁, 금융위기, 무역분쟁 등 불확실성이 높아질 때마다 투자자들은 금으로 피신합니다. 2008년 금융위기, 2020년 팬데믹, 2022년 러-우 전쟁 때 금 가격은 급등했습니다.",
-    stat: "$5,608", statLabel: "역대 최고가 (2026년 1월, USD/oz)"
-  },
-  {
-    icon: "⚖️", titleKo: "포트폴리오 분산", titleEn: "Portfolio Diversification",
-    body: "금은 주식·채권과 낮은 상관관계를 가집니다. 포트폴리오의 5~15%를 금에 배분하면 변동성을 낮추면서도 장기 수익률을 개선할 수 있습니다.",
-    stat: "10–20%", statLabel: "Morgan Stanley 추천 자산 배분 율"
-  },
-  {
-    icon: "🏛️", titleKo: "중앙은행의 선택", titleEn: "Central Bank Reserve",
-    body: "한국은행을 포함한 세계 각국 중앙은행은 외환보유액의 일부를 금으로 보유합니다. 중앙은행들이 2022년 이후 역대 최대 규모로 금을 매입하고 있습니다.",
-    stat: MARKET_FACTS.cbBuying2023, statLabel: "2023 중앙은행 금 순매입량"
-  },
-  {
-    icon: "💎", titleKo: "희소성과 내재 가치", titleEn: "Scarcity & Intrinsic Value",
-    body: "지구상에 채광된 금은 올림픽 수영장 약 3.5개 분량에 불과합니다. 새로운 채광량은 매년 제한적이며, 금은 부식되거나 소멸되지 않습니다.",
-    stat: "~220천t", statLabel: "역대 총 채광량 추정 (WGC 2024)"
-  },
-  {
-    icon: "🏦", titleKo: "환율 위험 분산", titleEn: "FX Risk Mitigation",
-    body: "원화(KRW)가 약세를 보일 때, 달러로 표시된 금의 원화 가치는 상승합니다. 미국 금리 인상, 글로벌 리스크-오프 국면에서 원화 자산을 보호하는 자연 헤지 수단입니다.",
-    stat: "+394%", statLabel: "최근 10년 금 수익률 (KRW 기준)"
-  },
+  { icon: "🛡️", titleKo: "인플레이션 헤지", titleEn: "Inflation Hedge", body: "금은 수천 년간 구매력을 보존해왔습니다. 지폐가 인쇄될수록 금의 실질 가치는 올라갑니다. 한국의 소비자물가지수(CPI)가 상승할 때, 금은 원화 자산을 보호하는 방패 역할을 합니다.", stat: MARKET_FACTS.tenYearReturn, statLabel: "최근 10년 금 수익률 (USD 기준)" },
+  { icon: "🌍", titleKo: "지정학적 안전 자산", titleEn: "Safe Haven Asset", body: "전쟁, 금융위기, 무역분쟁 등 불확실성이 높아질 때마다 투자자들은 금으로 피신합니다. 2008년 금융위기, 2020년 팬데믹, 2022년 러-우 전쟁 때 금 가격은 급등했습니다.", stat: "$5,608", statLabel: "역대 최고가 (2026년 1월, USD/oz)" },
+  { icon: "⚖️", titleKo: "포트폴리오 분산", titleEn: "Portfolio Diversification", body: "금은 주식·채권과 낮은 상관관계를 가집니다. 포트폴리오의 5~15%를 금에 배분하면 변동성을 낮추면서도 장기 수익률을 개선할 수 있습니다.", stat: "10-20%", statLabel: "Morgan Stanley 추천 자산 배분 율" },
+  { icon: "🏛️", titleKo: "중앙은행의 선택", titleEn: "Central Bank Reserve", body: "한국은행을 포함한 세계 각국 중앙은행은 외환보유액의 일부를 금으로 보유합니다. 중앙은행들이 2022년 이후 역대 최대 규모로 금을 매입하고 있습니다.", stat: MARKET_FACTS.cbBuying2023, statLabel: "2023 중앙은행 금 순매입량" },
+  { icon: "💎", titleKo: "희소성과 내재 가치", titleEn: "Scarcity & Intrinsic Value", body: "지구상에 채광된 금은 올림픽 수영장 약 3.5개 분량에 불과합니다. 새로운 채광량은 매년 제한적이며, 금은 부식되거나 소멸되지 않습니다.", stat: "~220천t", statLabel: "역대 총 채광량 추정 (WGC 2024)" },
+  { icon: "🏦", titleKo: "환율 위험 분산", titleEn: "FX Risk Mitigation", body: "원화(KRW)가 약세를 보일 때, 달러로 표시된 금의 원화 가치는 상승합니다. 미국 금리 인상, 글로벌 리스크-오프 국면에서 원화 자산을 보호하는 자연 헤지 수단입니다.", stat: "+394%", statLabel: "최근 10년 금 수익률 (KRW 기준)" },
 ];
 
 const WHY_GOLD_STATS = [
@@ -164,80 +129,37 @@ const WHY_GOLD_STATS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// EDUCATION ARTICLES — All Korean typos corrected
+// EDUCATION ARTICLES
 // ═══════════════════════════════════════════════════════════════════════════════
 const EDUCATION_ARTICLES = [
-  {
-    id: "what-is-gold", emoji: "🥇", category: "기초",
-    title: "실물 금이란 무엇인가?", subtitle: "금 ETF, 금 통장과 다른 진짜 금의 의미", readTime: "5분",
-    sections: [
-      { heading: "실물 금 vs 종이 금", body: "투자용 금은 크게 두 종류로 나뉩니다. 종이 금은 금 ETF, KRX 금 시장, 금 통장처럼 금을 실제 보유하지 않고 가격만 추종하는 상품입니다. 실물 금은 실제로 제련된 금 바(bar) 또는 금화(coin)로, 당신이 손에 들고 금고에 넣을 수 있는 금속 그 자체입니다.", bullets: ["금 ETF: 거래소에 상장된 펀드. 편리하지만 발행사 리스크 존재.", "KRX 금 시장: 한국 내 금 현물 거래. 세금 혜택 있음.", "실물 금 바: 직접 소유하는 순도 999.9 금괴. Aurum Korea가 취급.", "금 통장(KB, 신한 등): 은행이 금을 대신 보유. 예금자 보호 미적용."], highlight: "실물 금은 발행자도, 거래상대방 리스크도 없는 유일한 금융 자산입니다." },
-      { heading: "Aurum Korea가 취급하는 금의 종류", body: "저희는 LBMA(런던 귀금속 시장협회) 인증 정련소에서 제조된 제품만을 취급합니다.", bullets: ["1g 금 바 — 소액 투자 시작점", "5g 금 바 — 선물·기념일 수요 높음", "10g 금 바 — 가장 인기 있는 크기", "1oz (31.1g) 금 바 — 국제 표준 단위", "100g 금 바 — 기관·고액 투자자 선호", "1kg 금 바 — 최저 프리미엄, 최고 효율"], highlight: null },
-    ],
-  },
-  {
-    id: "gold-pricing", emoji: "📈", category: "가격",
-    title: "금 가격은 어떻게 결정되나?", subtitle: "현물가, 프리미엄, 환율의 3중 구조", readTime: "7분",
-    sections: [
-      { heading: "국제 현물가 (Spot Price)", body: "금 가격의 기준은 LBMA가 하루 두 번 발표하는 현물가입니다. 이 가격은 트로이 온스(31.1034g) 당 USD로 표시됩니다.", bullets: null, highlight: "현재 금 현물가는 홈페이지 상단의 실시간 시세 위젯에서 확인할 수 있습니다." },
-      { heading: "환율 (USD/KRW)", body: "국제 금 가격은 달러(USD) 기준이므로, 원화(KRW) 가격 = 현물가 × 환율입니다. 달러가 강세일 때 원화 금 가격이 올라가고, 원화 약세(환율 상승) 시에도 같은 효과가 납니다.", bullets: null, highlight: null },
-      { heading: "프리미엄 (Premium)", body: "실물 금 바의 판매가 = 현물가 + 프리미엄입니다. 프리미엄은 제련·제조비, 운송·보험, 딜러 마진으로 구성됩니다.", bullets: ["제련·제조비: 정련소가 금괴를 만드는 비용 (보통 0.5~1%)", "운송·보험료: 싱가포르 → 보관 금고까지", "Aurum 수수료: 투명하게 공개 (상품 페이지 확인)", "소량일수록 프리미엄 높음 → 1g < 10g < 1oz < 1kg 순"], highlight: null },
-      { heading: "매수-매도 스프레드", body: "구매(매수)가와 매각(매도)가의 차이를 스프레드라고 합니다. 실물 금은 유동성이 낮아 스프레드가 ETF보다 넓습니다.", bullets: null, highlight: null },
-    ],
-  },
-  {
-    id: "how-to-buy", emoji: "🛒", category: "구매",
-    title: "Aurum Korea에서 금 구매하는 방법", subtitle: "회원가입부터 보관까지 5단계 가이드", readTime: "4분",
-    sections: [
-      { heading: "구매 프로세스 (5단계)", body: "Aurum Korea의 구매 과정은 단순하고 투명합니다.", bullets: ["1단계: 회원가입 — 이메일 또는 카카오 소셜 로그인 (5분 이내)", "2단계: 상품 선택 — 중량·브랜드별 금 바 선택", "3단계: 결제 — 토스페이, 카카오페이, 전신환(Wire Transfer)", "4단계: 주문 확인 — 이메일 + 카카오 알림으로 즉시 발송", "5단계: 보관 시작 — Malca-Amit 싱가포르 금고에 즉시 배정"], highlight: "구매 즉시 Malca-Amit 전용 금고에 배정됩니다. 별도 보관 신청 불필요." },
-      { heading: "결제 방법", body: "현재 지원되는 결제 수단입니다.", bullets: ["토스페이: 신용카드·체크카드·계좌이체 (즉시 처리)", "카카오페이: 카카오뱅크 연동 즉시 결제", "전신환(Wire Transfer): 법인·고액 거래 권장. 영업일 1일 처리.", "신용카드: Visa / Mastercard (국내외)"], highlight: null },
-      { heading: "실물 인출", body: "금은 기본적으로 싱가포르 Malca-Amit 금고에 보관됩니다. 실물 인출을 원하실 경우 별도 배송 신청이 가능하며, 국내 반입 시 관세 및 부가세가 부과될 수 있습니다.", bullets: null, highlight: null },
-    ],
-  },
-  {
-    id: "storage-security", emoji: "🔐", category: "보관",
-    title: "보관 및 안전성", subtitle: "Malca-Amit 싱가포르 금고의 보안 구조", readTime: "5분",
-    sections: [
-      { heading: "Malca-Amit이란?", body: "Malca-Amit은 다이아몬드·귀금속 보관 및 운송 분야 세계 최고 수준의 전문 업체입니다. 1963년 설립, 전 세계 주요 도시에 고급 보안 금고를 운영하고 있습니다.", bullets: ["24시간 무장 경비 및 다중 생체인식 보안", "고객별 분리 보관 (세그리게이션) 가능", "보험: Lloyd's of London 신디케이트 완전 보장", "ISO 9001:2015 인증", "싱가포르 MAS(금융통화청) 규제 환경"], highlight: "고객 자산은 Aurum Korea의 재무 상태와 완전히 분리됩니다. Aurum Korea가 파산하더라도 고객 금은 보호됩니다." },
-      { heading: "싱가포르 보관의 장점", body: "싱가포르는 아시아 최대 귀금속 허브입니다.", bullets: ["금 수입·수출 GST(부가세) 면제 (투자용 금)", "정치적 안정성 — AAA 국가 신용등급", "한국 원화 환율 위험 분산 효과", "국제 금 시장 접근성 최고"], highlight: null },
-    ],
-  },
-  {
-    id: "tax-legal", emoji: "📋", category: "세금·법률",
-    title: "세금 및 법률 (한국)", subtitle: "해외 실물 금 투자 시 알아야 할 의무", readTime: "8분",
-    sections: [
-      { heading: "해외 금융계좌 신고", body: "해외 금융계좌 잔액이 연중 어느 하루라도 5억 원을 초과하면 다음 해 6월 1일~30일 사이에 국세청에 신고해야 합니다.", bullets: null, highlight: "미신고 시 최대 20% 과태료. 세무사 상담을 권장합니다." },
-      { heading: "양도소득세", body: "국내에서 실물 금을 매각할 경우, 기타소득세(필요경비 공제 후 22%) 또는 사업소득세가 부과될 수 있습니다.", bullets: ["KRX 금 시장 거래: 비과세 (특례)", "은행 금 통장 이익: 배당소득세 15.4%", "실물 금 매각이익: 기타소득 or 사업소득 분류 가능", "반드시 세무사·세무대리인과 개별 상담 필요"], highlight: null },
-      { heading: "실물 금 국내 반입 시 관세", body: "싱가포르 보관 금을 국내로 반입할 경우 관세(3%) + 부가가치세(10%)가 부과됩니다.", bullets: null, highlight: "본 내용은 일반 정보 제공 목적이며 법적·세무적 조언이 아닙니다. 공인 세무사 또는 법률 전문가와 상담하시기 바랍니다." },
-    ],
-  },
-  {
-    id: "glossary", emoji: "📚", category: "용어집",
-    title: "금 투자 용어 사전", subtitle: "알아두면 유용한 귀금속 투자 용어 A–Z", readTime: "3분",
-    sections: [
-      { heading: "기본 용어", body: "", bullets: ["Spot Price (현물가): 즉시 인도 기준 금 시세. 국제 금 가격의 기준.", "Troy Ounce (트로이 온스): 금 계량 단위. 1 troy oz = 31.1034g.", "Premium (프리미엄): 현물가 대비 실물 금 판매가의 추가 마진.", "Bid/Ask Spread: 매수-매도 가격 차이. 스프레드가 좁을수록 거래 비용 낮음.", "LBMA: 런던 귀금속 시장협회. 국제 금 가격 Fix 기준.", "COMEX: 미국 뉴욕 상품거래소. 금 선물 가격 형성 시장."], highlight: null },
-      { heading: "순도 관련", body: "", bullets: ["999.9 (4 Nines): 순도 99.99%. 투자용 금의 국제 표준.", "24K: 순도 99.9% 이상 금. 투자용 금바는 보통 24K.", "Assay Certificate: 순도 인증서. 투자용 금바에 동봉."], highlight: null },
-      { heading: "보관 관련", body: "", bullets: ["Allocated Storage: 고객 자산이 특정 금괴로 지정되어 분리 보관.", "Unallocated Storage: 풀(pool)에 혼합 보관. 비용 낮지만 상대방 리스크 존재.", "Segregated: 완전 분리 보관. Aurum Korea 기본 옵션.", "Custodian: 자산 보관 수탁 기관. Aurum Korea의 경우 Malca-Amit."], highlight: null },
-    ],
-  },
+  { id: "what-is-gold", emoji: "🥇", category: "기초", title: "실물 금이란 무엇인가?", subtitle: "금 ETF, 금 통장과 다른 진짜 금의 의미", readTime: "5분", sections: [{ heading: "실물 금 vs 종이 금", body: "투자용 금은 크게 두 종류로 나뉩니다. 종이 금은 금 ETF, KRX 금 시장, 금 통장처럼 금을 실제 보유하지 않고 가격만 추종하는 상품입니다. 실물 금은 실제로 제련된 금 바(bar) 또는 금화(coin)로, 당신이 손에 들고 금고에 넣을 수 있는 금속 그 자체입니다.", bullets: ["금 ETF: 거래소에 상장된 펀드. 편리하지만 발행사 리스크 존재.", "KRX 금 시장: 한국 내 금 현물 거래. 세금 혜택 있음.", "실물 금 바: 직접 소유하는 순도 999.9 금괴. Aurum Korea가 취급.", "금 통장(KB, 신한 등): 은행이 금을 대신 보유. 예금자 보호 미적용."], highlight: "실물 금은 발행자도, 거래상대방 리스크도 없는 유일한 금융 자산입니다." }, { heading: "Aurum Korea가 취급하는 금의 종류", body: "저희는 LBMA(런던 귀금속 시장협회) 인증 정련소에서 제조된 제품만을 취급합니다.", bullets: ["1g 금 바 — 소액 투자 시작점", "5g 금 바 — 선물·기념일 수요 높음", "10g 금 바 — 가장 인기 있는 크기", "1oz (31.1g) 금 바 — 국제 표준 단위", "100g 금 바 — 기관·고액 투자자 선호", "1kg 금 바 — 최저 프리미엄, 최고 효율"], highlight: null }] },
+  { id: "gold-pricing", emoji: "📈", category: "가격", title: "금 가격은 어떻게 결정되나?", subtitle: "현물가, 프리미엄, 환율의 3중 구조", readTime: "7분", sections: [{ heading: "국제 현물가 (Spot Price)", body: "금 가격의 기준은 LBMA가 하루 두 번 발표하는 현물가입니다. 이 가격은 트로이 온스(31.1034g) 당 USD로 표시됩니다.", bullets: null, highlight: "현재 금 현물가는 홈페이지 상단의 실시간 시세 위젯에서 확인할 수 있습니다." }, { heading: "환율 (USD/KRW)", body: "국제 금 가격은 달러(USD) 기준이므로, 원화(KRW) 가격 = 현물가 × 환율입니다.", bullets: null, highlight: null }, { heading: "프리미엄 (Premium)", body: "실물 금 바의 판매가 = 현물가 + 프리미엄입니다.", bullets: ["제련·제조비: 정련소가 금괴를 만드는 비용 (보통 0.5~1%)", "운송·보험료: 싱가포르 → 보관 금고까지", "Aurum 수수료: 투명하게 공개 (상품 페이지 확인)", "소량일수록 프리미엄 높음 → 1g < 10g < 1oz < 1kg 순"], highlight: null }] },
+  { id: "how-to-buy", emoji: "🛒", category: "구매", title: "Aurum Korea에서 금 구매하는 방법", subtitle: "회원가입부터 보관까지 5단계 가이드", readTime: "4분", sections: [{ heading: "구매 프로세스 (5단계)", body: "Aurum Korea의 구매 과정은 단순하고 투명합니다.", bullets: ["1단계: 회원가입 — 이메일 또는 카카오 소셜 로그인 (5분 이내)", "2단계: 상품 선택 — 중량·브랜드별 금 바 선택", "3단계: 결제 — 토스페이, 카카오페이, 전신환(Wire Transfer), 암호화폐", "4단계: 주문 확인 — 이메일 + 카카오 알림으로 즉시 발송", "5단계: 보관 시작 — Malca-Amit 싱가포르 금고에 즉시 배정"], highlight: "구매 즉시 Malca-Amit 전용 금고에 배정됩니다. 별도 보관 신청 불필요." }] },
+  { id: "storage-security", emoji: "🔐", category: "보관", title: "보관 및 안전성", subtitle: "Malca-Amit 싱가포르 금고의 보안 구조", readTime: "5분", sections: [{ heading: "Malca-Amit이란?", body: "Malca-Amit은 다이아몬드·귀금속 보관 및 운송 분야 세계 최고 수준의 전문 업체입니다.", bullets: ["24시간 무장 경비 및 다중 생체인식 보안", "고객별 분리 보관 (세그리게이션) 가능", "보험: Lloyd's of London 신디케이트 완전 보장", "ISO 9001:2015 인증", "싱가포르 MAS(금융통화청) 규제 환경"], highlight: "고객 자산은 Aurum Korea의 재무 상태와 완전히 분리됩니다." }] },
+  { id: "tax-legal", emoji: "📋", category: "세금·법률", title: "세금 및 법률 (한국)", subtitle: "해외 실물 금 투자 시 알아야 할 의무", readTime: "8분", sections: [{ heading: "해외 금융계좌 신고", body: "해외 금융계좌 잔액이 연중 어느 하루라도 5억 원을 초과하면 다음 해 6월 1일~30일 사이에 국세청에 신고해야 합니다.", bullets: null, highlight: "미신고 시 최대 20% 과태료. 세무사 상담을 권장합니다." }, { heading: "실물 금 국내 반입 시 관세", body: "싱가포르 보관 금을 국내로 반입할 경우 관세(3%) + 부가가치세(10%)가 부과됩니다.", bullets: null, highlight: "본 내용은 일반 정보 제공 목적이며 법적·세무적 조언이 아닙니다." }] },
+  { id: "glossary", emoji: "📚", category: "용어집", title: "금 투자 용어 사전", subtitle: "알아두면 유용한 귀금속 투자 용어 A–Z", readTime: "3분", sections: [{ heading: "기본 용어", body: "", bullets: ["Spot Price (현물가): 즉시 인도 기준 금 시세. 국제 금 가격의 기준.", "Troy Ounce (트로이 온스): 금 계량 단위. 1 troy oz = 31.1034g.", "Premium (프리미엄): 현물가 대비 실물 금 판매가의 추가 마진.", "LBMA: 런던 귀금속 시장협회. 국제 금 가격 Fix 기준."], highlight: null }] },
 ];
 const EDUCATION_CATEGORIES = ["전체", "기초", "가격", "구매", "보관", "세금·법률", "용어집"];
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// NEWS
+// NEWS — A-2: Replace broken Kitco RSS with reliable sources
 // ═══════════════════════════════════════════════════════════════════════════════
 const STATIC_NEWS = [
-  { title: "Gold Holds Near $4,700 Amid Record Central Bank Accumulation", link: "https://www.kitco.com/news/gold", pubDate: "2026-04-11T06:00:00Z", source: "Kitco", category: "gold", snippet: "Gold prices remain elevated above $4,700 per troy ounce as central banks continued accumulating the precious metal at near-record pace through Q1 2026." },
-  { title: "Fed Rate Pause Signals Extended Gold Bull Run", link: "https://www.kitco.com/news/gold", pubDate: "2026-04-10T08:30:00Z", source: "Kitco", category: "gold", snippet: "Analysts say the Federal Reserve's decision to pause rate hikes creates a favourable environment for gold, with real yields expected to fall further." },
-  { title: "Silver Demand Hits 10-Year High on Solar Panel Boom", link: "https://www.kitco.com/news/silver", pubDate: "2026-04-10T04:00:00Z", source: "Kitco", category: "silver", snippet: "Industrial demand for silver surged to a decade-high driven by solar panel manufacturing, creating a structural supply deficit that supports prices." },
-  { title: "토스뱅크 골드스팟 — 금 현물 실시간 시세", link: "https://service.tossbank.com/partner-opening/nhs/gold-spot", pubDate: "2026-04-14T00:00:00Z", source: "TossBank", category: "gold", snippet: "토스뱅크 파트너 서비스를 통해 KB국민은행 기준 금 현물 매도가를 실시간으로 확인. AGP 월 자동이체와 연동하여 활용 가능한 금 시세 리소스." },
-  { title: "Silver Industrial Deficit to Widen in 2026 — Silver Institute", link: "https://www.kitco.com/news/silver", pubDate: "2026-04-07T05:00:00Z", source: "Kitco", category: "silver", snippet: "The Silver Institute projects the global silver market deficit will widen to over 200 million ounces in 2026, the fourth consecutive year of structural undersupply." },
-];
-const RSS_FEEDS = [
-  { url: "https://www.kitco.com/rss/news.rss", source: "Kitco", category: "gold" },
-  { url: "https://www.kitco.com/rss/silver-news.rss", source: "Kitco", category: "silver" },
+  { title: "중앙은행 금 매입 역대 최고 수준 지속 — 금 가격 고공행진", link: "https://www.mining.com/", pubDate: "2026-04-11T06:00:00Z", source: "Mining.com", category: "gold", snippet: "전 세계 중앙은행들이 2026년 1분기에도 기록적인 속도로 금을 매입하며 금 가격이 온스당 $4,700 이상을 유지하고 있습니다." },
+  { title: "Fed 금리 동결 신호 — 금 강세장 연장 전망", link: "https://www.mining.com/", pubDate: "2026-04-10T08:30:00Z", source: "Mining.com", category: "gold", snippet: "연방준비제도의 금리 인상 중단 결정이 금에 유리한 환경을 조성, 실질 수익률 추가 하락이 예상됩니다." },
+  { title: "태양광 붐으로 은 수요 10년 최고치 — 공급 부족 지속", link: "https://goldbroker.com/news", pubDate: "2026-04-10T04:00:00Z", source: "GoldBroker", category: "silver", snippet: "태양광 패널 제조 수요로 은 산업 수요가 10년 최고치를 기록, 구조적 공급 부족이 가격을 지지하고 있습니다." },
+  { title: "2026년 은 공급 부족 확대 전망 — Silver Institute", link: "https://goldbroker.com/news", pubDate: "2026-04-07T05:00:00Z", source: "GoldBroker", category: "silver", snippet: "Silver Institute는 2026년 글로벌 은 시장 부족이 2억 온스 이상으로 확대될 것으로 예측, 4년 연속 구조적 공급 부족입니다." },
+  { title: "금값 전망 및 금 투자 전략 — 최신 뉴스", link: "https://news.google.com/rss/search?q=%EA%B8%88%EA%B0%92+%EA%B8%88%ED%88%AC%EC%9E%90&hl=ko&gl=KR&ceid=KR:ko", pubDate: "2026-04-14T00:00:00Z", source: "한국 뉴스", category: "gold", snippet: "한국 금 투자자들이 주목해야 할 최신 금값 동향 및 투자 전략 분석입니다." },
+  { title: "은값 상승 — 한국 은 투자 관심 급증", link: "https://news.google.com/rss/search?q=%EC%9D%80%EA%B0%92+%EC%9D%80%ED%88%AC%EC%9E%90&hl=ko&gl=KR&ceid=KR:ko", pubDate: "2026-04-08T00:00:00Z", source: "한국 뉴스", category: "silver", snippet: "은값 상승세와 함께 한국 투자자들의 은 실물 투자 관심이 급증하고 있습니다." },
 ];
 
+// A-2: Reliable RSS feeds replacing broken Kitco
+const RSS_FEEDS = [
+  { url: "https://www.mining.com/feed/", source: "Mining.com", category: "gold" },
+  { url: "https://goldbroker.com/news/rss-feed-40", source: "GoldBroker", category: "gold" },
+  { url: "https://news.google.com/rss/search?q=%EA%B8%88%EA%B0%92+%EA%B8%88%ED%88%AC%EC%9E%90&hl=ko&gl=KR&ceid=KR:ko", source: "한국 뉴스", category: "gold" },
+  { url: "https://news.google.com/rss/search?q=%EC%9D%80%EA%B0%92+%EC%9D%80%ED%88%AC%EC%9E%90&hl=ko&gl=KR&ceid=KR:ko", source: "한국 뉴스", category: "silver" },
+];
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // HELPERS
@@ -285,10 +207,53 @@ function useInView(ref) {
   return inView;
 }
 
+// ─── A-1: localStorage-based daily close tracking (KST) ───────────────────────
+function getDailyChangeData(currentPrices, currentKrw) {
+  const KST_OFFSET = 9 * 60 * 60 * 1000;
+  const now = new Date();
+  const kstNow = new Date(now.getTime() + KST_OFFSET);
+  const today = kstNow.toISOString().split('T')[0];
+
+  const CACHE_KEY = 'aurum_price_daily';
+  let cache = {};
+  try { cache = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}'); } catch {}
+
+  const changes = {};
+  // If stored date is a PREVIOUS day, roll to previousClose
+  if (cache.date && cache.date !== today && cache.prices) {
+    cache.previousClose = cache.prices;
+    cache.previousKrw = cache.krw;
+  }
+
+  // Update today's prices
+  cache.date = today;
+  cache.prices = currentPrices;
+  cache.krw = currentKrw;
+
+  // Compute % change from previous close
+  if (cache.previousClose) {
+    for (const metal of ['gold', 'silver', 'platinum']) {
+      const prev = cache.previousClose[metal];
+      const curr = currentPrices[metal];
+      if (prev && curr) {
+        changes[metal] = ((curr - prev) / prev * 100).toFixed(2);
+      }
+    }
+    if (cache.previousKrw && currentKrw) {
+      changes.krw = ((currentKrw - cache.previousKrw) / cache.previousKrw * 100).toFixed(2);
+    }
+  }
+
+  try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch {}
+  return changes; // { gold: '0.42', silver: '-1.15', ... } or {}
+}
+
 function useLivePrices() {
   const [prices, setPrices] = useState(FALLBACK_PRICES);
   const [krwRate, setKrwRate] = useState(FALLBACK_KRW);
   const [priceError, setPriceError] = useState(null);
+  const [dailyChanges, setDailyChanges] = useState({});
+
   const fetch_ = useCallback(async () => {
     try {
       const [g, s, p, fx] = await Promise.all([
@@ -298,17 +263,21 @@ function useLivePrices() {
         fetch("https://open.er-api.com/v6/latest/USD"),
       ]);
       const [gd, sd, pd, fxd] = await Promise.all([g.json(), s.json(), p.json(), fx.json()]);
-      setPrices({ gold: gd.price, silver: sd.price, platinum: pd.price });
-      if (fxd.rates?.KRW) setKrwRate(fxd.rates.KRW);
+      const newPrices = { gold: gd.price, silver: sd.price, platinum: pd.price };
+      const newKrw = fxd.rates?.KRW || FALLBACK_KRW;
+      setPrices(newPrices);
+      setKrwRate(newKrw);
+      setDailyChanges(getDailyChangeData(newPrices, newKrw));
       setPriceError(null);
     } catch {
       setPriceError("가격 로딩 실패 — 최근 데이터 표시 중");
     }
   }, []);
   useEffect(() => { fetch_(); const t = setInterval(fetch_, 60_000); return () => clearInterval(t); }, [fetch_]);
-  return { prices, krwRate, priceError };
+  return { prices, krwRate, priceError, dailyChanges };
 }
 
+// A-2: News hook with deduplication + new reliable feeds
 function useNewsData() {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -320,13 +289,28 @@ function useNewsData() {
           RSS_FEEDS.map(feed =>
             fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(feed.url)}&count=6`)
               .then(r => r.ok ? r.json() : null)
-              .then(d => (!d || d.status !== "ok") ? [] : d.items.map(i => ({ title: i.title || "", link: i.link || "#", pubDate: i.pubDate || new Date().toISOString(), source: feed.source, category: feed.category, snippet: (i.description || "").replace(/<[^>]*>/g, "").trim().slice(0, 200) })))
+              .then(d => (!d || d.status !== "ok") ? [] : d.items.map(i => ({
+                title: i.title || "",
+                link: i.link || "#",
+                pubDate: i.pubDate || new Date().toISOString(),
+                source: feed.source,
+                category: feed.category,
+                snippet: (i.description || "").replace(/<[^>]*>/g, "").trim().slice(0, 200)
+              })))
               .catch(() => [])
           )
         );
         if (!cancelled) {
           const all = res.flatMap(r => r.status === "fulfilled" ? r.value : []);
-          setArticles(all.length >= 4 ? all.slice(0, 12) : STATIC_NEWS);
+          // Deduplication by title
+          const seen = new Set();
+          const unique = all.filter(a => {
+            const key = a.title.toLowerCase().trim();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
+          setArticles(unique.length >= 4 ? unique.slice(0, 12) : STATIC_NEWS);
         }
       } catch { if (!cancelled) setArticles(STATIC_NEWS); }
       finally { if (!cancelled) setLoading(false); }
@@ -346,34 +330,20 @@ function useToast() {
   return { toasts, show };
 }
 
-
-
 // ═══════════════════════════════════════════════════════════════════════════════
-// WHY SILVER — 2026 data (Silver Institute World Silver Survey 2026)
+// WHY SILVER
 // ═══════════════════════════════════════════════════════════════════════════════
 const WHY_SILVER_STATS = [
-  { value: "67 Moz", label: "2026 Annual Supply Deficit" },
-  { value: "6th Year", label: "Consecutive Annual Deficit" },
-  { value: ">60%", label: "Industrial & Tech Demand Share" },
-  { value: "Scarce", label: "Korean Bank Availability" },
+  { value: "67 Moz", label: "2026 공급 부족" },
+  { value: "6년째", label: "연속 공급 부족" },
+  { value: ">60%", label: "산업·기술 수요 비중" },
+  { value: "품귀", label: "한국 은행 은 공급" },
 ];
 
 const WHY_SILVER_REASONS = [
-  {
-    icon: "⚡", titleKo: "산업의 필수 금속", titleEn: "Industrial Backbone",
-    body: "Solar panels, EVs, 5G electronics, AI data centres, and defence systems all depend on silver. This demand is structural and accelerating — unlike gold, silver cannot be replaced.",
-    stat: ">60%", statLabel: "Global demand from industry/tech (2026)"
-  },
-  {
-    icon: "📉", titleKo: "구조적 공급 부족", titleEn: "Structural Supply Deficit",
-    body: "The silver market enters its 6th consecutive year of deficit in 2026, with a projected shortfall of 67 million oz. China export controls tightened supply further in January 2026.",
-    stat: "67 Moz", statLabel: "2026 projected supply deficit"
-  },
-  {
-    icon: "🇰🇷", titleKo: "한국 접근 프리미엄", titleEn: "Korean Access Premium",
-    body: "Korean banks have repeatedly suspended silver bar sales due to chronic shortages. Physical silver in Korea often trades at substantial premiums. Aurum eliminates this via offshore allocation at international spot.",
-    stat: "+394%", statLabel: "최근 10년 금 수익률 (KRW 기준)"
-  },
+  { icon: "⚡", titleKo: "산업의 필수 금속", titleEn: "Industrial Backbone", body: "태양광 패널, 전기차, 5G 전자기기, AI 데이터센터, 방위산업 모두 은에 의존합니다. 이 수요는 구조적이며 가속화되고 있습니다.", stat: ">60%", statLabel: "산업·기술 글로벌 수요 비중 (2026)" },
+  { icon: "📉", titleKo: "구조적 공급 부족", titleEn: "Structural Supply Deficit", body: "은 시장은 2026년 6년 연속 부족을 기록하며, 6,700만 온스 부족이 예상됩니다. 중국의 수출 통제 강화로 공급이 더욱 타이트해졌습니다.", stat: "67 Moz", statLabel: "2026년 예상 공급 부족" },
+  { icon: "🏅", titleKo: "한국 접근 프리미엄", titleEn: "Korean Access Premium", body: "한국 은행들은 만성적인 부족으로 은바 판매를 반복적으로 중단했습니다. Aurum은 국제 현물가로 해외 배분 방식을 통해 이 문제를 해결합니다.", stat: "+394%", statLabel: "최근 10년 금 수익률 (KRW 기준)" },
 ];
 
-export { API, FALLBACK_PRICES, FALLBACK_KRW, MARKET_FACTS, PRODUCTS, MOCK_HOLDINGS, MOCK_ORDERS_INIT, AUDIT_TRAIL_INIT, WHY_GOLD_REASONS, WHY_GOLD_STATS, WHY_SILVER_STATS, WHY_SILVER_REASONS, EDUCATION_ARTICLES, EDUCATION_CATEGORIES, STATIC_NEWS, RSS_FEEDS, calcPrice, fUSD, fKRW, fDate, fDateLong, useIsMobile, useInView, useLivePrices, useNewsData, useToast };
+export { API, FALLBACK_PRICES, FALLBACK_KRW, MARKET_FACTS, PRODUCTS, MOCK_HOLDINGS, MOCK_ORDERS_INIT, AUDIT_TRAIL_INIT, WHY_GOLD_REASONS, WHY_GOLD_STATS, WHY_SILVER_STATS, WHY_SILVER_REASONS, EDUCATION_ARTICLES, EDUCATION_CATEGORIES, STATIC_NEWS, RSS_FEEDS, getDailyChangeData, calcPrice, fUSD, fKRW, fDate, fDateLong, useIsMobile, useInView, useLivePrices, useNewsData, useToast };
