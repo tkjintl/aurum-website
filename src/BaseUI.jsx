@@ -67,10 +67,31 @@ function Nav({ page, navigate, lang, setLang, user, setUser, setShowLogin, cart 
     { key: "agp", ko: "AGP (아름 골드 플랜)", en: "AGP (아름 골드 플랜)" },
     { key: "learn", ko: "교육", en: "Learn" },
   ];
+  /* A-2 Phase 2: Square AU monogram logo replacing gold-circle "Au" */
+  const logoSize = isMobile ? 32 : 38;
   const Logo = () => (
-    <div onClick={() => go("home")} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer" }}>
-      <div style={{ width: isMobile ? 30 : 35, height: isMobile ? 30 : 35, borderRadius: "50%", background: "linear-gradient(135deg,#c5a572,#8a6914)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: isMobile ? 12 : 15, fontWeight: 700, color: "#0a0a0a", flexShrink: 0 }}>Au</div>
-      <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 16 : 21, fontWeight: 600, color: "#c5a572", letterSpacing: 2 }}>AURUM KOREA</span>
+    <div onClick={() => go("home")} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", textDecoration: "none" }}>
+      <div
+        className="aurum-logo-mark"
+        style={{
+          width: logoSize,
+          height: logoSize,
+          border: "1px solid rgba(197, 165, 114, 0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontFamily: "'Cormorant Garamond', serif",
+          fontSize: logoSize * 0.42,
+          fontWeight: 500,
+          color: "#C5A572",
+          letterSpacing: "0.04em",
+          transition: "border-color 0.3s ease",
+          flexShrink: 0,
+        }}
+      >
+        AU
+      </div>
+      <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 16 : 20, fontWeight: 500, letterSpacing: "0.30em", color: "#f5f0e8" }}>AURUM</span>
     </div>
   );
   const CartBtn = () => (
