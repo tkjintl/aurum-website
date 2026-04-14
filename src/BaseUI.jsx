@@ -39,12 +39,12 @@ function Ticker({ lang, prices, krwRate }) {
   }, [lang, prices, krwRate]);
   return (
     <div style={{ background: "linear-gradient(90deg,#0d0d0d,#1a1510,#0d0d0d)", borderBottom: "1px solid #2a2318", padding: isMobile ? "7px 12px" : "9px 0" }}>
-      <div style={{ display: "flex", justifyContent: isMobile ? "space-between" : "center", gap: isMobile ? 6 : 52, fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 10 : 12, flexWrap: isMobile ? "wrap" : "nowrap" }}>
+      <div style={{ display: "flex", justifyContent: isMobile ? "space-between" : "center", gap: isMobile ? 6 : 52, fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 10 : 13, flexWrap: isMobile ? "wrap" : "nowrap" }}>
         {items.map((item, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap" }}>
-            <span style={{ color: "#8a7d6b", fontSize: isMobile ? 9 : 11 }}>{item.label}</span>
+            <span style={{ color: "#8a7d6b", fontSize: isMobile ? 9 : 12 }}>{item.label}</span>
             <span style={{ color: "#c5a572", fontWeight: 600 }}>{item.label === "USD/KRW" ? item.price.toFixed(1) : `$${item.price.toFixed(2)}`}</span>
-            <span style={{ color: item.up ? "#4ade80" : "#f87171", fontSize: isMobile ? 8 : 10 }}>{item.change}</span>
+            <span style={{ color: item.up ? "#4ade80" : "#f87171", fontSize: isMobile ? 8 : 11 }}>{item.change}</span>
           </div>
         ))}
       </div>
@@ -64,7 +64,7 @@ function Nav({ page, navigate, lang, setLang, user, setUser, setShowLogin, cart 
     { key: "shop", ko: "매장", en: "Shop" },
     { key: "why", ko: "왜 금인가", en: "Why Gold" },
     { key: "storage", ko: "보관", en: "Storage" },
-    { key: "agp", ko: "AGP (아름 골드 플랜)", en: "AGP (아름 골드 플랜)" },
+    { key: "agp", ko: "AGP", en: "AGP" },
     { key: "learn", ko: "교육", en: "Learn" },
   ];
   const Logo = () => (
