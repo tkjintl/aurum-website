@@ -49,18 +49,16 @@ function CurrencyToggle({ currency, setCurrency }) {
 function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
   const fPrice = (usdAmt) => currency === "KRW" ? fKRW(usdAmt * krwRate) : fUSD(usdAmt);
   const isMobile = useIsMobile();
-  // H-04: Gold tracker — 1돈 (3.75g = 3.75/31.1035 oz) units
-  const DON_RATIO = 3.75 / 31.1035;
-  // Savings panels — compute in USD for toggle compatibility
-  const goldKB_usd = prices.gold * DON_RATIO * 1.15;   // Korean market ~15% over spot
-  const goldAurum_usd = prices.gold * DON_RATIO * 1.08; // Aurum spot+8%
+  // Gold savings panel — 1 oz unit
+  const goldKB_usd = prices.gold * 1 * 1.15;   // Korean market ~15% over spot
+  const goldAurum_usd = prices.gold * 1 * 1.06; // Aurum spot+6%
   const goldSavings_usd = goldKB_usd - goldAurum_usd;
   const goldKB = goldKB_usd * krwRate;
   const goldAurum = goldAurum_usd * krwRate;
   const goldSavings = goldSavings_usd * krwRate;
   const KG_RATIO = 1000 / 31.1035;
   const silverKB_usd = (prices.silver || 32.15) * KG_RATIO * 1.25;
-  const silverAurum_usd = (prices.silver || 32.15) * KG_RATIO * 1.08;
+  const silverAurum_usd = (prices.silver || 32.15) * KG_RATIO * 1.06;
   const silverSavings_usd = silverKB_usd - silverAurum_usd;
   const silverKB = silverKB_usd * krwRate;
   const silverAurum = silverAurum_usd * krwRate;
@@ -164,10 +162,10 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
           {/* LEFT panel — Gold 1돈 tracker */}
           <div className="lift-card" style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 10, padding: isMobile ? "20px 18px" : "28px 28px" }}>
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 11, color: "#8a7d6b", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>
-              {lang === "ko" ? "금 1돈 구매 시 절약 금액" : "Savings on 1 Don Gold (3.75g)"}
+              {lang === "ko" ? "금 1 oz 구매 시 절약 금액" : "Savings on 1 oz Gold"}
             </div>
             <div style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 22 : 30, color: "#f5f0e8", marginBottom: 20, lineHeight: 1.15, fontWeight: 400 }}>
-              {lang === "ko" ? "금 절약 비교" : "Gold Savings"}
+              {lang === "ko" ? "금 절약 비교" : "Gold Savings (1 oz)"}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
@@ -484,7 +482,6 @@ function Shop({ lang, navigate, setProduct, prices, krwRate, addToCart, toast, c
                   {/* D-1: toggle-aware primary price */}
                   <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 14 : 17, color: "#c5a572", fontWeight: 600 }}>{fPrice(price)}</div>
                 </div>
-                <div style={{ fontSize: 10, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>Aurum가</div>
               </div>
               <button onClick={e => { e.stopPropagation(); addToCart(p, 1, "singapore"); toast(lang === "ko" ? "장바구니에 추가되었습니다." : "Added to cart."); }} style={{ width: "100%", background: "rgba(197,165,114,0.1)", border: "1px solid rgba(197,165,114,0.3)", color: "#c5a572", padding: "8px", borderRadius: 5, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit',sans-serif", transition: "all 0.15s" }}
                 onMouseEnter={e => { e.currentTarget.style.background = "rgba(197,165,114,0.2)"; }}
@@ -509,7 +506,7 @@ function ProductPage({ product, lang, navigate, prices, krwRate, user, setShowLo
   const [storage, setStorage] = useState("singapore");
   const [qty, setQty] = useState(1);
   if (!product) return null;
-  const unit = calcPrice(product, prices);  // = spot * 1.08
+  const unit = calcPrice(product, prices);  // = spot * 1.06
   const spot = unit / (1 + product.premium); // international spot for this product
   const koreaPrice = spot * 1.15; // 15% kimchi premium over spot
   const savings = koreaPrice - unit; // what customer saves vs Korean market
@@ -694,7 +691,7 @@ function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices,
           <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 16, color: "#f5f0e8", fontWeight: 600, margin: "0 0 20px" }}>주문 요약</h3>
           {/* E-3: Cart summary — toggle-aware, correct kimchi math */}
           {(() => {
-            const spot_sum = subtotal / 1.08;
+            const spot_sum = subtotal / 1.06;
             const koreaTotal = spot_sum * 1.15;
             const savings = koreaTotal - subtotal;
             return (
