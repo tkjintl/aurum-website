@@ -1147,7 +1147,7 @@ function AGP({ lang, navigate }) {
   return (
     <div style={{ background: T.bg, minHeight: "100vh" }}>
       <div style={{ padding: isMobile ? "64px 20px 48px" : "96px 80px 72px", textAlign: "center", borderBottom: `1px solid ${T.border}` }}>
-        <SectionLabel>{ko ? "아름 골드 플랜 (AGP)" : "Aurum Gold Plan (AGP)"}</SectionLabel>
+        <SectionLabel>{ko ? "Aurum 골드 플랜 (AGP)" : "Aurum Gold Plan (AGP)"}</SectionLabel>
         <h1 style={{ fontFamily: T.serif, fontSize: isMobile ? 30 : 52, color: T.textPrimary, fontWeight: 300, margin: "0 0 14px", maxWidth: 800, marginLeft: "auto", marginRight: "auto" }}>
           {ko ? "실물 금과 은을 싱가포르에 — 월 20만원부터 저축하세요." : "Save in Real Physical Gold and Silver — Stored in Singapore, from KRW 200,000/month."}
         </h1>
