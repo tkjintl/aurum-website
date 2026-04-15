@@ -545,9 +545,11 @@ function ProductPage({ product, lang, navigate, prices, krwRate, user, setShowLo
   const [storage, setStorage] = useState("singapore");
   const [qty, setQty] = useState(1);
   if (!product) return null;
-  const unit = calcPrice(product, prices);  // = spot * 1.06
+  const unit = calcPrice(product, prices);  // per-product Aurum price (uses product.premium from lib.jsx)
   const spot = unit / (1 + product.premium); // international spot for this product
-  const koreaPrice = spot * 1.10; // 한국금거래소 매도가 (부가세 10% 포함)
+  // Korean reference price — uses SHARED KR_GOLD_PREMIUM / KR_SILVER_PREMIUM (matches home page + ticker)
+  const krPremium = product.metal === "silver" ? KR_SILVER_PREMIUM : KR_GOLD_PREMIUM;
+  const koreaPrice = spot * (1 + krPremium); // 한국금거래소 매도가 — universal across all surfaces
   const savings = koreaPrice - unit; // what customer saves vs Korean market
   const storageAnnualFee = unit * 0.003; // 0.3%/yr Singapore storage
   const duty = storage === "korea" ? unit * 0.13 : 0; // 13% = 3% customs + 10% VAT
@@ -728,10 +730,16 @@ function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices,
         </div>
         <div style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 10, padding: isMobile ? 18 : 24, height: "fit-content" }}>
           <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 16, color: "#f5f0e8", fontWeight: 600, margin: "0 0 20px" }}>주문 요약</h3>
-          {/* E-3: Cart summary — toggle-aware, correct kimchi math */}
+          {/* Cart summary — per-item Korean reference using shared KR_GOLD_PREMIUM / KR_SILVER_PREMIUM */}
           {(() => {
-            const spot_sum = subtotal / 1.06;
-            const koreaTotal = spot_sum * 1.10;  // 한국금거래소 매도가 (부가세 포함)
+            // Per-item Korean reference: spot × (1 + metal-specific KR premium) × qty
+            const koreaTotal = cart.reduce((sum, item) => {
+              const prod = PRODUCTS.find(p => p.id === item.id);
+              if (!prod) return sum;
+              const itemSpot = item.price / (1 + prod.premium);  // back into spot from item.price
+              const krPremium = prod.metal === "silver" ? KR_SILVER_PREMIUM : KR_GOLD_PREMIUM;
+              return sum + itemSpot * (1 + krPremium) * item.qty;
+            }, 0);
             const savings = koreaTotal - subtotal;
             return (
               <>
