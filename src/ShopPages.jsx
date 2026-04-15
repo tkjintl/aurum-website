@@ -517,7 +517,10 @@ function ProductPage({ product, lang, navigate, prices, krwRate, user, setShowLo
   const savings = koreaPrice - unit; // what customer saves vs Korean market
   const storageAnnualFee = unit * 0.003; // 0.3%/yr Singapore storage
   const duty = storage === "korea" ? unit * 0.13 : 0; // 13% = 3% customs + 10% VAT
-  const total = (unit + duty) * qty;
+  // Grand total: for Singapore add annual storage; for Korea add 13% duty
+  const total = storage === "singapore"
+    ? (unit + storageAnnualFee) * qty
+    : (unit + duty) * qty;
 
   const buyNow = () => {
     if (!user) { setShowLogin(true); return; }
@@ -574,8 +577,8 @@ function ProductPage({ product, lang, navigate, prices, krwRate, user, setShowLo
             {/* Row 4: Storage fee (Singapore) or Korea duty — conditional */}
             {storage === "singapore" && (
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                <span style={{ fontSize: 13, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>보관료 (연 0.3%)</span>
-                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: "#a09080" }}>{fPrice(storageAnnualFee * qty)}/yr</span>
+                <span style={{ fontSize: 13, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>보관료 연 예상 (0.3%)</span>
+                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: "#a09080" }}>{fPrice(storageAnnualFee * qty)}</span>
               </div>
             )}
             {storage === "korea" && (
@@ -597,7 +600,7 @@ function ProductPage({ product, lang, navigate, prices, krwRate, user, setShowLo
             <div style={{ display: "flex", gap: 10, flexDirection: isMobile ? "column" : "row" }}>
               {[
                 { key: "singapore", icon: <FlagSG size={16} />, label: lang === "ko" ? "싱가포르 볼트" : "Singapore Vault", sub: lang === "ko" ? "GST 면제 · 연 0.3%" : "No GST · 0.3%/yr" },
-                { key: "korea", icon: <FlagKR size={16} />, label: lang === "ko" ? "한국 배송" : "Ship to Korea", sub: lang === "ko" ? "관세+VAT ~18% 부과" : "~18% duties apply" },
+                { key: "korea", icon: <FlagKR size={16} />, label: lang === "ko" ? "한국 배송" : "Ship to Korea", sub: lang === "ko" ? "관세+VAT 13% 부과" : "13% duties apply" },
               ].map(o => (
                 <button key={o.key} onClick={() => setStorage(o.key)} style={{ flex: 1, background: storage === o.key ? "rgba(197,165,114,0.07)" : "transparent", border: `1px solid ${storage === o.key ? "#c5a572" : "#2a2318"}`, borderRadius: 8, padding: "10px 14px", cursor: "pointer", textAlign: "left", transition: "all 0.15s" }}>
                   <div style={{ fontSize: 13, color: "#f5f0e8", marginBottom: 2, fontFamily: "'Outfit',sans-serif" }}>{o.icon} {o.label}</div>
@@ -647,10 +650,8 @@ function ProductPage({ product, lang, navigate, prices, krwRate, user, setShowLo
 // ═══════════════════════════════════════════════════════════════════════════════
 // CART PAGE
 // ═══════════════════════════════════════════════════════════════════════════════
-function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices, krwRate, currency, setCurrency, setProduct }) {
+function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices, krwRate, currency, setCurrency, setProduct, cartPayMethod, setCartPayMethod }) {
   const fPrice = (usdAmt) => currency === "KRW" ? fKRW(usdAmt * krwRate) : fUSD(usdAmt);
-  const [cartPayMethod, setCartPayMethod] = useState("toss");
-  const payLabels = { toss: "토스뱅크", card: "신용/체크카드", wire: "전신환", crypto: "암호화폐" };
   const payFeeRates = { toss: 0.003, card: 0.055, wire: 0.003, crypto: 0.025 };
   const isMobile = useIsMobile();
   if (cart.length === 0) return (
@@ -662,7 +663,7 @@ function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices,
     </div>
   );
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const storageFee = subtotal * 0.008;
+  const storageFee = subtotal * 0.003; // 0.3%/yr
   return (
     <div style={{ padding: isMobile ? "24px 16px" : "40px 80px", background: "#0a0a0a", minHeight: "80vh" }}>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
@@ -713,20 +714,20 @@ function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices,
                   <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#c5a572" }}>{fPrice(subtotal)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                  <span style={{ fontSize: 12, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>보관/배송비 (연 예상)</span>
-                  <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#8a7d6b" }}>{fPrice(storageFee)}/yr</span>
+                  <span style={{ fontSize: 12, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>보관료 연 예상 (0.3%)</span>
+                  <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#8a7d6b" }}>{fPrice(storageFee)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 4 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ fontSize: 12, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>결제 수수료</span>
-                    <select value={cartPayMethod} onChange={e => setCartPayMethod(e.target.value)} onClick={e => e.stopPropagation()} style={{ background: "#0a0a0a", border: "1px solid #282828", color: "#c5a572", fontSize: 10, padding: "2px 6px", borderRadius: 3, fontFamily: "'Outfit',sans-serif", cursor: "pointer" }}>
-                      <option value="toss">토스뱅크 (0.3%)</option>
-                      <option value="wire">전신환 (0.3%)</option>
-                      <option value="card">신용/체크카드 (5.5%)</option>
-                      <option value="crypto">암호화폐 (2.5%)</option>
+                  <div style={{ display: "flex", alignItems: "center", gap: 4, flexShrink: 1, minWidth: 0 }}>
+                    <span style={{ fontSize: 11, color: "#a09080", fontFamily: "'Outfit',sans-serif", whiteSpace: "nowrap" }}>결제 수수료</span>
+                    <select value={cartPayMethod} onChange={e => setCartPayMethod(e.target.value)} onClick={e => e.stopPropagation()} style={{ background: "#141414", border: "1px solid #282828", color: "#c5a572", fontSize: 9, padding: "1px 4px", borderRadius: 3, fontFamily: "'Outfit',sans-serif", cursor: "pointer", maxWidth: 90 }}>
+                      <option value="toss">토스뱅크</option>
+                      <option value="wire">전신환</option>
+                      <option value="card">신용카드</option>
+                      <option value="crypto">암호화폐</option>
                     </select>
                   </div>
-                  <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#8a7d6b" }}>{fPrice(subtotal * payFeeRates[cartPayMethod])}</span>
+                  <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#8a7d6b", flexShrink: 0 }}>{fPrice(subtotal * payFeeRates[cartPayMethod])}</span>
                 </div>
               </>
             );
@@ -734,7 +735,7 @@ function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices,
           <div style={{ borderTop: "1px solid #2a2318", paddingTop: 14, marginBottom: 18 }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <span style={{ fontSize: 15, color: "#f5f0e8", fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>총 결제금액</span>
-              <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, color: "#c5a572", fontWeight: 700 }}>{fPrice(subtotal + subtotal * payFeeRates[cartPayMethod])}</span>
+              <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, color: "#c5a572", fontWeight: 700 }}>{fPrice(subtotal + storageFee + subtotal * payFeeRates[cartPayMethod])}</span>
             </div>
           </div>
           <button onClick={() => navigate("checkout")} style={{ width: "100%", background: "linear-gradient(135deg,#c5a572,#8a6914)", border: "none", color: "#0a0a0a", padding: "14px", fontSize: 15, fontWeight: 700, borderRadius: 8, cursor: "pointer", fontFamily: "'Outfit',sans-serif" }}>
@@ -753,18 +754,19 @@ function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices,
 // ═══════════════════════════════════════════════════════════════════════════════
 // CHECKOUT — 5-STEP FLOW
 // ═══════════════════════════════════════════════════════════════════════════════
-function Checkout({ lang, navigate, cart, clearCart, prices, krwRate, user, addOrder, toast, currency, setCurrency }) {
+function Checkout({ lang, navigate, cart, clearCart, prices, krwRate, user, addOrder, toast, currency, setCurrency, initialPayMethod }) {
   const fPrice = (usdAmt) => currency === "KRW" ? fKRW(usdAmt * krwRate) : fUSD(usdAmt);
   const isMobile = useIsMobile();
   const [step, setStep] = useState(1);
-  const [payMethod, setPayMethod] = useState(null);
+  const [payMethod, setPayMethod] = useState(initialPayMethod || null);
+  const payFeeRates = { toss: 0.003, kakao: 0.003, wire: 0.003, card: 0.055, crypto: 0.025 };
   const [terms, setTerms] = useState(false);
   const [orderId, setOrderId] = useState(null);
   const [wireDetails, setWireDetails] = useState(null);
   const [processing, setProcessing] = useState(false);
 
   const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const storageFeeY1 = subtotal * 0.008;
+  const storageFeeY1 = subtotal * 0.003; // 0.3%/yr
 
   if (!user) return (
     <div style={{ padding: isMobile ? "60px 16px" : "80px", textAlign: "center", background: "#0a0a0a", minHeight: "70vh", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
@@ -855,7 +857,7 @@ function Checkout({ lang, navigate, cart, clearCart, prices, krwRate, user, addO
             ))}
           </div>
           <div style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 8, padding: 18, marginBottom: 24 }}>
-            {[[lang === "ko" ? "상품 소계" : "Subtotal", fPrice(subtotal), "#ddd"], [lang === "ko" ? "보관료 (1년, 예상)" : "보관료 (연 예상)", fPrice(storageFeeY1), "#8a7d6b"]].map(([l, v, c], i) => (
+            {[[lang === "ko" ? "상품 소계" : "Subtotal", fPrice(subtotal), "#ddd"], ["보관료 연 예상 (0.3%)", fPrice(storageFeeY1), "#8a7d6b"]].map(([l, v, c], i) => (
               <div key={i} style={{ display: "flex", justifyContent: "space-between", marginBottom: 10 }}>
                 <span style={{ fontSize: 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif" }}>{l}</span>
                 <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: c }}>{v}</span>
@@ -864,7 +866,7 @@ function Checkout({ lang, navigate, cart, clearCart, prices, krwRate, user, addO
             <div style={{ borderTop: "1px solid #2a2318", paddingTop: 12, display: "flex", justifyContent: "space-between" }}>
               <span style={{ fontSize: 15, color: "#f5f0e8", fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>{lang === "ko" ? "합계" : "Total"}</span>
               <div style={{ textAlign: "right" }}>
-                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, color: "#c5a572", fontWeight: 700 }}>{fPrice(subtotal)}</span>
+                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, color: "#c5a572", fontWeight: 700 }}>{fPrice(subtotal + storageFeeY1)}</span>
               </div>
             </div>
           </div>
@@ -911,23 +913,34 @@ function Checkout({ lang, navigate, cart, clearCart, prices, krwRate, user, addO
               </div>
             ))}
           </div>
-          <div style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 10, padding: 20, marginBottom: 14 }}>
-            <div style={{ fontSize: 11, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", marginBottom: 10, textTransform: "uppercase", letterSpacing: 1 }}>{lang === "ko" ? "결제 정보" : "Payment"}</div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-              <span style={{ fontSize: 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif" }}>{lang === "ko" ? "결제 수단" : "Method"}</span>
-              <span style={{ fontSize: 13, color: "#f5f0e8", fontFamily: "'Outfit',sans-serif" }}>{payMethods.find(m => m.key === payMethod)?.name}</span>
-            </div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-              <span style={{ fontSize: 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif" }}>{lang === "ko" ? "보관" : "Storage"}</span>
-              <span style={{ fontSize: 13, color: "#f5f0e8", fontFamily: "'Outfit',sans-serif" }}>{lang === "ko" ? "싱가포르 Malca-Amit FTZ" : "Singapore Malca-Amit FTZ"}</span>
-            </div>
-            <div style={{ borderTop: "1px solid #2a2318", paddingTop: 12, display: "flex", justifyContent: "space-between" }}>
-              <span style={{ fontSize: 15, color: "#f5f0e8", fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>{lang === "ko" ? "결제 금액" : "Total"}</span>
-              <div style={{ textAlign: "right" }}>
-                <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, color: "#c5a572", fontWeight: 700 }}>{fPrice(subtotal)}</span>
+          {/* Step 3 payment breakdown — full total including storage + tx fee */}
+          {(() => {
+            const txFeeRate = payFeeRates[payMethod] || 0.003;
+            const txFee = subtotal * txFeeRate;
+            const grandTotal = subtotal + storageFeeY1 + txFee;
+            const methodName = payMethods.find(m => m.key === payMethod)?.name || '—';
+            return (
+              <div style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 10, padding: 20, marginBottom: 14 }}>
+                <div style={{ fontSize: 11, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", marginBottom: 10, textTransform: "uppercase", letterSpacing: 1 }}>결제 내역</div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontSize: 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif" }}>Aurum 가격</span>
+                  <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: "#c5a572" }}>{fPrice(subtotal)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontSize: 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif" }}>보관료 연 예상 (0.3%)</span>
+                  <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: "#8a7d6b" }}>{fPrice(storageFeeY1)}</span>
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+                  <span style={{ fontSize: 13, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif" }}>{methodName} 수수료 ({(txFeeRate * 100).toFixed(1)}%)</span>
+                  <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: "#8a7d6b" }}>{fPrice(txFee)}</span>
+                </div>
+                <div style={{ borderTop: "1px solid #2a2318", paddingTop: 12, display: "flex", justifyContent: "space-between" }}>
+                  <span style={{ fontSize: 15, color: "#f5f0e8", fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>총 결제금액</span>
+                  <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, color: "#c5a572", fontWeight: 700 }}>{fPrice(grandTotal)}</span>
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })()}
           <label style={{ display: "flex", alignItems: "flex-start", gap: 10, cursor: "pointer", marginBottom: 20, background: "#111008", border: "1px solid #1a1510", borderRadius: 8, padding: 16 }}>
             <input type="checkbox" checked={terms} onChange={e => setTerms(e.target.checked)} style={{ marginTop: 3, accentColor: "#c5a572", width: 16, height: 16 }} />
             <span style={{ fontSize: 12, color: "#8a7d6b", lineHeight: 1.6, fontFamily: "'Outfit',sans-serif" }}>
@@ -977,7 +990,7 @@ function Checkout({ lang, navigate, cart, clearCart, prices, krwRate, user, addO
             </div>
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 14 }}>
               <span style={{ fontSize: 12, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", textTransform: "uppercase", letterSpacing: 1 }}>{lang === "ko" ? "결제 금액" : "Amount"}</span>
-              <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 15, color: "#c5a572", fontWeight: 700 }}>{fPrice(subtotal)}</span>
+              <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 15, color: "#c5a572", fontWeight: 700 }}>{fPrice(subtotal + storageFeeY1 + subtotal * (payFeeRates[payMethod] || 0.003))}</span>
             </div>
             <div style={{ background: "rgba(74,222,128,0.07)", border: "1px solid rgba(74,222,128,0.2)", borderRadius: 8, padding: "12px 16px" }}>
               <div style={{ fontSize: 12, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600, marginBottom: 4 }}>🏦 {lang === "ko" ? "볼트 배정 완료" : "Vault Allocated"}</div>
