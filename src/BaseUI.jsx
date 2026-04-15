@@ -2,6 +2,16 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useIsMobile, useNewsData, fDate, STATIC_NEWS } from "./lib.jsx";
 
 // ═══════════════════════════════════════════════════════════════════════════════
+// SHARED PRICING CONSTANTS — single source of truth for Korean retail premiums
+//   - Used by Ticker (BaseUI.jsx) AND Home savings panel (ShopPages.jsx)
+//   - Adjust here only; both surfaces will stay in sync
+// ═══════════════════════════════════════════════════════════════════════════════
+export const KR_GOLD_PREMIUM = 0.22;     // 22% — 한국금거래소 매도가 (부가세 + 유통 마진 포함)
+export const KR_SILVER_PREMIUM = 0.32;   // 32% — 한국 시중 은 실물 프리미엄 (부가세 + 공급 부족 반영)
+export const AURUM_GOLD_PREMIUM = 0.06;  // Aurum gold spot premium (display reference)
+export const AURUM_SILVER_PREMIUM = 0.06; // Aurum silver spot premium (display reference)
+
+// ═══════════════════════════════════════════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════════════════════════════════════════
 function ToastContainer({ toasts }) {
@@ -66,7 +76,8 @@ function Ticker({ lang, prices, krwRate, dailyChanges }) {
       },
       {
         label: lang === "ko" ? "한국금거래소 매도가 (부가세 포함)" : "KR Gold/돈",
-        price: Math.round(prices.gold * krwRate * 1.22 / 31.1035 * 3.75),
+        // Uses KR_GOLD_PREMIUM (single source of truth — same constant flows into Home savings panel)
+        price: Math.round(prices.gold * krwRate * (1 + KR_GOLD_PREMIUM) / 31.1035 * 3.75),
         change: '—',
         up: true,
         isKrGold: true,
