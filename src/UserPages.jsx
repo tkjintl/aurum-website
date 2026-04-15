@@ -78,7 +78,7 @@ function OrderHistoryPage({ lang, navigate, orders, krwRate }) {
                 <div style={{ display: "flex", gap: 12, alignItems: "center", flexShrink: 0 }}>
                   <span style={{ background: `${sc.col}18`, color: sc.col, border: `1px solid ${sc.col}40`, padding: "3px 10px", borderRadius: 20, fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 600, whiteSpace: "nowrap" }}>{lang === "ko" ? sc.ko : sc.en}</span>
                   <div style={{ textAlign: "right" }}>
-                    <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 13 : 15, color: "#c5a572", fontWeight: 600 }}>{fUSD(order.total)}</div>
+                    <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 13 : 15, color: "#c5a572", fontWeight: 600 }}>{fKRW(order.total * krwRate)}</div>
                   </div>
                   <span style={{ color: "#555", fontSize: 16, transform: isOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }}>▾</span>
                 </div>
@@ -89,7 +89,7 @@ function OrderHistoryPage({ lang, navigate, orders, krwRate }) {
                     {[
                       [lang === "ko" ? "결제 수단" : "Payment", payLabel(order.paymentMethod)],
                       [lang === "ko" ? "보관" : "Storage", lang === "ko" ? "Singapore FTZ" : "Singapore FTZ"],
-                      [lang === "ko" ? "합계 (USD)" : "Total (USD)", fUSD(order.total)],
+                      [lang === "ko" ? "합계 (KRW)" : "Total (KRW)", fKRW(order.total * krwRate)],
                     ].map(([l, v], i) => (
                       <div key={i}>
                         <div style={{ fontSize: 10, color: "#555", fontFamily: "'Outfit',sans-serif", textTransform: "uppercase", letterSpacing: 1, marginBottom: 3 }}>{l}</div>
@@ -101,7 +101,7 @@ function OrderHistoryPage({ lang, navigate, orders, krwRate }) {
                     {order.items.map((item, i) => (
                       <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "6px 0", borderBottom: i < order.items.length - 1 ? "1px solid #1a1510" : "none" }}>
                         <span style={{ fontSize: 12, color: "#f5f0e8", fontFamily: "'Outfit',sans-serif" }}>{lang === "ko" ? item.nameKo : item.name} ×{item.qty}</span>
-                        <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#c5a572" }}>{fUSD(item.unitPrice * item.qty)}</span>
+                        <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#c5a572" }}>{fKRW(item.unitPrice * item.qty * krwRate)}</span>
                       </div>
                     ))}
                   </div>
@@ -600,43 +600,43 @@ function Storage({ lang, navigate }) {
 
   const faqItems = [
     {
-      q: ko ? "Q1. 최소 구매 금액은? " : "Q1. What is the minimum purchase?",
+      q: "Q1. 최소 구매 금액은?",
       a: ko ? "일회성 실물 바 구매는 최소 1온스(약 USD 3,100~3,500) 수준부터 시작합니다. 더 작은 단위로 시작하고 싶다면 Aurum Gold Plan(AGP)을 통해 월 KRW 200,000(약 USD 73)부터 1g 단위로 저축할 수 있습니다." : "One-off bar purchases start at roughly 1 oz (USD 3,100–3,500). If you want to begin smaller, the Aurum Gold Plan (AGP) lets you save in 1-gram increments from KRW 200,000 (~USD 73) per month."
     },
     {
-      q: ko ? "Q2. 카드로 결제 가능한가요? " : "Q2. Can I pay with a Korean credit card?",
+      q: "Q2. 카드로 결제 가능한가요?",
       a: ko ? "네. 토스페이를 통해 신용카드 또는 체크카드 결제 가능합니다. 카드 결제 시 프리미엄 5.5%(토스 수수료 포함)이며, 전신환 결제 시 2.5%, 암호화폐 결제 시 2.0%입니다." : "Yes. You can pay via Toss Pay using a Korean credit or debit card. Card premium is 5.5% (includes Toss processing); wire premium is 2.5%; crypto premium is 2.0%."
     },
     {
-      q: ko ? "Q3. 한국으로 금을 가져올 때 세금은? " : "Q3. What tax applies when bringing gold to Korea?",
+      q: "Q3. 한국으로 금을 가져올 때 세금은?",
       a: ko ? "한국 수입 시 관세 3%와 부가가치세 10%, 합계 약 13%가 금속 가액에 부과됩니다. 금을 싱가포르에 계속 보관하는 동안은 한국 세금이 발생하지 않습니다. 개별 상황은 공인 세무사와 상담하세요." : "Importing into Korea triggers 3% customs + 10% VAT on metal value, totaling ~13%. No Korean taxes apply while metal remains in Singapore. Consult a certified Korean tax advisor for your specific situation."
     },
     {
-      q: ko ? "Q4. Aurum이 망하면 내 금은? " : "Q4. What happens to my gold if Aurum goes bankrupt?",
+      q: "Q4. Aurum이 망하면 내 금은?",
       a: ko ? "귀하의 금은 Aurum 명의가 아닌 귀하 명의로 Malca-Amit 금고에 배분·보관됩니다. Aurum 재무 상태와 완전히 분리되어 있으며, Aurum이 파산하더라도 수탁자인 Malca-Amit이 직접 귀하에게 반환합니다." : "Your gold is allocated in your name at Malca-Amit, not Aurum's. It is fully segregated from Aurum's balance sheet. In the event of Aurum's insolvency, Malca-Amit returns the metal directly to you."
     },
     {
-      q: ko ? "Q5. 싱가포르 금고를 직접 방문할 수 있나요? " : "Q5. Can I visit the Singapore vault in person?",
+      q: "Q5. 싱가포르 금고를 직접 방문할 수 있나요?",
       a: ko ? "가능합니다. 온라인으로 사전 예약하시면 본인 보유 자산을 직접 실사할 수 있습니다. 여권과 구매 증명서 지참이 필요하며, 현장 감사 수수료는 회당 SGD 500입니다." : "Yes. Book an online appointment and you can inspect your own holdings in person. Bring your passport and invoice. On-site audit fee is SGD 500 per visit."
     },
     {
-      q: ko ? "Q6. 보관료는 어떻게 차감되나요? " : "Q6. How are storage fees deducted?",
+      q: "Q6. 보관료는 어떻게 차감되나요?",
       a: ko ? "일일 보관료는 SGT 00:01 기준 현물가로 계산되며, 매년 3월 1일 또는 전액 매도·인출 시점에 일괄 청구됩니다. Aurum 계정 현금 잔액에서 자동 차감되거나 등록 카드로 청구됩니다." : "Daily storage is calculated at 00:01 SGT spot and billed once per year on 1 March, or when you fully sell/withdraw. Fees are auto-deducted from your Aurum cash balance or charged to your card on file."
     },
     {
-      q: ko ? "Q7. 매도 시 원화 수취는 얼마나 걸리나요? " : "Q7. How long to receive KRW when selling?",
+      q: "Q7. 매도 시 원화 수취는 얼마나 걸리나요?",
       a: ko ? "온라인 매도 주문 체결 후 2영업일 이내에 연결된 한국 은행 계좌로 원화가 입금됩니다. USD, SGD 수취도 가능합니다." : "After executing an online sell order, KRW is credited to your linked Korean bank account within 2 business days. USD and SGD payouts are also available."
     },
     {
-      q: ko ? "Q8. 해외금융계좌 신고 대상인가요? " : "Q8. Does this trigger Korean overseas financial account reporting?",
+      q: "Q8. 해외금융계좌 신고 대상인가요?",
       a: ko ? "한국 거주자로서 연중 어느 하루라도 해외 금융계좌 잔액 합계가 5억 원을 초과하면 다음 해 6월 1일~30일 사이에 국세청에 신고해야 합니다. Aurum은 NTS 양식에 맞춘 연말 잔고 증명서를 제공합니다. 세무사 상담 권장." : "Korean residents with aggregate offshore financial account balances exceeding KRW 500M at any point in the year must report to the NTS between June 1–30 the following year. Aurum provides year-end statements in NTS-compliant format. Consult a tax advisor."
     },
     {
-      q: ko ? "Q9. AGP와 실물 보관의 차이는? " : "Q9. AGP vs allocated bullion — what's the difference?",
+      q: "Q9. AGP와 실물 보관의 차이는?",
       a: ko ? "실물 보관은 구매 즉시 고유 일련번호를 가진 특정 바가 귀하에게 배정됩니다. AGP는 1g 단위로 적립하다가 누적 100g 또는 1kg에 도달하면 실물 PAMP·Heraeus 바로 무료 전환할 수 있는 저축 상품입니다. AGP도 100% 실물 금으로 백업되며 매일 보유량이 공개됩니다." : "Allocated storage assigns a specific serial-numbered bar to you at purchase. AGP is a savings product where you accumulate by the gram and, at 100g or 1kg threshold, convert to a real PAMP or Heraeus bar for free. AGP is also 100% physically backed with daily public backing reports."
     },
     {
-      q: ko ? "Q10. 상속 시 처리는? " : "Q10. What happens in case of inheritance?",
+      q: "Q10. 상속 시 처리는?",
       a: ko ? "싱가포르 법률에 따라 귀하의 법정 상속인에게 이전 가능합니다. 고객 대시보드에서 수익자(beneficiary)를 사전 등록할 수 있으며, 상세 프로세스는 계정 개설 시 안내됩니다. 한국 상속세 관련 사항은 별도 전문가 상담이 필요합니다." : "Under Singapore law, your holdings transfer to your legal heirs. You may pre-register a beneficiary in your customer dashboard. Details are provided at account opening. Korean estate tax implications should be discussed with a qualified professional."
     },
   ];
@@ -671,7 +671,7 @@ function Storage({ lang, navigate }) {
             { icon: "📜", label: ko ? "Lloyd's of London — 완전 가액 보험, 모든 위험 보장" : "Lloyd's of London — Full replacement value insurance, all risks covered" },
             { icon: <FlagSG size={18} />, label: ko ? "Singapore FTZ — 자유무역지대, GST 면제, AAA 국가 신용등급" : "Singapore FTZ — Free Trade Zone, GST-exempt, AAA sovereign credit rating" },
           ].map((chip, i) => (
-            <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "10px 16px", display: "flex", alignItems: "center", gap: 8, maxWidth: isMobile ? "100%" : 340 }}>
+            <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "14px 16px", display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: isMobile ? "100%" : 280, boxSizing: "border-box" }}>
               <span style={{ fontSize: 18, flexShrink: 0 }}>{chip.icon}</span>
               <span style={{ fontSize: 11, color: T.textSecondary, fontFamily: T.sans, lineHeight: 1.5 }}>{chip.label}</span>
             </div>
@@ -708,14 +708,6 @@ function Storage({ lang, navigate }) {
         </>
       )}
 
-      {/* ── FAQ ── */}
-      {section(
-        <>
-          {h2("자주 묻는 질문", "Frequently Asked Questions")}
-          <FAQAccordion items={faqItems} />
-        </>
-      )}
-
       {/* ── SUB-SECTION NAV ── */}
       <div style={{ background: T.panel, borderBottom: `1px solid ${T.border}`, padding: isMobile ? "16px 20px" : "18px 80px", overflowX: "auto" }}>
         <div style={{ display: "flex", gap: isMobile ? 10 : 8, flexWrap: isMobile ? "nowrap" : "wrap", minWidth: "max-content" }}>
@@ -737,11 +729,11 @@ function Storage({ lang, navigate }) {
         {lead("주문 즉시 Malca-Amit 금고에 배정됩니다. 5단계, 5분 소요.", "Assigned to the Malca-Amit vault the moment you order. 5 steps, 5 minutes.")}
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           {[
-            { num: 1, icon: "🛒", title: ko ? "구매 " : "Purchase", body: ko ? "Aurum 웹사이트에서 실시간 현물가 + 투명한 프리미엄으로 주문" : "Order on the Aurum website at live spot price plus transparent premium." },
-            { num: 2, icon: "💳", title: ko ? "결제 " : "Pay", body: ko ? "토스페이(카드·계좌이체) 또는 국제 전신환" : "Toss Pay (card or bank transfer) or international wire transfer." },
-            { num: 3, icon: "🏭", title: ko ? "공급 " : "Supplier Execution", body: ko ? "결제 확인 후 수분 이내 LBMA 승인 정련소 네트워크와 물량 체결" : "Aurum executes with the LBMA-approved refiner network within minutes of payment confirmation." },
-            { num: 4, icon: "🏛️", title: ko ? "금고 배정 " : "Vault Allocation", body: ko ? "고유 일련번호를 가진 특정 바가 귀하의 계정으로 Malca-Amit Singapore FTZ에 배정" : "A specific, serial-numbered bar is assigned to your account at Malca-Amit Singapore FTZ." },
-            { num: 5, icon: "📸", title: ko ? "확인 " : "Confirmation", body: ko ? "48시간 이내 사진·증명서·카카오톡 알림 발송" : "Photos, certificate, and KakaoTalk notification sent within 48 hours." },
+            { num: 1, icon: "🛒", title: ko ? "구매" : "Purchase", body: ko ? "Aurum 웹사이트에서 실시간 현물가 + 투명한 프리미엄으로 주문" : "Aurum 웹사이트에서 실시간 현물가 + 투명한 프리미엄으로 주문" },
+            { num: 2, icon: "💳", title: ko ? "결제" : "Pay", body: ko ? "토스페이(카드·계좌이체) 또는 국제 전신환" : "Toss Pay (card or bank transfer) or international wire transfer." },
+            { num: 3, icon: "🏭", title: ko ? "공급" : "Supplier Execution", body: ko ? "결제 확인 후 수분 이내 LBMA 승인 정련소 네트워크와 물량 체결" : "Aurum executes with the LBMA-approved refiner network within minutes of payment confirmation." },
+            { num: 4, icon: "🏛️", title: ko ? "금고 배정" : "Vault Allocation", body: ko ? "고유 일련번호를 가진 특정 바가 귀하의 계정으로 Malca-Amit Singapore FTZ에 배정" : "A specific, serial-numbered bar is assigned to your account at Malca-Amit Singapore FTZ." },
+            { num: 5, icon: "📸", title: ko ? "확인" : "Confirmation", body: ko ? "48시간 이내 사진·증명서·카카오톡 알림 발송" : "Photos, certificate, and KakaoTalk notification sent within 48 hours." },
           ].map(s => <StepCard key={s.num} {...s} />)}
         </div>
         <div style={{ marginTop: 24, padding: "14px 18px", background: "rgba(197,165,114,0.05)", border: `1px solid rgba(197,165,114,0.2)`, borderRadius: 8 }}>
@@ -755,42 +747,42 @@ function Storage({ lang, navigate }) {
       <div id="benefits" style={{ padding: isMobile ? "48px 20px" : "72px 80px", borderBottom: `1px solid ${T.border}` }}>
         {h2("보관 혜택", "Storage Benefits")}
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(2, 1fr)", gap: 16 }}>
-          <BenefitTile icon="🔐" title={ko ? "Allocated / 완전 배분" : "Allocated"} bullets={[
+          <BenefitTile icon="🔐" title={ko ? "완전 배분" : "완전 배분"} bullets={[
             ko ? "고유 일련번호로 귀하의 이름 하에 개별 등록 " : "Registered under your name with a unique serial number",
             ko ? "다른 고객과 혼합 보관(unallocated)하지 않음 " : "Never pooled or commingled with other customers' metal",
             ko ? "Aurum 파산 시에도 고객 자산 완전 분리 — 법적 소유권은 항상 고객 " : "Segregated from Aurum's balance sheet — you retain legal title at all times",
           ]} />
-          <BenefitTile icon="🛡️" title={ko ? "Insured / 완전 보험" : "Insured"} bullets={[
+          <BenefitTile icon="🛡️" title={ko ? "완전 보험" : "완전 보험"} bullets={[
             ko ? "Marsh 브로커를 통한 Lloyd's of London 신디케이트 언더라이팅" : "Underwritten by Lloyd's of London syndicates via Marsh",
             ko ? "모든 위험 보장 — 화재·도난·천재지변·운송·직원 실수 포함" : "All-risks coverage including fire, theft, natural disaster, transit, and employee error",
             ko ? "교체 가치 100% 보상, 공제액 $0" : "100% replacement value, zero deductible",
           ]} />
-          <BenefitTile icon="📋" title={ko ? "Audited / 정기 감사" : "Audited"} bullets={[
+          <BenefitTile icon="📋" title={ko ? "정기 감사" : "정기 감사"} bullets={[
             ko ? "LBMA 승인 감사기관 Bureau Veritas 연 2회 실사" : "Bureau Veritas (LBMA-approved) conducts bi-annual audits",
             ko ? "무작위 금괴 일련번호·중량 대조 검증" : "Random-sample serial number and weight verification",
             ko ? "실시간 온라인 감사 리포트 (Live Audit Report) 고객 조회 가능" : "Live Audit Report viewable in customer dashboard",
           ]} />
-          <BenefitTile icon="📸" title={ko ? "Photos / 사진 증명" : "Photos"} bullets={[
+          <BenefitTile icon="📸" title={ko ? "사진 증명" : "사진 증명"} bullets={[
             ko ? "고해상도 사진 + 일련번호 + 인증서 동시 업로드" : "HD photos with serial numbers and certificates uploaded together",
             ko ? "입고 48시간 이내 이메일·카카오톡 알림" : "Email and KakaoTalk alert within 48 hours of intake",
             ko ? "대시보드에서 언제든 재다운로드 가능" : "Re-download from your dashboard anytime",
           ]} />
-          <BenefitTile icon="🌏" title={ko ? "FTZ / 자유무역지대" : "FTZ"} bullets={[
+          <BenefitTile icon="🌏" title={ko ? "FTZ 자유무역지대" : "FTZ 자유무역지대"} bullets={[
             ko ? "Singapore Freeport Zone 내 Malca-Amit Le Freeport 금고" : "Malca-Amit Le Freeport vault inside Singapore's Free Trade Zone",
             ko ? "GST(싱가포르 부가세) 완전 면제 — 투자용 금 IPM 특례" : "Full GST exemption via the Investment Precious Metals (IPM) regime",
             ko ? "한국 VAT(10%) · 관세(3%) 미적용 — 해외 보관 유지 시" : "No Korean VAT (10%) or customs duties (3%) while metal remains offshore",
           ]} />
-          <BenefitTile icon="⚡" title={ko ? "Liquid / 즉시 유동화" : "Liquid"} bullets={[
+          <BenefitTile icon="⚡" title={ko ? "즉시 유동화" : "즉시 유동화"} bullets={[
             ko ? "실시간 매도호가 제공, 원클릭 매도" : "Live bid prices, one-click sell",
             ko ? "한국 등록 은행 계좌로 KRW 2영업일 내 수취" : "KRW settlement to your registered Korean bank within 2 business days",
             ko ? "최소 보유기간·위약금 없음" : "No minimum holding period, no exit fees",
           ]} />
-          <BenefitTile icon="🧾" title={ko ? "Tax-Optimized / 세금 최적화" : "Tax-Optimized"} bullets={[
+          <BenefitTile icon="🧾" title={ko ? "세금 최적화" : "세금 최적화"} bullets={[
             ko ? "한국 거주자가 해외 보관으로 누리는 합법적 세제 효과" : "Legal tax optimization for Korean residents through offshore custody",
             ko ? "KRX 금시장 대비 VAT 10% 절약 + 관세 3% 회피" : "Save 10% VAT and avoid 3% customs vs. taking KRX gold physical",
             ko ? "매각차익은 인출 시점까지 과세이연 (법률·세무 조언 아님 — 전문가 상담 필수)" : "Gains are tax-deferred until realized (not legal or tax advice — consult a professional)",
           ]} />
-          <BenefitTile icon={<FlagKR size={22} />} title={ko ? "한국어 우선 서비스" : "Korean-First Service"} bullets={[
+          <BenefitTile icon={<FlagKR size={22} />} title={ko ? "한국어 우선 서비스" : "한국어 우선 서비스"} bullets={[
             ko ? "전 플랫폼·고객지원·문서 한국어 완전 지원" : "Full Korean-language platform, support, and documentation",
             ko ? "카카오톡 상담, KST 영업시간 응대" : "KakaoTalk support during KST business hours",
             ko ? "원화(KRW) 결제·정산 지원, 분기별 원화 가치 리포트" : "KRW payment and settlement, quarterly KRW valuation reports",
@@ -823,11 +815,11 @@ function Storage({ lang, navigate }) {
         <p style={{ fontSize: isMobile ? 13 : 14, color: T.textSecondary, fontFamily: T.sans, lineHeight: 1.8, margin: "0 0 20px" }}>{ko ? "신뢰를 부탁드리지 않습니다. 다섯 가지 방법으로 증명합니다." : "We don't ask you to trust us. We prove it, five different ways."}</p>
         <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
           {[
-            { num: "1", title: ko ? "제3자 감사 (Bureau Veritas) " : "Third-Party Audit (Bureau Veritas)", bullets: ko ? ["LBMA 승인 독립 감사기관", "연 2회 실물 카운트 및 중량 검증", "무작위 샘플 일련번호 대조", "고객 대시보드에서 감사 보고서 다운로드"] : ["LBMA-approved independent auditor", "Bi-annual physical counts and weight verification", "Random-sample serial number matching", "Audit reports downloadable from the customer dashboard"] },
-            { num: "2", title: ko ? "실시간 감사 리포트 " : "Live Audit Report", bullets: ko ? ["전체 고객 자산 목록 실시간 공개 (익명 처리)", "고객은 본인 보유 내역이 실시간 목록에 포함되어 있는지 직접 확인 가능", "입고·출고 발생 시 즉시 업데이트"] : ["Anonymized real-time vault inventory visible to all customers", "Customers verify their own holdings appear in the live list", "Updated in real time with every deposit and withdrawal"] },
-            { num: "3", title: ko ? "고객 현장 감사 " : "Customer On-Site Audit", bullets: ko ? ["싱가포르 금고에서 본인 보유 자산 직접 실사 가능", "사전 예약 필수, 회당 SGD 500 수수료", "바 실물 확인 및 일련번호 대조 포함"] : ["Physical on-site inspection at the Singapore vault", "Appointment required, SGD 500 fee per visit", "Hand inspection of bars matched to serial records"] },
-            { num: "4", title: ko ? "내부 감사 " : "Internal Audit", bullets: ko ? ["운영팀이 월간 내부 정기 점검 수행", "Marsh·Lloyd's 보험 계약 의무사항", "7년간 기록 보관"] : ["Monthly internal reconciliation by the operations team", "Required under the Marsh / Lloyd's insurance policy", "Documented and retained for 7 years"] },
-            { num: "5", title: ko ? "재무 감사 " : "Financial Audit", bullets: ko ? ["Aurum Korea Pte Ltd는 싱가포르 회사법에 따라 매년 감사", "싱가포르 등록 회계법인 감사", "연차보고서 공개"] : ["Aurum Korea Pte Ltd is audited annually under the Singapore Companies Act", "Audited by a licensed Singapore auditing firm", "Annual report published"] },
+            { num: "1", title: ko ? "제3자 감사 (Bureau Veritas)" : "Third-Party Audit (Bureau Veritas)", bullets: ko ? ["LBMA 승인 독립 감사기관", "연 2회 실물 카운트 및 중량 검증", "무작위 샘플 일련번호 대조", "고객 대시보드에서 감사 보고서 다운로드"] : ["LBMA-approved independent auditor", "Bi-annual physical counts and weight verification", "Random-sample serial number matching", "Audit reports downloadable from the customer dashboard"] },
+            { num: "2", title: ko ? "실시간 감사 리포트" : "Live Audit Report", bullets: ko ? ["전체 고객 자산 목록 실시간 공개 (익명 처리)", "고객은 본인 보유 내역이 실시간 목록에 포함되어 있는지 직접 확인 가능", "입고·출고 발생 시 즉시 업데이트"] : ["Anonymized real-time vault inventory visible to all customers", "Customers verify their own holdings appear in the live list", "Updated in real time with every deposit and withdrawal"] },
+            { num: "3", title: ko ? "고객 현장 감사" : "Customer On-Site Audit", bullets: ko ? ["싱가포르 금고에서 본인 보유 자산 직접 실사 가능", "사전 예약 필수, 회당 SGD 500 수수료", "바 실물 확인 및 일련번호 대조 포함"] : ["Physical on-site inspection at the Singapore vault", "Appointment required, SGD 500 fee per visit", "Hand inspection of bars matched to serial records"] },
+            { num: "4", title: ko ? "내부 감사" : "Internal Audit", bullets: ko ? ["운영팀이 월간 내부 정기 점검 수행", "Marsh·Lloyd's 보험 계약 의무사항", "7년간 기록 보관"] : ["Monthly internal reconciliation by the operations team", "Required under the Marsh / Lloyd's insurance policy", "Documented and retained for 7 years"] },
+            { num: "5", title: ko ? "재무 감사" : "Financial Audit", bullets: ko ? ["Aurum Korea Pte Ltd는 싱가포르 회사법에 따라 매년 감사", "싱가포르 등록 회계법인 감사", "연차보고서 공개"] : ["Aurum Korea Pte Ltd is audited annually under the Singapore Companies Act", "Audited by a licensed Singapore auditing firm", "Annual report published"] },
           ].map((card, i) => (
             <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 10, padding: "18px 20px", display: "flex", gap: 16 }}>
               <div style={{ width: 32, height: 32, borderRadius: "50%", background: "linear-gradient(135deg,#c5a572,#8a6914)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
@@ -851,15 +843,15 @@ function Storage({ lang, navigate }) {
         {h2("소유권과 분리 보관 원칙", "Your Bullion Is Yours — Legally and Physically")}
         {[
           {
-            title: ko ? "법적 소유권 " : "Legal Ownership",
+            title: ko ? "법적 소유권" : "Legal Ownership",
             body: ko ? "배분된 순간부터 귀하의 금은 귀하의 명의로 등록되며, 법적 이름이 기재된 볼트 증명서가 발행됩니다. Aurum Korea Pte Ltd는 중개인 및 보관 조정자 역할을 수행할 뿐 귀하의 금속에 대한 소유자가 아닙니다. 귀하는 항상 완전한 법적 소유권을 보유합니다." : "From the moment of allocation your bullion is registered in your name, with a vault certificate issued under your legal name. Aurum Korea Pte Ltd acts as broker and storage coordinator — not as owner. You retain full legal title at all times."
           },
           {
-            title: ko ? "Aurum 자산과 완전 분리 " : "Segregated From Aurum's Balance Sheet",
+            title: ko ? "Aurum 자산과 완전 분리" : "Segregated From Aurum's Balance Sheet",
             body: ko ? "귀하의 금은 Aurum의 대차대조표에 포함되지 않습니다. Malca-Amit에서 귀하의 이름으로 분리된 서브 계정에 보관됩니다. 만에 하나 Aurum이 지급불능 상태에 빠지더라도, 귀하의 금은 회사 자산이 되지 않고 수탁자로부터 직접 귀하에게 반환됩니다." : "Your bullion is not on Aurum's balance sheet. It is held in a segregated sub-account under your name at Malca-Amit. If Aurum were to enter insolvency, your metal does not become a company asset — it is returned to you directly by the custodian."
           },
           {
-            title: ko ? "Malca-Amit의 역할 " : "Malca-Amit as Independent Custodian",
+            title: ko ? "Malca-Amit의 역할" : "Malca-Amit as Independent Custodian",
             body: ko ? "Malca-Amit은 1963년 설립된 62년 역사의 귀금속 수탁 전문기업으로 싱가포르, 홍콩, 런던, 취리히, 뉴욕, 상하이에 금고를 운영합니다. 싱가포르 통화청(MAS) 규제를 받으며 ISO 9001:2015 인증을 보유합니다. 수탁자의 선관주의 의무는 금속 소유자인 귀하에게 있으며, Aurum에게 있지 않습니다." : "Malca-Amit is a 62-year-old precious metals custodian (founded 1963) operating vaults in Singapore, Hong Kong, London, Zurich, New York, and Shanghai. Regulated by the Monetary Authority of Singapore (MAS) and certified to ISO 9001:2015. Their fiduciary duty runs to the bullion owner — you — not to Aurum."
           },
         ].map((item, i) => (
@@ -969,6 +961,14 @@ function Storage({ lang, navigate }) {
           ))}
         </div>
       </div>
+
+      {/* ── FAQ ── moved to end per founder directive */}
+      {section(
+        <>
+          {h2("자주 묻는 질문", "Frequently Asked Questions")}
+          <FAQAccordion items={faqItems} />
+        </>
+      )}
 
       {/* ── CTA STRIP ── */}
       <div style={{ padding: isMobile ? "48px 20px" : "72px 80px", textAlign: "center", background: "linear-gradient(135deg,rgba(197,165,114,0.06),rgba(197,165,114,0.02))" }}>
@@ -1111,35 +1111,35 @@ function AGP({ lang, navigate }) {
 
   const faqItems = [
     {
-      q: ko ? "Q1. AGP 그램은 실제 금입니까? " : "Q1. Are AGP grams real physical gold?",
+      q: "Q1. AGP 그램은 실제 금입니까?",
       a: ko ? "네. 모든 AGP 그램은 Malca-Amit 싱가포르 금고에 보관된 실물 금·은·백금으로 100% 백업됩니다. 매일 공개 감사 리포트로 백업 비율을 확인하실 수 있으며, Bureau Veritas가 연 2회 실물 검증을 수행합니다." : "Yes. Every AGP gram is 100% backed by physical gold, silver, or platinum held at Malca-Amit Singapore. You can verify the backing ratio in the daily public audit report, and Bureau Veritas performs physical verification twice per year."
     },
     {
-      q: ko ? "Q2. 최소 얼마부터 시작할 수 있나요? " : "Q2. What is the minimum starting amount?",
+      q: "Q2. 최소 얼마부터 시작할 수 있나요?",
       a: ko ? "단일 입금 최소는 1g(현재 시세로 약 USD 153 " : "The minimum single purchase is 1 gram (~USD 153 / KRW 210,000 at current spot). The minimum monthly auto-debit is KRW 200,000."
     },
     {
-      q: ko ? "Q3. 토스뱅크 자동이체 설정은 어떻게 하나요? " : "Q3. How do I set up Toss Bank auto-debit?",
+      q: "Q3. 토스뱅크 자동이체 설정은 어떻게 하나요?",
       a: ko ? "Aurum 계정 개설 후 대시보드의 '자동이체 설정'에서 토스뱅크 계정 연결. 이체 금액, 주기(주간·월간), 시작일 선택 후 저장. 초기 버전은 수동 이체 방식이며, API 연동은 향후 업데이트됩니다." : "After Aurum account setup, go to Dashboard → Auto-Debit Setup and connect your Toss Bank account. Choose amount, frequency (weekly/monthly), and start date. Initial version uses manual transfer; API integration is a planned upgrade."
     },
     {
-      q: ko ? "Q4. 언제든 실물 바로 전환할 수 있나요? " : "Q4. Can I convert to physical bar anytime?",
+      q: "Q4. 언제든 실물 바로 전환할 수 있나요?",
       a: ko ? "전환 기준점(금 100g·1kg, 은 1kg, 백금 100g)에 도달하면 언제든 무료로 전환 가능합니다. 전환 요청 후 공급업체 체결 및 배정까지 5~10영업일이 소요됩니다." : "Once you hit the conversion threshold (100g or 1,000g gold, 1,000g silver, 100g platinum), you may convert anytime for free. Conversion takes 5–10 business days for supplier fulfillment and allocation."
     },
     {
-      q: ko ? "Q5. 전환할 때 추가 비용이 있나요? " : "Q5. Are there conversion fees?",
+      q: "Q5. 전환할 때 추가 비용이 있나요?",
       a: ko ? "전환 수수료는 없습니다. 전환된 실물 바는 배분 보관 요율(0.50~0.80%/년)이 적용됩니다. 한국 배송을 선택할 경우 13% 관세·VAT와 운송·보험료가 별도 부과됩니다." : "No conversion fees. Converted bars move to allocated storage rate (0.50–0.80%/yr). If you choose to ship to Korea, 13% import duties and shipping/insurance fees apply separately."
     },
     {
-      q: ko ? "Q6. 세금은 어떻게 처리되나요? " : "Q6. How are taxes handled?",
+      q: "Q6. 세금은 어떻게 처리되나요?",
       a: ko ? "싱가포르 보관 중에는 한국 세금이 발생하지 않습니다. 매도 시 발생한 차익은 기타소득으로 과세될 수 있으며, 실물을 한국으로 반입할 경우 13% 관세·VAT가 부과됩니다. 해외금융계좌 잔액이 연중 5억원을 초과한 경우 신고 의무. 본 내용은 법률·세무 조언이 아니므로 반드시 공인 세무사와 상담하세요." : "No Korean taxes apply while stored in Singapore. Gains upon sale may be taxable as other income. Importing physical into Korea triggers 13% duties. Offshore balances exceeding KRW 500M aggregate in a year trigger reporting. This is not tax advice — consult a certified Korean tax professional."
     },
     {
-      q: ko ? "Q7. Aurum 파산 시 내 AGP 그램은 어떻게 되나요? " : "Q7. What if Aurum goes bankrupt?",
+      q: "Q7. Aurum 파산 시 내 AGP 그램은 어떻게 되나요?",
       a: ko ? "AGP 그램을 뒷받침하는 실물 금속은 Malca-Amit에 AGP 전용 풀로 보관되며 Aurum 대차대조표와 분리되어 있습니다. Aurum 파산 시 수탁자인 Malca-Amit이 AGP 그램 비율에 따라 고객에게 직접 반환합니다." : "The physical metal backing AGP grams is held in a dedicated AGP pool at Malca-Amit, segregated from Aurum's balance sheet. In Aurum's insolvency, Malca-Amit returns metal to customers directly, proportional to their AGP gram holdings."
     },
     {
-      q: ko ? "Q8. NH투자증권 + 토스뱅크 금 적립과 뭐가 다른가요? " : "Q8. How is this different from NH Investment + Toss Bank gold savings?",
+      q: "Q8. NH투자증권 + 토스뱅크 금 적립과 뭐가 다른가요?",
       a: ko ? "NH + 토스는 KRX 금시장에서 운용되는 한국 국내 서비스입니다. 실물 인출 시 10% VAT가 발생하고, KRX 가격(김치 프리미엄 포함)으로 거래됩니다. AGP는 싱가포르 자유무역지대에 보관되는 해외 실물이며, 국제 현물가로 거래되고, 전환 시 한국 VAT가 발생하지 않습니다(실물을 한국으로 반입하지 않는 한). 두 상품은 서로 다른 카테고리입니다 — 국내 페이퍼·한국 과세 vs. 해외 실물·세제 최적화." : "NH + Toss is a domestic Korean service operating on the KRX gold market. Physical withdrawal triggers 10% Korean VAT, and pricing is in KRX (which includes kimchi premium). AGP is offshore physical stored in Singapore's Free Trade Zone, priced at international spot, with no Korean VAT on conversion (as long as you don't ship into Korea). The two products are different categories — domestic paper with Korean taxation vs. offshore physical with tax optimization."
     },
   ];
@@ -1154,27 +1154,27 @@ function AGP({ lang, navigate }) {
         <p style={{ fontSize: isMobile ? 14 : 16, color: T.textSecondary, fontFamily: T.sans, maxWidth: 680, margin: "0 auto 20px", lineHeight: 1.75 }}>
           {ko ? "그램 단위로 적립하세요. Malca-Amit에서 100% 실물 백업. 언제든 완전한 바로 전환 가능. 구조적 공급 부족 속의 은 — 한국 은행 프리미엄 없이 접근 가능." : "Accumulate by the gram. 100% physically backed at Malca-Amit. Convert to a full bar anytime. Silver in structural deficit — now accessible in Korea without bank premiums."}
         </p>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center", marginBottom: 32 }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, justifyContent: "center", alignItems: "stretch", marginBottom: 32 }}>
           {[
             { icon: "💯", label: ko ? "100% 실물 백업 — 금, 은 & 백금 — 매일 공개 감사" : "100% physically backed — Gold, Silver & Platinum — audited daily" },
-            { icon: "🥇", label: ko ? "100g 또는 1kg 도달 시 PAMP·Heraeus 바로 무료 전환 " : "Free conversion to PAMP or Heraeus bars at 100g or 1kg" },
-            { icon: <FlagKR size={18} />, label: ko ? "한국어 서비스 + 토스뱅크 자동이체 지원 " : "Korean-language service, Toss Bank auto-debit" },
+            { icon: "🥇", label: ko ? "100g 또는 1kg 도달 시 PAMP·Heraeus 바로 무료 전환" : "Free conversion to PAMP or Heraeus bars at 100g or 1kg" },
+            { icon: <FlagKR size={18} />, label: ko ? "한국어 서비스 + 토스뱅크 자동이체 지원" : "Korean-language service, Toss Bank auto-debit" },
           ].map((chip, i) => (
-            <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "10px 16px", display: "flex", alignItems: "center", gap: 8, maxWidth: isMobile ? "100%" : 340 }}>
+            <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "14px 16px", display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: isMobile ? "100%" : 280, boxSizing: "border-box" }}>
               <span style={{ fontSize: 18, flexShrink: 0 }}>{chip.icon}</span>
               <span style={{ fontSize: 11, color: T.textSecondary, fontFamily: T.sans, lineHeight: 1.5 }}>{chip.label}</span>
             </div>
           ))}
         </div>
-        <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap" }}>
-          <button onClick={() => navigate && navigate("agp-intro")} style={{ background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#0a0a0a", border: "none", padding: "15px 36px", fontSize: 15, fontWeight: 700, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>🚀 {ko ? "AGP 가입하기" : "AGP 가입하기"}</button>
+        <div style={{ display: "flex", gap: 14, justifyContent: "center", flexWrap: "wrap", maxWidth: 700, margin: "0 auto" }}>
+          <button onClick={() => navigate && navigate("agp-intro")} style={{ flex: 1, minWidth: 200, background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#0a0a0a", border: "none", padding: "15px 24px", fontSize: 15, fontWeight: 700, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>🚀 {ko ? "AGP 가입하기" : "AGP 가입하기"}</button>
           {navigate && (
-            <button onClick={() => navigate("agp-report")} style={{ background: "transparent", color: T.accent, border: `1px solid ${T.accent}`, padding: "15px 36px", fontSize: 15, fontWeight: 600, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>📊 {ko ? "오늘의 백업 리포트 " : "Today's Backing Report"}</button>
+            <button onClick={() => navigate("agp-report")} style={{ flex: 1, minWidth: 200, background: "transparent", color: T.accent, border: `1px solid ${T.accent}`, padding: "15px 24px", fontSize: 15, fontWeight: 600, borderRadius: 7, cursor: "pointer", fontFamily: T.sans }}>📊 {ko ? "오늘의 백업 리포트" : "오늘의 백업 리포트"}</button>
           )}
         </div>
       </div>
-      {section(<><br/>{h2("AGP는 이렇게 작동합니다", "How Aurum Gold Plan Works")}<div style={{ display: "flex", flexDirection: "column", gap: 24 }}><StepCard num={1} icon="✍️" title={ko ? "가입 " : "Enroll"} body={ko ? "10분 내 온라인 가입 및 한국 표준 KYC 완료" : "10-minute online signup with Korean-standard KYC"} /><StepCard num={2} icon="💰" title={ko ? "입금 " : "Fund"} body={ko ? "토스뱅크·한국 은행에서 일회 또는 월간 자동이체" : "One-time or recurring auto-debit from Toss Bank or any Korean bank"} /><StepCard num={3} icon="⚖️" title={ko ? "그램 적립 " : "Accumulate"} body={ko ? "입금액이 실시간 현물가 + 2.0% 프리미엄으로 AGP 그램으로 전환" : "Each deposit converts to AGP grams at live spot plus 2.0% premium"} /><StepCard num={4} icon="📊" title={ko ? "관리 " : "Monitor"} body={ko ? "대시보드에서 그램, KRW 가치, 손익, 보관료, 전환 기준 진행률 확인" : "Dashboard shows grams, KRW value, P&L, storage fees, and progress to conversion threshold"} /><StepCard num={5} icon="🥇" title={ko ? "전환 " : "Convert"} body={ko ? "100g(또는 1kg 기준) 도달 시 실물 바로 무료 전환 또는 언제든 KRW 매도" : "At 100g (or 1kg for flagship), convert to a physical bar for free — or sell back for KRW anytime"} /></div></>)}
-      {section(<><br/>{h2("AGP vs 국내 금 투자 상품", "AGP vs Other Korean Gold Savings Options")}{lead("한국 은행과 증권사가 금 저축 상품을 출시하고 있는 것은 반가운 변화입니다. 하지만 모든 국내 상품은 한 가지 공통된 한계를 가지고 있습니다. 금이 한국 안에 있다는 것. AGP는 싱가포르 자유무역지대에 보관되는 진짜 실물 금, 국제 현물가 기준, 원하는 때 PAMP·Heraeus 바로 무료 전환 가능한 상품입니다.", "Korean banks and brokerages now offer gold savings products. But every domestic option has the same limitation: the gold sits in Korea. That means 10% VAT on withdrawal and kimchi-premium pricing. AGP is the offshore counterpart — real physical gold in Singapore's Free Trade Zone, priced at international spot.")}<div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 560 }}><thead><tr style={{ background: "#0d0b08" }}>{[ko ? "특징" : "Feature", "Aurum AGP", "Kbank / KRX", ko ? "국내 은행 적금" : "Korean Bank Passbook"].map((h, i) => <th key={i} style={{ padding: "12px 14px", textAlign: "left", color: i === 1 ? T.accent : T.textSecondary, fontSize: 10, letterSpacing: 1, textTransform: "uppercase", fontFamily: T.sans, border: `1px solid ${T.border}` }}>{h}</th>)}</tr></thead><tbody>{[[ko?"실물 백업":"Physical backing",ko?"✅ 100% 완전 배분":"✅ 100% allocated",ko?"⚠️ KRX 수탁":"⚠️ KRX custody",ko?"❌ 은행 장부상":"❌ Bank paper"],[ko?"관할":"Jurisdiction","SG Singapore FTZ","KR Korea","KR Korea"],[ko?"실물 전환":"Convert to bar",ko?"✅ 100g/1kg 무료":"✅ Free @ 100g/1kg",ko?"⚠️ 10% VAT 발생":"⚠️ 10% VAT triggered",ko?"❌ 불가":"❌ Not available"],[ko?"보관료":"Storage fee","0.30%/yr","~0%/yr (paper)",ko?"은행 수수료":"Bank fees"]].map((row,i)=><tr key={i}>{row.map((cell,j)=><td key={j} style={{ padding: "11px 14px", fontFamily: T.sans, fontSize: 12, color: j===1?T.textPrimary:T.textSecondary, border: `1px solid ${T.border}`, background: j===1?"rgba(197,165,114,0.04)":T.panel, fontWeight: j===1?500:400 }}>{cell}</td>)}</tr>)}</tbody></table></div></>)}
+      {section(<><br/>{h2("AGP는 이렇게 작동합니다", "AGP는 이렇게 작동합니다")}<div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: isMobile ? 12 : 14 }}><StepCard num={1} icon="✍️" title={ko ? "가입" : "가입"} body={ko ? "10분 내 온라인 가입 및 한국 표준 KYC 완료" : "10분 내 온라인 가입 및 한국 표준 KYC 완료"} /><StepCard num={2} icon="💰" title={ko ? "입금" : "입금"} body={ko ? "토스뱅크·한국 은행에서 일회 또는 월간 자동이체" : "토스뱅크·한국 은행에서 일회 또는 월간 자동이체"} /><StepCard num={3} icon="⚖️" title={ko ? "그램 적립" : "그램 적립"} body={ko ? "입금액이 실시간 현물가 + 2.0% 프리미엄으로 AGP 그램으로 전환" : "입금액이 실시간 현물가 + 2.0% 프리미엄으로 AGP 그램으로 전환"} /><StepCard num={4} icon="📊" title={ko ? "관리" : "관리"} body={ko ? "대시보드에서 그램, KRW 가치, 손익, 보관료, 전환 기준 진행률 확인" : "대시보드에서 그램, KRW 가치, 손익, 보관료, 전환 기준 진행률 확인"} /><StepCard num={5} icon="🥇" title={ko ? "전환" : "전환"} body={ko ? "100g(또는 1kg 기준) 도달 시 실물 바로 무료 전환 또는 언제든 KRW 매도" : "100g(또는 1kg 기준) 도달 시 실물 바로 무료 전환 또는 언제든 KRW 매도"} /></div></>)}
+      {section(<><br/>{h2("AGP vs 국내 금 투자 상품", "AGP vs Other Korean Gold Savings Options")}{lead("한국 은행과 증권사가 금 저축 상품을 출시하고 있는 것은 반가운 변화입니다. 하지만 모든 국내 상품은 한 가지 공통된 한계를 가지고 있습니다. 금이 한국 안에 있다는 것. AGP는 싱가포르 자유무역지대에 보관되는 진짜 실물 금, 국제 현물가 기준, 원하는 때 PAMP·Heraeus 바로 무료 전환 가능한 상품입니다.", "Korean banks and brokerages now offer gold savings products. But every domestic option has the same limitation: the gold sits in Korea. That means 10% VAT on withdrawal and kimchi-premium pricing. AGP is the offshore counterpart — real physical gold in Singapore's Free Trade Zone, priced at international spot.")}<div style={{ overflowX: "auto" }}><table style={{ width: "100%", borderCollapse: "collapse", minWidth: 560 }}><thead><tr style={{ background: "#0d0b08" }}>{[ko ? "특징" : "Feature", "Aurum AGP", "Kbank / KRX", ko ? "국내 은행 적금" : "Korean Bank Passbook"].map((h, i) => <th key={i} style={{ padding: "12px 14px", textAlign: "left", color: i === 1 ? T.accent : T.textSecondary, fontSize: 10, letterSpacing: 1, textTransform: "uppercase", fontFamily: T.sans, border: `1px solid ${T.border}` }}>{h}</th>)}</tr></thead><tbody>{[[ko?"실물 백업":"Physical backing",ko?"✅ 100% 완전 배분":"✅ 100% allocated",ko?"⚠️ KRX 수탁":"⚠️ KRX custody",ko?"❌ 은행 장부상":"❌ Bank paper"],[ko?"관할":"Jurisdiction","🇸🇬 Singapore FTZ","🇰🇷 Korea","🇰🇷 Korea"],[ko?"실물 전환":"Convert to bar",ko?"✅ 100g/1kg 무료":"✅ Free @ 100g/1kg",ko?"⚠️ 10% VAT 발생":"⚠️ 10% VAT triggered",ko?"❌ 불가":"❌ Not available"],[ko?"보관료":"Storage fee","0.30%/yr","~0%/yr (paper)",ko?"은행 수수료":"Bank fees"]].map((row,i)=><tr key={i}>{row.map((cell,j)=><td key={j} style={{ padding: "11px 14px", fontFamily: T.sans, fontSize: 12, color: j===1?T.textPrimary:T.textSecondary, border: `1px solid ${T.border}`, background: j===1?"rgba(197,165,114,0.04)":T.panel, fontWeight: j===1?500:400 }}>{cell}</td>)}</tr>)}</tbody></table></div></>)}
       {section(<><br/>{h2("고객님의 금 저축 여정", "Your Gold Savings Journey")}<div style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 12, padding: isMobile?"20px":"28px 32px" }}>{[{milestone:ko?"1개월":"Month 1",text:ko?"AGP 계정 개설, 토스뱅크 자동이체 50만원/월 설정":"Opens AGP account, sets Toss Bank auto-debit at KRW 500,000/month"},{milestone:ko?"12개월":"Month 12",text:ko?"약 28g 적립 완료. 첫 연간 스테이트먼트 수신":"~28g accumulated. Receives first annual statement"},{milestone:ko?"4년":"Year 4",text:ko?"약 114g 적립, 100g 전환 기준점 돌파":"~114g accumulated — crosses 100g conversion threshold"},{milestone:ko?"4년 마일스톤":"Year 4 milestone",text:ko?"100g를 실물 PAMP 100g 바로 전환(무료). 남은 14g는 AGP 계속 적립":"Converts 100g to a real PAMP 100g bar for free. 14g stays in AGP.",highlight:true},{milestone:ko?"10년":"Year 10",text:ko?"약 280g 실물 바 + 약 60g AGP 그램 = 총 ~340g 실물 금 보유":"~280g in allocated bars + ~60g in AGP = ~340g total gold ownership"}].map((item,i)=><div key={i} style={{ display:"flex",gap:16,padding:"14px 0",borderBottom:i<4?`1px solid ${T.border}`:"none" }}><div style={{ minWidth:isMobile?72:110,flexShrink:0,display:"flex",alignItems:"flex-start",justifyContent:"center" }}><span style={{ fontFamily:T.mono,fontSize:11,color:T.accent,fontWeight:600,textAlign:"center" }}>{item.milestone}</span></div><p style={{ margin:0,fontSize:13,color:item.highlight?T.textPrimary:T.textSecondary,fontFamily:T.sans,lineHeight:1.6,fontWeight:item.highlight?500:400 }}>{item.text}</p></div>)}</div></>)}
       {section(<><br/>{h2("가격과 수수료", "Pricing & Fees")}<div style={{ overflowX:"auto",marginBottom:28 }}><table style={{ width:"100%",borderCollapse:"collapse",minWidth:500 }}><thead><tr style={{ background:"#0d0b08" }}>{[ko?"상품":"Product",ko?"최소":"Minimum",ko?"보관료":"Storage fee"].map((h,i)=><th key={i} style={{ padding:"12px 16px",textAlign:"center",color:T.textSecondary,fontSize:10,letterSpacing:1.5,textTransform:"uppercase",fontFamily:T.sans,border:`1px solid ${T.border}` }}>{h}</th>)}</tr></thead><tbody>{[[ko?"AGP 금 그램":"AGP Gold grams","1g","0.30%/yr"],[ko?"AGP 은 그램":"AGP Silver grams","1,000g (1킬로)","0.50%/yr"],[ko?"AGP 백금 그램":"AGP Platinum grams","1g","0.40%/yr"]].map((row,i)=><tr key={i}>{row.map((cell,j)=><td key={j} style={{ padding:"12px 16px",textAlign:"center",fontFamily:j===2?T.mono:T.sans,fontSize:13,color:j===2?T.accent:T.textPrimary,border:`1px solid ${T.border}`,background:T.panel }}>{cell}</td>)}</tr>)}</tbody></table></div><div style={{ background:T.panel,border:`1px solid ${T.border}`,borderRadius:10,padding:"20px 22px" }}><div style={{ fontFamily:T.sans,fontSize:14,color:T.accent,fontWeight:600,marginBottom:12 }}>{ko?"전환 기준점 (수수료 없음)":"Conversion Thresholds (free)"}</div>{[[ko?"금":"Gold",ko?"100g → PAMP":"100g → PAMP/Heraeus 100g bar",ko?"1,000g → 1kg LBMA 바":"1,000g → 1kg LBMA bar"],[ko?"은":"Silver",ko?"1,000g → 1kg LBMA 바":"1,000g → 1kg LBMA bar",null],[ko?"백금":"Platinum",ko?"100g → 100g 바":"100g → 100g bar",null]].map(([metal,rule,subRule],i)=><div key={i} style={{ display:"flex",gap:14,padding:"8px 0",borderBottom:i<2?`1px solid ${T.border}`:"none" }}><span style={{ fontFamily:T.sans,fontSize:13,color:T.accent,fontWeight:600,minWidth:70,flexShrink:0 }}>{metal}</span><div style={{ fontFamily:T.sans,fontSize:13,color:T.textSecondary }}><div>{rule}</div>{subRule&&<div style={{ color:T.textSecondary,fontSize:13,marginTop:4 }}>{subRule}</div>}</div></div>)}</div></>)}
       {section(<><br/>{h2("자주 묻는 질문", "Frequently Asked Questions")}<FAQAccordion items={faqItems} /></>)}
