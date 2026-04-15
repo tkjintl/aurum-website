@@ -50,17 +50,17 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
   const fPrice = (usdAmt) => currency === "KRW" ? fKRW(usdAmt * krwRate) : fUSD(usdAmt);
   const isMobile = useIsMobile();
   // Gold savings panel — 1 oz unit
-  const goldKB_usd = prices.gold * 1 * 1.15;   // Korean market ~15% over spot
+  const goldKR_usd = prices.gold * 1 * 1.10;    // 한국금거래소 매도가 (부가세 10% 포함)
   const goldAurum_usd = prices.gold * 1 * 1.06; // Aurum spot+6%
-  const goldSavings_usd = goldKB_usd - goldAurum_usd;
-  const goldKB = goldKB_usd * krwRate;
+  const goldSavings_usd = goldKR_usd - goldAurum_usd;
+  const goldKR = goldKR_usd * krwRate;
   const goldAurum = goldAurum_usd * krwRate;
   const goldSavings = goldSavings_usd * krwRate;
   const KG_RATIO = 1000 / 31.1035;
-  const silverKB_usd = (prices.silver || 32.15) * KG_RATIO * 1.25;
+  const silverKR_usd = (prices.silver || 32.15) * KG_RATIO * 1.10;  // 한국금거래소 매도가 (부가세 포함)
   const silverAurum_usd = (prices.silver || 32.15) * KG_RATIO * 1.06;
-  const silverSavings_usd = silverKB_usd - silverAurum_usd;
-  const silverKB = silverKB_usd * krwRate;
+  const silverSavings_usd = silverKR_usd - silverAurum_usd;
+  const silverKR = silverKR_usd * krwRate;
   const silverAurum = silverAurum_usd * krwRate;
   const silverSavings = silverSavings_usd * krwRate;
   return (
@@ -169,7 +169,7 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
-                { label: lang === "ko" ? "한국 실물 시가" : "Korean Market", val: fPrice(goldKB_usd), col: "#f87171" },
+                { label: lang === "ko" ? "한국금거래소 매도가 (부가세 포함)" : "한국금거래소 (VAT incl.)", val: fPrice(goldKR_usd), col: "#f87171" },
                 { label: lang === "ko" ? "Aurum 실물가" : "Aurum Price", val: fPrice(goldAurum_usd), col: "#4ade80" },
               ].map((x, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
@@ -184,7 +184,7 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed rgba(74,222,128,0.2)", paddingTop: 6 }}>
                   <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>절약률</div>
-                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>{goldKB > 0 ? (goldSavings / goldKB * 100).toFixed(1) : "0.0"}%</div>
+                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>{goldKR > 0 ? (goldSavings / goldKR * 100).toFixed(1) : "0.0"}%</div>
                 </div>
               </div>
             </div>
@@ -200,7 +200,7 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
-                { label: lang === "ko" ? "한국 실물 시가" : "Korean Market", val: fPrice(silverKB_usd), col: "#f87171" },
+                { label: lang === "ko" ? "한국금거래소 매도가 (부가세 포함)" : "한국금거래소 (VAT incl.)", val: fPrice(silverKR_usd), col: "#f87171" },
                 { label: lang === "ko" ? "Aurum 실물가" : "Aurum Price", val: fPrice(silverAurum_usd), col: "#4ade80" },
               ].map((x, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
@@ -215,7 +215,7 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed rgba(74,222,128,0.2)", paddingTop: 6 }}>
                   <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>절약률</div>
-                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>{silverKB > 0 ? (silverSavings / silverKB * 100).toFixed(1) : "0.0"}%</div>
+                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>{silverKR > 0 ? (silverSavings / silverKR * 100).toFixed(1) : "0.0"}%</div>
                 </div>
               </div>
             </div>
@@ -240,8 +240,8 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
           </div>
           <div style={{ borderTop: "1px dashed rgba(197,165,114,0.12)", paddingTop: 8, fontFamily: "'Outfit',sans-serif", fontSize: 11, color: "#555", lineHeight: 1.6 }}>
             {lang === "ko"
-              ? "※ 한국 실물 시가는 KB Star 금·은 시세 기준 추정값입니다. Aurum 가격은 국제 현물가 + 프리미엄 기준이며, 실시간으로 변동됩니다."
-              : "※ Korean market prices are estimates based on KB Star gold & silver rates. Aurum prices are international spot + premium and update in real time."}
+              ? "※ 한국금거래소 매도가는 국제 현물가에 부가세(10%)를 포함한 기준가입니다. Aurum 가격은 국제 현물가 + 프리미엄 기준이며, 실시간으로 변동됩니다."
+              : "※ Korean prices based on 한국금거래소 매도가 (international spot + 10% VAT). Aurum prices are international spot + premium and update in real time."}
           </div>
         </div>
       </div>
@@ -508,7 +508,7 @@ function ProductPage({ product, lang, navigate, prices, krwRate, user, setShowLo
   if (!product) return null;
   const unit = calcPrice(product, prices);  // = spot * 1.06
   const spot = unit / (1 + product.premium); // international spot for this product
-  const koreaPrice = spot * 1.15; // 15% kimchi premium over spot
+  const koreaPrice = spot * 1.10; // 한국금거래소 매도가 (부가세 10% 포함)
   const savings = koreaPrice - unit; // what customer saves vs Korean market
   const storageAnnualFee = unit * 0.003; // 0.3%/yr Singapore storage
   const duty = storage === "korea" ? unit * 0.13 : 0; // 13% = 3% customs + 10% VAT
@@ -556,7 +556,7 @@ function ProductPage({ product, lang, navigate, prices, krwRate, user, setShowLo
           <div style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 10, padding: isMobile ? 16 : 22, marginBottom: 18 }}>
             {/* Row 1: Korea physical price (15% kimchi premium) */}
             <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-              <span style={{ fontSize: 13, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>한국 물리금 가격</span>
+              <span style={{ fontSize: 13, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>한국금거래소 매도가</span>
               <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 13, color: "#f87171" }}>{fPrice(koreaPrice * qty)}</span>
             </div>
             {/* Row 2: Customer savings — green */}
@@ -692,12 +692,12 @@ function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices,
           {/* E-3: Cart summary — toggle-aware, correct kimchi math */}
           {(() => {
             const spot_sum = subtotal / 1.06;
-            const koreaTotal = spot_sum * 1.15;
+            const koreaTotal = spot_sum * 1.10;  // 한국금거래소 매도가 (부가세 포함)
             const savings = koreaTotal - subtotal;
             return (
               <>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-                  <span style={{ fontSize: 12, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>한국 물리금 가격 총액</span>
+                  <span style={{ fontSize: 12, color: "#a09080", fontFamily: "'Outfit',sans-serif" }}>한국금거래소 매도가 총액</span>
                   <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 12, color: "#f87171" }}>{fPrice(koreaTotal)}</span>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
