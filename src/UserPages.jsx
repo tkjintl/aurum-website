@@ -376,7 +376,7 @@ function WhyGold({ lang, navigate }) {
   return (
     <div style={{ background: "#0a0a0a", minHeight: "80vh" }}>
       <div style={{ padding: isMobile ? "44px 16px 32px" : "64px 80px 44px", textAlign: "center" }}>
-        <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#c5a572", letterSpacing: 4, textTransform: "uppercase", marginBottom: 12 }}>{lang === "ko" ? "왜 금인가" : "Why Gold"}</div>
+        <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 22 : 36, color: "#c5a572", fontWeight: 700, letterSpacing: isMobile ? 1 : 2, textTransform: "uppercase", marginBottom: 16 }}>🥇 {lang === "ko" ? "왜 금인가" : "Why Gold"}</div>
         <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 30 : 46, color: "#f5f0e8", fontWeight: 300, margin: "0 0 16px", lineHeight: 1.2 }}>{lang === "ko" ? "금은 단순한 금속이 아닙니다" : "Gold Is More Than a Metal"}</h1>
         <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 14 : 16, color: "#8a7d6b", maxWidth: 540, margin: "0 auto", lineHeight: 1.75 }}>
           {lang === "ko" ? "수천 년간 인류가 신뢰해온 가치 저장 수단. 지금 당신의 포트폴리오에 금이 필요한 6가지 이유를 확인하세요." : "The world's most trusted store of value for thousands of years. 6 reasons your portfolio needs physical gold."}
@@ -478,8 +478,8 @@ function WhyGold({ lang, navigate }) {
             {lang === "ko" ? "싱가포르 보관 실물 은 — 국제 현물가로, 한국 은행 프리미엄 없이" : "Physical silver in Singapore storage — at international spot, without Korean bank premiums"}
           </p>
           <div style={{ display: "flex", gap: 14, justifyContent: "center", flexDirection: isMobile ? "column" : "row", maxWidth: 480, margin: "0 auto" }}>
-            <button onClick={() => navigate("shop")} style={{ flex: 1, background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#ffffff", border: "none", padding: "14px 28px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 700, borderRadius: 30, cursor: "pointer" }}>{lang === "ko" ? "실물 은 구매하기 →" : "Buy Physical Silver →"}</button>
-            <button onClick={() => navigate("agp-intro")} style={{ flex: 1, background: "transparent", color: "#c5a572", border: "1px solid rgba(197,165,114,0.4)", padding: "14px 28px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 30, cursor: "pointer" }}>{lang === "ko" ? "AGP로 은 저축 →" : "Silver in AGP →"}</button>
+            <button onClick={() => navigate("shop")} style={{ flex: 1, background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#ffffff", border: "none", padding: "14px 28px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 700, borderRadius: 30, cursor: "pointer" }}>{lang === "ko" ? "실물 금 은 구매하기 →" : "Buy Physical Gold & Silver →"}</button>
+            <button onClick={() => navigate("agp-intro")} style={{ flex: 1, background: "transparent", color: "#c5a572", border: "1px solid rgba(197,165,114,0.4)", padding: "14px 28px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 30, cursor: "pointer" }}>{lang === "ko" ? "AGP로 실물 금 은 으로 저축 →" : "Save in Gold & Silver via AGP →"}</button>
           </div>
         </div>
       </div>
@@ -687,14 +687,14 @@ function Storage({ lang, navigate }) {
             "Aurum Korea 금고에 보관된 고객님의 실물 금은 24시간 언제든 온라인으로 확인하고 관리할 수 있습니다. 실시간 평가금액 조회, 고유 일련번호 사진 열람, 매도 주문, 실물 인출 요청까지 — 한국어 대시보드에서 모든 것이 가능합니다. 은행 금통장처럼 숫자만 보이는 상품이 아닙니다. 진짜 금이 존재하고, 그 금은 귀하의 것입니다.",
             "Your physical gold stored at Aurum Korea is available online 24/7. Real-time valuation, individual bar serial number photos, sell orders, physical withdrawal requests — all accessible from a Korean-language dashboard. This is not a bank gold passbook where you never see or touch anything. Real metal exists. It is yours."
           )}
-          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 14 }}>
             {[
-              { icon: "🖥️", title: ko ? "온라인 대시보드 " : "Online Dashboard", body: ko ? "실시간 USD·KRW 평가금액, 구매 이력, 개별 바 일련번호, 누적 보관료 확인 " : "Real-time USD and KRW valuation, purchase history, individual bar serial numbers, storage fees accrued to date." },
-              { icon: "📸", title: ko ? "실물 사진 확인 " : "Photo Verification", body: ko ? "모든 바를 일련번호가 보이도록 촬영하여 업로드. 신규 업로드 시 이메일·카카오톡 알림" : "Every bar photographed with serial number visible. Email and KakaoTalk alert when new photos are uploaded." },
-              { icon: "📋", title: ko ? "볼트 증명서 " : "Vault Certificate", body: ko ? "고객 명의로 보관된 모든 바 목록이 기재된 PDF. 거래 발생 시 자동 업데이트. 자산관리·상속·담보대출 시 활용 가능" : "Downloadable PDF listing all bars held in your name. Auto-updated after every transaction. Useful for wealth planning, estate documentation, or loan collateral." },
-              { icon: "💱", title: ko ? "원클릭 매도 " : "One-Click Sell", body: ko ? "실시간 매수호가에 Aurum으로 매도. 연결된 한국 은행 계좌로 KRW 2영업일 내 수취" : "Sell to Aurum at live bid price. KRW settlement to your linked Korean bank within 2 business days." },
-              { icon: "🔄", title: ko ? "계정 내 현금·실물 동시 보유 " : "Cash + Bullion in One Account", body: ko ? "USD, SGD, KRW 잔액을 Aurum 계정에 보유하여 신속한 매매와 평균단가 관리" : "Hold USD, SGD, or KRW balances inside your Aurum account for faster trades and price-averaging." },
-              { icon: "🌐", title: ko ? "한국어 전담 고객지원 " : "Korean-Language Support", body: ko ? "카카오톡·전화·이메일로 실시간 대응. 영업시간 KST, 긴급 상담 24/7" : "Real-time support via KakaoTalk, phone, and email. KST business hours with 24/7 emergency line." },
+              { icon: "🖥️", title: ko ? "온라인 대시보드" : "Online Dashboard", body: ko ? "실시간 USD·KRW 평가금액, 구매 이력, 개별 바 일련번호, 누적 보관료 확인" : "Real-time USD and KRW valuation, purchase history, individual bar serial numbers, storage fees accrued to date." },
+              { icon: "📸", title: ko ? "실물 사진 확인" : "Photo Verification", body: ko ? "모든 바를 일련번호가 보이도록 촬영하여 업로드. 신규 업로드 시 이메일·카카오톡 알림" : "Every bar photographed with serial number visible. Email and KakaoTalk alert when new photos are uploaded." },
+              { icon: "📋", title: ko ? "볼트 증명서" : "Vault Certificate", body: ko ? "고객 명의로 보관된 모든 바 목록이 기재된 PDF. 거래 발생 시 자동 업데이트. 자산관리·상속·담보대출 시 활용 가능" : "Downloadable PDF listing all bars held in your name. Auto-updated after every transaction. Useful for wealth planning, estate documentation, or loan collateral." },
+              { icon: "💱", title: ko ? "원클릭 매도" : "One-Click Sell", body: ko ? "실시간 매수호가에 Aurum으로 매도. 연결된 한국 은행 계좌로 KRW 2영업일 내 수취" : "Sell to Aurum at live bid price. KRW settlement to your linked Korean bank within 2 business days." },
+              { icon: "🔄", title: ko ? "계정 내 현금·실물 동시 보유" : "Cash + Bullion in One Account", body: ko ? "USD, SGD, KRW 잔액을 Aurum 계정에 보유하여 신속한 매매와 평균단가 관리" : "Hold USD, SGD, or KRW balances inside your Aurum account for faster trades and price-averaging." },
+              { icon: "🌐", title: ko ? "한국어 전담 고객지원" : "Korean-Language Support", body: ko ? "카카오톡·전화·이메일로 실시간 대응. 영업시간 KST, 긴급 상담 24/7" : "Real-time support via KakaoTalk, phone, and email. KST business hours with 24/7 emergency line." },
             ].map((item, i) => (
               <div key={i} style={{ background: T.panel, border: `1px solid ${T.border}`, borderRadius: 8, padding: "16px 18px", display: "flex", gap: 14 }}>
                 <span style={{ fontSize: 24, flexShrink: 0 }}>{item.icon}</span>
@@ -727,9 +727,9 @@ function Storage({ lang, navigate }) {
       <div id="process" style={{ padding: isMobile ? "48px 20px" : "72px 80px", borderBottom: `1px solid ${T.border}` }}>
         {h2("보관 프로세스", "How Storage Works")}
         {lead("주문 즉시 Malca-Amit 금고에 배정됩니다. 5단계, 5분 소요.", "Assigned to the Malca-Amit vault the moment you order. 5 steps, 5 minutes.")}
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(3, 1fr)", gap: 20 }}>
           {[
-            { num: 1, icon: "🛒", title: ko ? "구매" : "Purchase", body: ko ? "Aurum 웹사이트에서 실시간 현물가 + 투명한 프리미엄으로 주문" : "Aurum 웹사이트에서 실시간 현물가 + 투명한 프리미엄으로 주문" },
+            { num: 1, icon: "🛒", title: ko ? "구매" : "Purchase", body: ko ? "Aurum 웹사이트에서 실시간 현물가 + 투명한 프리미엄으로 주문" : "Order on the Aurum website at live spot price + transparent premium." },
             { num: 2, icon: "💳", title: ko ? "결제" : "Pay", body: ko ? "토스페이(카드·계좌이체) 또는 국제 전신환" : "Toss Pay (card or bank transfer) or international wire transfer." },
             { num: 3, icon: "🏭", title: ko ? "공급" : "Supplier Execution", body: ko ? "결제 확인 후 수분 이내 LBMA 승인 정련소 네트워크와 물량 체결" : "Aurum executes with the LBMA-approved refiner network within minutes of payment confirmation." },
             { num: 4, icon: "🏛️", title: ko ? "금고 배정" : "Vault Allocation", body: ko ? "고유 일련번호를 가진 특정 바가 귀하의 계정으로 Malca-Amit Singapore FTZ에 배정" : "A specific, serial-numbered bar is assigned to your account at Malca-Amit Singapore FTZ." },
