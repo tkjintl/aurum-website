@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useIsMobile, calcPrice, fUSD, fKRW, PRODUCTS, MOCK_ORDERS_INIT, API } from "./lib.jsx";
-import { NewsSection } from "./BaseUI.jsx";
+import { NewsSection, KR_GOLD_PREMIUM, KR_SILVER_PREMIUM, AURUM_GOLD_PREMIUM, AURUM_SILVER_PREMIUM } from "./BaseUI.jsx";
 
 // ── A-3: Country flags — hatscripts/circle-flags CDN (replaces broken inline SVG) ──
 const FlagSG = ({ size = 20 }) => (
@@ -49,20 +49,31 @@ function CurrencyToggle({ currency, setCurrency }) {
 function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
   const fPrice = (usdAmt) => currency === "KRW" ? fKRW(usdAmt * krwRate) : fUSD(usdAmt);
   const isMobile = useIsMobile();
-  // Gold savings panel — 1 oz unit
-  const goldKR_usd = prices.gold * 1 * 1.10;    // 한국금거래소 매도가 (부가세 10% 포함)
-  const goldAurum_usd = prices.gold * 1 * 1.06; // Aurum spot+6%
-  const goldSavings_usd = goldKR_usd - goldAurum_usd;
-  const goldKR = goldKR_usd * krwRate;
-  const goldAurum = goldAurum_usd * krwRate;
-  const goldSavings = goldSavings_usd * krwRate;
+
+  // ── Savings panel — pricing flows from SHARED KR_GOLD_PREMIUM / KR_SILVER_PREMIUM ──
+  // Korean reference prices are computed in KRW directly (Korean market is KRW-denominated).
+  // Aurum prices remain USD-native and respect the currency toggle for display.
+
+  // GOLD (1 oz unit)
+  const goldKR_krwPerOz = prices.gold * krwRate * (1 + KR_GOLD_PREMIUM);     // KRW per oz, 22% premium (matches ticker)
+  const goldAurum_usd = prices.gold * 1 * (1 + AURUM_GOLD_PREMIUM);          // USD per oz at Aurum
+  const goldAurum_krw = goldAurum_usd * krwRate;
+  const goldSavings_krw = goldKR_krwPerOz - goldAurum_krw;
+  const goldSavings_usd = goldSavings_krw / krwRate;
+  const goldSavingsPct = goldKR_krwPerOz > 0 ? (goldSavings_krw / goldKR_krwPerOz * 100) : 0;
+
+  // SILVER (1 kg unit)
   const KG_RATIO = 1000 / 31.1035;
-  const silverKR_usd = (prices.silver || 32.15) * KG_RATIO * 1.10;  // 한국금거래소 매도가 (부가세 포함)
-  const silverAurum_usd = (prices.silver || 32.15) * KG_RATIO * 1.06;
-  const silverSavings_usd = silverKR_usd - silverAurum_usd;
-  const silverKR = silverKR_usd * krwRate;
-  const silverAurum = silverAurum_usd * krwRate;
-  const silverSavings = silverSavings_usd * krwRate;
+  const silverKR_krwPerKg = (prices.silver || 32.15) * KG_RATIO * krwRate * (1 + KR_SILVER_PREMIUM);  // KRW per kg, 32% premium
+  const silverAurum_usd = (prices.silver || 32.15) * KG_RATIO * (1 + AURUM_SILVER_PREMIUM);
+  const silverAurum_krw = silverAurum_usd * krwRate;
+  const silverSavings_krw = silverKR_krwPerKg - silverAurum_krw;
+  const silverSavings_usd = silverSavings_krw / krwRate;
+  const silverSavingsPct = silverKR_krwPerKg > 0 ? (silverSavings_krw / silverKR_krwPerKg * 100) : 0;
+
+  // Helper: format Korean price always in KRW (regardless of toggle), with explicit unit
+  const fKoreanKRW = (krwAmt, unit) => `${fKRW(krwAmt)}${unit ? ` / ${unit}` : ""}`;
+
   return (
     <div>
 
@@ -159,7 +170,7 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
       {/* ── Physical Premium Comparison — gold LEFT, silver RIGHT ── */}
       <div className="savings-panel-glow" style={{ background: "#0a0a0a", padding: isMobile ? "24px 16px" : "32px 80px", borderBottom: "1px solid #1a1510", position: "relative" }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 14 : 24 }}>
-          {/* LEFT panel — Gold 1돈 tracker */}
+          {/* LEFT panel — Gold 1oz tracker */}
           <div className="lift-card" style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 10, padding: isMobile ? "20px 18px" : "28px 28px" }}>
             <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 11, color: "#8a7d6b", letterSpacing: 2, textTransform: "uppercase", marginBottom: 12 }}>
               {lang === "ko" ? "금 1 oz 구매 시 절약 금액" : "Savings on 1 oz Gold"}
@@ -168,23 +179,37 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
               {lang === "ko" ? "금 절약 비교" : "Gold Savings (1 oz)"}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {[
-                { label: lang === "ko" ? "한국금거래소 매도가 (부가세 포함)" : "한국금거래소 (VAT incl.)", val: fPrice(goldKR_usd), col: "#f87171" },
-                { label: lang === "ko" ? "Aurum 실물가" : "Aurum Price", val: fPrice(goldAurum_usd), col: "#4ade80" },
-              ].map((x, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
-                  <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#8a7d6b" }}>{x.label}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 16 : 20, color: x.col, fontWeight: 600 }}>{x.val}</div>
+              {/* Row 1: KOREAN PRICE — always shown in KRW/oz, mirrors ticker premium */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
+                <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#8a7d6b" }}>
+                  {lang === "ko" ? "한국금거래소 매도가 (부가세 포함)" : "한국금거래소 (VAT incl.)"}
                 </div>
-              ))}
+                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 16 : 20, color: "#f87171", fontWeight: 600 }}>
+                  {fKoreanKRW(goldKR_krwPerOz, "oz")}
+                </div>
+              </div>
+              {/* Row 2: AURUM PRICE — respects currency toggle */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
+                <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#8a7d6b" }}>
+                  {lang === "ko" ? "Aurum 실물가" : "Aurum Price"}
+                </div>
+                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 16 : 20, color: "#4ade80", fontWeight: 600 }}>
+                  {fPrice(goldAurum_usd)}{currency === "KRW" ? " / oz" : " / oz"}
+                </div>
+              </div>
+              {/* Savings panel */}
               <div style={{ background: "rgba(74,222,128,0.07)", padding: "12px 16px", borderRadius: 8, border: "1px solid rgba(74,222,128,0.2)", marginTop: 4 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                   <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>{lang === "ko" ? "절약" : "Save"}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 18 : 24, color: "#4ade80", fontWeight: 700 }}>{fPrice(goldSavings_usd)}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 18 : 24, color: "#4ade80", fontWeight: 700 }}>
+                    {fPrice(goldSavings_usd)}
+                  </div>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed rgba(74,222,128,0.2)", paddingTop: 6 }}>
-                  <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>절약률</div>
-                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>{goldKR > 0 ? (goldSavings / goldKR * 100).toFixed(1) : "0.0"}%</div>
+                  <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>{lang === "ko" ? "절약률" : "Savings Rate"}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>
+                    {goldSavingsPct.toFixed(1)}%
+                  </div>
                 </div>
               </div>
             </div>
@@ -199,23 +224,37 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
               {lang === "ko" ? "은 절약 비교" : "Silver Savings"}
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              {[
-                { label: lang === "ko" ? "한국금거래소 매도가 (부가세 포함)" : "한국금거래소 (VAT incl.)", val: fPrice(silverKR_usd), col: "#f87171" },
-                { label: lang === "ko" ? "Aurum 실물가" : "Aurum Price", val: fPrice(silverAurum_usd), col: "#4ade80" },
-              ].map((x, i) => (
-                <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
-                  <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#8a7d6b" }}>{x.label}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 16 : 20, color: x.col, fontWeight: 600 }}>{x.val}</div>
+              {/* Row 1: KOREAN PRICE — always shown in KRW/kg, uses 32% premium */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
+                <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#8a7d6b" }}>
+                  {lang === "ko" ? "한국 시중 매도가 (부가세 포함)" : "Korea Retail (VAT incl.)"}
                 </div>
-              ))}
+                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 16 : 20, color: "#f87171", fontWeight: 600 }}>
+                  {fKoreanKRW(silverKR_krwPerKg, "kg")}
+                </div>
+              </div>
+              {/* Row 2: AURUM PRICE — respects currency toggle */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
+                <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#8a7d6b" }}>
+                  {lang === "ko" ? "Aurum 실물가" : "Aurum Price"}
+                </div>
+                <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 16 : 20, color: "#4ade80", fontWeight: 600 }}>
+                  {fPrice(silverAurum_usd)}{currency === "KRW" ? " / kg" : " / kg"}
+                </div>
+              </div>
+              {/* Savings panel */}
               <div style={{ background: "rgba(74,222,128,0.07)", padding: "12px 16px", borderRadius: 8, border: "1px solid rgba(74,222,128,0.2)", marginTop: 4 }}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
                   <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>{lang === "ko" ? "절약" : "Save"}</div>
-                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 18 : 24, color: "#4ade80", fontWeight: 700 }}>{fPrice(silverSavings_usd)}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 18 : 24, color: "#4ade80", fontWeight: 700 }}>
+                    {fPrice(silverSavings_usd)}
+                  </div>
                 </div>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed rgba(74,222,128,0.2)", paddingTop: 6 }}>
-                  <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>절약률</div>
-                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>{silverKR > 0 ? (silverSavings / silverKR * 100).toFixed(1) : "0.0"}%</div>
+                  <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>{lang === "ko" ? "절약률" : "Savings Rate"}</div>
+                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>
+                    {silverSavingsPct.toFixed(1)}%
+                  </div>
                 </div>
               </div>
             </div>
@@ -226,11 +265,11 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
         <div style={{ marginTop: 16, padding: isMobile ? "16px 14px" : "18px 24px", background: "rgba(197,165,114,0.04)", border: "1px solid rgba(197,165,114,0.12)", borderRadius: 8 }}>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: isMobile ? 14 : 0, alignItems: "center", marginBottom: 10 }}>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: isMobile ? 0 : "0 12px", borderRight: !isMobile ? "1px solid rgba(197,165,114,0.15)" : "none" }}>
-              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "clamp(24px, 4vw, 48px)", color: "#f87171", fontWeight: 700, lineHeight: 1 }}>15-20%+</div>
+              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "clamp(24px, 4vw, 48px)", color: "#f87171", fontWeight: 700, lineHeight: 1 }}>{(KR_GOLD_PREMIUM * 100).toFixed(0)}%</div>
               <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 11 : 12, color: "#8a7d6b", lineHeight: 1.4, marginTop: 6, textAlign: "center" }}>한국 평균 금 실물 프리미엄</div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: isMobile ? 0 : "0 12px", borderRight: !isMobile ? "1px solid rgba(197,165,114,0.15)" : "none" }}>
-              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "clamp(24px, 4vw, 48px)", color: "#f87171", fontWeight: 700, lineHeight: 1 }}>30%+</div>
+              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: "clamp(24px, 4vw, 48px)", color: "#f87171", fontWeight: 700, lineHeight: 1 }}>{(KR_SILVER_PREMIUM * 100).toFixed(0)}%</div>
               <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 11 : 12, color: "#8a7d6b", lineHeight: 1.4, marginTop: 6, textAlign: "center" }}>한국 평균 은 실물 프리미엄</div>
             </div>
             <div style={{ display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center", padding: isMobile ? 0 : "0 12px" }}>
