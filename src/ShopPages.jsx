@@ -158,7 +158,7 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
         </div>
       </div>
 
-      {/* ── Physical Premium Comparison — A-1: 2-panel layout (gold LEFT, silver RIGHT), 왜 Aurum box removed ── */}
+      {/* ── Physical Premium Comparison — gold LEFT, silver RIGHT ── */}
       <div className="savings-panel-glow" style={{ background: "#0a0a0a", padding: isMobile ? "24px 16px" : "32px 80px", borderBottom: "1px solid #1a1510", position: "relative" }}>
         <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: isMobile ? 14 : 24 }}>
           {/* LEFT panel — Gold 1돈 tracker */}
@@ -172,7 +172,7 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
                 { label: lang === "ko" ? "한국 실물 시가" : "Korean Market", val: fPrice(goldKB_usd), col: "#f87171" },
-                { label: lang === "ko" ? "아름 실물가" : "Aurum Price", val: fPrice(goldAurum_usd), col: "#4ade80" },
+                { label: lang === "ko" ? "Aurum 실물가" : "Aurum Price", val: fPrice(goldAurum_usd), col: "#4ade80" },
               ].map((x, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
                   <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#8a7d6b" }}>{x.label}</div>
@@ -184,7 +184,6 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
                   <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>{lang === "ko" ? "절약" : "Save"}</div>
                   <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 18 : 24, color: "#4ade80", fontWeight: 700 }}>{fPrice(goldSavings_usd)}</div>
                 </div>
-                {/* C-2: % savings row */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed rgba(74,222,128,0.2)", paddingTop: 6 }}>
                   <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>절약률</div>
                   <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>{goldKB > 0 ? (goldSavings / goldKB * 100).toFixed(1) : "0.0"}%</div>
@@ -204,7 +203,7 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {[
                 { label: lang === "ko" ? "한국 실물 시가" : "Korean Market", val: fPrice(silverKB_usd), col: "#f87171" },
-                { label: lang === "ko" ? "아름 실물가" : "Aurum Price", val: fPrice(silverAurum_usd), col: "#4ade80" },
+                { label: lang === "ko" ? "Aurum 실물가" : "Aurum Price", val: fPrice(silverAurum_usd), col: "#4ade80" },
               ].map((x, i) => (
                 <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "4px 0" }}>
                   <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 12, color: "#8a7d6b" }}>{x.label}</div>
@@ -216,7 +215,6 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
                   <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>{lang === "ko" ? "절약" : "Save"}</div>
                   <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 18 : 24, color: "#4ade80", fontWeight: 700 }}>{fPrice(silverSavings_usd)}</div>
                 </div>
-                {/* C-2: % savings row */}
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", borderTop: "1px dashed rgba(74,222,128,0.2)", paddingTop: 6 }}>
                   <div style={{ fontSize: 11, color: "#4ade80", fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>절약률</div>
                   <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 14, color: "#4ade80", fontWeight: 700, textAlign: "center" }}>{silverKB > 0 ? (silverSavings / silverKB * 100).toFixed(1) : "0.0"}%</div>
@@ -244,7 +242,7 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
           </div>
           <div style={{ borderTop: "1px dashed rgba(197,165,114,0.12)", paddingTop: 8, fontFamily: "'Outfit',sans-serif", fontSize: 11, color: "#555", lineHeight: 1.6 }}>
             {lang === "ko"
-              ? "※ 한국 실물 시가는 KB Star 금·은 시세 기준 추정값입니다. 아름 가격은 국제 현물가 + 프리미엄 기준이며, 실시간으로 변동됩니다."
+              ? "※ 한국 실물 시가는 KB Star 금·은 시세 기준 추정값입니다. Aurum 가격은 국제 현물가 + 프리미엄 기준이며, 실시간으로 변동됩니다."
               : "※ Korean market prices are estimates based on KB Star gold & silver rates. Aurum prices are international spot + premium and update in real time."}
           </div>
         </div>
