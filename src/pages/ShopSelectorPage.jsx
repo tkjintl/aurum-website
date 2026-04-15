@@ -128,7 +128,7 @@ export default function ShopSelectorPage({ lang, navigate }) {
             </div>
           </div>
 
-          {/* Card 2 — AGP 아름 골드 플랜 (featured) */}
+          {/* Card 2 — AGP Aurum 골드 플랜 (featured) */}
           <div
             className="magnetic-card"
             onClick={() => navigate('agp-intro')}
@@ -169,7 +169,7 @@ export default function ShopSelectorPage({ lang, navigate }) {
             </div>
 
             <h2 style={{ fontFamily: T.krDisplay, fontSize: 30, fontWeight: 600, color: T.textPrimary, marginBottom: 6, lineHeight: 1.25 }}>
-              아름 골드 플랜
+              Aurum 골드 플랜
             </h2>
             <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 17, color: T.gold, fontWeight: 400, marginBottom: 24 }}>
               Aurum Gold Plan — Automated Accumulation
