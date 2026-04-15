@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { initMagneticCards } from '../lib/magnetic';
 
-// ─── Inline flag SVGs for cross-browser rendering ───────────────────────────
+// ─── Inline flag SVG ─────────────────────────────────────────────────────────
 const FlagSG = () => (
   <svg width="18" height="12" viewBox="0 0 20 14" style={{ display: 'inline-block', verticalAlign: 'middle', borderRadius: 2 }}>
     <rect width="20" height="7" fill="#EF3340" />
@@ -39,20 +39,28 @@ export default function ShopSelectorPage({ lang, navigate }) {
     krDisplay: "'Noto Serif KR', 'Cormorant Garamond', serif",
   };
 
+  // Card 1 bullet items
+  const physicalItems = ko
+    ? ['1 oz ~ 1 kg 바 · 1/2 oz 코인', '한 번의 결제 · 영구 보관', '유선·카드·암호화폐 결제 지원']
+    : ['Bars from 1 oz to 1 kg · Coins from 1/2 oz', 'One-time purchase, permanent allocation', 'Wire, card, and crypto supported'];
+
+  // Card 2 bullet items
+  const agpItems = ko
+    ? ['월 200,000원부터 시작', '매일·매주·매월 자동 적립', '100g 도달 시 실물 바 무료 전환']
+    : ['Start from KRW 200,000 / month', 'Daily, weekly, or monthly auto-debit', 'Free conversion to physical at 100g'];
+
   return (
     <div style={{ background: T.bg, minHeight: '90vh', padding: '80px 20px 80px' }}>
-      {/* Head */}
       <div style={{ maxWidth: 1240, margin: '0 auto' }}>
+
+        {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: 72 }}>
           <div style={{ fontFamily: T.mono, fontSize: 11, letterSpacing: '0.28em', color: T.gold, textTransform: 'uppercase', marginBottom: 20 }}>
             {ko ? '매장' : 'Shop'}
           </div>
-          <h1 style={{ fontFamily: T.krDisplay, fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: 500, color: T.textPrimary, lineHeight: 1.2, marginBottom: 14 }}>
+          <h1 style={{ fontFamily: T.krDisplay, fontSize: 'clamp(28px, 5vw, 52px)', fontWeight: 500, color: T.textPrimary, lineHeight: 1.2, marginBottom: 22 }}>
             {ko ? '어떻게 시작하시겠습니까' : 'How Would You Like to Begin?'}
           </h1>
-          {!ko && <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 'clamp(16px, 2vw, 22px)', color: T.gold, marginBottom: 22 }}>
-            Choose how you begin.
-          </div>}
           <p style={{ maxWidth: 620, margin: '0 auto', color: T.textSecondary, fontSize: 15, lineHeight: 1.75, fontFamily: T.sans }}>
             {ko
               ? 'Aurum은 두 가지 방식으로 실물 금·은을 제공합니다. 한 번에 구매하는 실물 바·코인 또는 월 20만원부터 시작하는 자동 적립 저축 플랜 (AGP).'
@@ -60,7 +68,7 @@ export default function ShopSelectorPage({ lang, navigate }) {
           </p>
         </div>
 
-        {/* Two-card selector grid */}
+        {/* Two-card grid */}
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 480px), 1fr))', gap: 24 }}>
 
           {/* Card 1 — 실물 금·은 매매 */}
@@ -84,40 +92,28 @@ export default function ShopSelectorPage({ lang, navigate }) {
               display: 'flex', flexDirection: 'column',
               alignItems: 'center', justifyContent: 'center',
               marginBottom: 32,
-              fontFamily: T.serif,
-              fontSize: 22, fontWeight: 500,
-              color: T.gold,
-              lineHeight: 1.05,
-              letterSpacing: '0.08em',
+              fontFamily: T.serif, fontSize: 22, fontWeight: 500,
+              color: T.gold, lineHeight: 1.05, letterSpacing: '0.08em',
             }}>
               <span>AU</span>
               <span>AG</span>
             </div>
 
-            <h2 style={{ fontFamily: T.krDisplay, fontSize: 30, fontWeight: 600, color: T.textPrimary, marginBottom: 6, lineHeight: 1.25 }}>
-              실물 금·은 매매
+            <h2 style={{ fontFamily: T.krDisplay, fontSize: 30, fontWeight: 600, color: T.textPrimary, marginBottom: 24, lineHeight: 1.25 }}>
+              {ko ? '실물 금·은 매매' : 'Physical Gold & Silver'}
             </h2>
-            {!ko && <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 17, color: T.gold, fontWeight: 400, marginBottom: 24 }}>
-              Physical Gold &amp; Silver — Direct Purchase
-            </div>}
+
             <p style={{ color: T.textSecondary, fontSize: 14.5, lineHeight: 1.75, marginBottom: 28, fontFamily: T.sans }}>
               {ko
-                ? 'LBMA 승인 골드·실버 바, sovereign-issued 코인을 일회성으로 구매합니다. 국제 현물가 + 투명한 프리미엄으로 고객님 명의 금고에 즉시 배분 보관됩니다.'
-                : 'One-time purchase of LBMA-approved gold and silver bars, and sovereign-issued coins. Allocated directly to your vault at international spot price plus a transparent premium.'}
+                ? 'LBMA 승인 골드·실버 바를 일회성으로 구매합니다. 국제 현물가 + 투명한 프리미엄으로 고객님 명의 금고에 즉시 배분 보관됩니다.'
+                : 'One-time purchase of LBMA-approved gold and silver bars and sovereign-issued coins. Allocated directly to your vault at international spot price plus a transparent premium.'}
             </p>
 
             <ul style={{ listStyle: 'none', padding: 0, marginBottom: 36, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[
-                { ko: '1 oz ~ 1 kg 바 · 1/2 oz 코인', en: 'Bars from 1 oz to 1kg · Coins from 1/2 oz' },
-                { ko: '한 번의 결제 · 영구 보관', en: 'One-time purchase, permanent allocation' },
-                { ko: '유선·카드·암호화폐 결제 지원', en: 'Wire, card, and crypto supported' },
-              ].map((item, i) => (
+              {physicalItems.map((item, i) => (
                 <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingBottom: 12, borderBottom: i < 2 ? '1px dashed rgba(197, 165, 114, 0.15)' : 'none', fontSize: 14, color: T.textPrimary, fontFamily: T.sans }}>
                   <span style={{ color: T.gold, fontFamily: T.mono, flexShrink: 0 }}>—</span>
-                  <div>
-                    <div>{ko ? item.ko : item.en}</div>
-                    {!ko && <div style={{ fontFamily: T.serif, fontStyle: 'italic', color: T.textMuted, fontSize: 13, marginTop: 2 }}>{item.ko}</div>}
-                  </div>
+                  <div>{item}</div>
                 </li>
               ))}
             </ul>
@@ -128,7 +124,7 @@ export default function ShopSelectorPage({ lang, navigate }) {
             </div>
           </div>
 
-          {/* Card 2 — AGP Aurum 골드 플랜 (featured) */}
+          {/* Card 2 — AGP */}
           <div
             className="magnetic-card"
             onClick={() => navigate('agp-intro')}
@@ -160,20 +156,16 @@ export default function ShopSelectorPage({ lang, navigate }) {
               border: `1px solid ${T.borderStrong}`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               marginBottom: 32,
-              fontFamily: T.serif,
-              fontSize: 24, fontWeight: 500,
-              color: T.gold,
-              letterSpacing: '0.06em',
+              fontFamily: T.serif, fontSize: 24, fontWeight: 500,
+              color: T.gold, letterSpacing: '0.06em',
             }}>
               AGP
             </div>
 
-            <h2 style={{ fontFamily: T.krDisplay, fontSize: 30, fontWeight: 600, color: T.textPrimary, marginBottom: 6, lineHeight: 1.25 }}>
-              Aurum 골드 플랜
+            <h2 style={{ fontFamily: T.krDisplay, fontSize: 30, fontWeight: 600, color: T.textPrimary, marginBottom: 24, lineHeight: 1.25 }}>
+              {ko ? 'Aurum 골드 플랜' : 'Aurum Gold Plan'}
             </h2>
-            {!ko && <div style={{ fontFamily: T.serif, fontStyle: 'italic', fontSize: 17, color: T.gold, fontWeight: 400, marginBottom: 24 }}>
-              Aurum Gold Plan — Automated Accumulation
-            </div>}
+
             <p style={{ color: T.textSecondary, fontSize: 14.5, lineHeight: 1.75, marginBottom: 28, fontFamily: T.sans }}>
               {ko
                 ? '월 20만원부터 시작하는 그램 단위 자동 적립. 토스뱅크 자동이체, 신용카드, 암호화폐로 입금하고 100g 도달 시 실물 바로 무료 전환합니다.'
@@ -181,17 +173,10 @@ export default function ShopSelectorPage({ lang, navigate }) {
             </p>
 
             <ul style={{ listStyle: 'none', padding: 0, marginBottom: 36, display: 'flex', flexDirection: 'column', gap: 12 }}>
-              {[
-                { ko: '월 200,000원부터 시작', en: 'Start from KRW 200,000 / month' },
-                { ko: '매일·매주·매월 자동 적립', en: 'Daily, weekly, or monthly auto-debit' },
-                { ko: '100g 도달 시 실물 바 무료 전환', en: 'Free conversion to physical at 100g' },
-              ].map((item, i) => (
+              {agpItems.map((item, i) => (
                 <li key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: 12, paddingBottom: 12, borderBottom: i < 2 ? '1px dashed rgba(197, 165, 114, 0.15)' : 'none', fontSize: 14, color: T.textPrimary, fontFamily: T.sans }}>
                   <span style={{ color: T.gold, fontFamily: T.mono, flexShrink: 0 }}>—</span>
-                  <div>
-                    <div>{ko ? item.ko : item.en}</div>
-                    {!ko && <div style={{ fontFamily: T.serif, fontStyle: 'italic', color: T.textMuted, fontSize: 13, marginTop: 2 }}>{item.ko}</div>}
-                  </div>
+                  <div>{item}</div>
                 </li>
               ))}
             </ul>
@@ -206,9 +191,8 @@ export default function ShopSelectorPage({ lang, navigate }) {
         {/* Bottom note */}
         <p style={{ textAlign: 'center', marginTop: 40, fontSize: 12, color: T.textMuted, fontFamily: T.sans, lineHeight: 1.7 }}>
           {ko
-            ? '모든 귀금속은 싱가포르 Malca-Amit FTZ에 완전 배분 보관됩니다. Lloyd\'s of London 보험 적용.'
-            : 'All precious metals are fully allocated at Malca-Amit Singapore FTZ. Insured by Lloyd\'s of London.'}
-          &nbsp;<FlagSG />
+            ? <>모든 귀금속은 싱가포르 Malca-Amit FTZ에 완전 배분 보관됩니다. Lloyd's of London 보험 적용. <FlagSG /></>
+            : <>All precious metals are fully allocated at Malca-Amit Singapore FTZ. Insured by Lloyd's of London. <FlagSG /></>}
         </p>
       </div>
     </div>
