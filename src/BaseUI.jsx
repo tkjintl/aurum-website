@@ -61,14 +61,16 @@ function Ticker({ lang, prices, krwRate, dailyChanges }) {
         change: dailyChanges.krw
           ? `${parseFloat(dailyChanges.krw) >= 0 ? '+' : ''}${dailyChanges.krw}%`
           : '—',
-        up: parseFloat(dailyChanges.krw || 0) >= 0
+        up: parseFloat(dailyChanges.krw || 0) >= 0,
+        noChange: true
       },
       {
-        label: lang === "ko" ? "한국금거래소 금/g" : "KR Gold/g",
-        price: Math.round(prices.gold * krwRate * 1.10 / 31.1035),
+        label: lang === "ko" ? "한국금거래소 매도가 (1돈 / 부가세 포함)" : "KR Gold/돈",
+        price: Math.round(prices.gold * krwRate * 1.10 / 31.1035 * 3.75),
         change: '—',
         up: true,
-        isKrGold: true
+        isKrGold: true,
+        noChange: true
       },
     ];
     setItems(build());
@@ -83,9 +85,9 @@ function Ticker({ lang, prices, krwRate, dailyChanges }) {
             <span style={{ color: "#a09080", fontSize: isMobile ? 9 : 11 }}>{item.label}</span>
             {/* A-4: ₩ prefix for KRW */}
             <span style={{ color: "#c5a572", fontWeight: 600 }}>
-              {item.isKrGold ? `₩${item.price.toLocaleString('ko-KR')}/g` : item.label === "USD/KRW" ? `₩${item.price.toFixed(1)}` : `$${item.price.toFixed(2)}`}
+              {item.isKrGold ? `₩${item.price.toLocaleString('ko-KR')}/돈` : item.label === "USD/KRW" ? `₩${item.price.toFixed(1)}` : `$${item.price.toFixed(2)}`}
             </span>
-            <span style={{ color: item.up ? "#4ade80" : "#f87171", fontSize: isMobile ? 8 : 10 }}>{item.change}</span>
+            {!item.noChange && <span style={{ color: item.up ? "#4ade80" : "#f87171", fontSize: isMobile ? 8 : 10 }}>{item.change}</span>}
           </div>
         ))}
       </div>
