@@ -31,76 +31,74 @@ function ToastContainer({ toasts }) {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// TICKER — A-1: Real daily % change via localStorage KST tracking
-//          A-4: ₩ prefix on USD/KRW
-//          Remove 3-second jitter interval
+// TICKER — Scrolling marquee, KRW-primary display
+//   Items: 금(GOLD/oz) · 은(SILVER/oz) · KRW/USD · 한국금값 (red) · Aurum 절약 (green)
+//   Removed: 백금, AGP 최소, Vault info, Aurum standalone price, VAT annotation
 // ═══════════════════════════════════════════════════════════════════════════════
 function Ticker({ lang, prices, krwRate, dailyChanges }) {
-  const isMobile = useIsMobile();
-  const [items, setItems] = useState([]);
+  // KRW price calculations
+  const goldKRW    = Math.round(prices.gold   * krwRate * (1 + AURUM_GOLD_PREMIUM));
+  const silverKRW  = Math.round(prices.silver * krwRate * (1 + AURUM_SILVER_PREMIUM));
+  const krGoldKRW  = Math.round(prices.gold   * krwRate * (1 + KR_GOLD_PREMIUM));
+  const savingsKRW = krGoldKRW - goldKRW;
+  const savingsPct = krGoldKRW > 0 ? ((savingsKRW / krGoldKRW) * 100).toFixed(1) : "0";
 
-  useEffect(() => {
-    const build = () => [
-      {
-        label: lang === "ko" ? "금" : "XAU/USD",
-        price: prices.gold,
-        change: dailyChanges.gold
-          ? `${parseFloat(dailyChanges.gold) >= 0 ? '+' : ''}${dailyChanges.gold}%`
-          : '—',
-        up: parseFloat(dailyChanges.gold || 0) >= 0
-      },
-      {
-        label: lang === "ko" ? "은" : "XAG/USD",
-        price: prices.silver,
-        change: dailyChanges.silver
-          ? `${parseFloat(dailyChanges.silver) >= 0 ? '+' : ''}${dailyChanges.silver}%`
-          : '—',
-        up: parseFloat(dailyChanges.silver || 0) >= 0
-      },
-      {
-        label: lang === "ko" ? "백금" : "XPT/USD",
-        price: prices.platinum,
-        change: dailyChanges.platinum
-          ? `${parseFloat(dailyChanges.platinum) >= 0 ? '+' : ''}${dailyChanges.platinum}%`
-          : '—',
-        up: parseFloat(dailyChanges.platinum || 0) >= 0
-      },
-      {
-        label: "USD/KRW",
-        price: krwRate,
-        change: dailyChanges.krw
-          ? `${parseFloat(dailyChanges.krw) >= 0 ? '+' : ''}${dailyChanges.krw}%`
-          : '—',
-        up: parseFloat(dailyChanges.krw || 0) >= 0,
-        noChange: true
-      },
-      {
-        label: lang === "ko" ? "한국금거래소 1돈 매도가" : "KR Gold",
-        // Uses KR_GOLD_PREMIUM (single source of truth — same constant flows into Home savings panel)
-        price: Math.round(prices.gold * krwRate * (1 + KR_GOLD_PREMIUM) / 31.1035 * 3.75),
-        change: '—',
-        up: true,
-        isKrGold: true,
-        noChange: true
-      },
-    ];
-    setItems(build());
-    // No 3-second jitter — prices only update on 60s API refresh cycle
-  }, [lang, prices, krwRate, dailyChanges]);
+  const goldChange   = dailyChanges.gold   ? `${parseFloat(dailyChanges.gold)   >= 0 ? '+' : ''}${dailyChanges.gold}%`   : '—';
+  const silverChange = dailyChanges.silver ? `${parseFloat(dailyChanges.silver) >= 0 ? '+' : ''}${dailyChanges.silver}%` : '—';
+  const goldUp   = parseFloat(dailyChanges.gold   || 0) >= 0;
+  const silverUp = parseFloat(dailyChanges.silver || 0) >= 0;
+
+  // Shared item style
+  const itemStyle  = { display:'inline-flex', alignItems:'center', gap:8, padding:'0 24px', borderRight:'1px solid rgba(197,165,114,.08)', fontFamily:"'JetBrains Mono',monospace", fontSize:10.5, letterSpacing:'.06em', flexShrink:0 };
+  const lblStyle   = { color:'#666' };
+  const priceStyle = { color:'#C5A572', fontWeight:500 };
+
+  // The 5 items — rendered twice for seamless loop
+  const Items = () => (
+    <>
+      {/* Live dot */}
+      <div style={itemStyle}>
+        <span style={{ width:5, height:5, borderRadius:'50%', background:'#5ead77', animation:'pulse 2s infinite', display:'inline-block', flexShrink:0 }} />
+        <span style={lblStyle}>LIVE</span>
+      </div>
+      {/* 금 (GOLD/oz) */}
+      <div style={itemStyle}>
+        <span style={lblStyle}>금 (GOLD/oz)</span>
+        <span style={priceStyle}>₩{goldKRW.toLocaleString('ko-KR')}</span>
+        <span style={{ color: goldUp ? '#5ead77' : '#e05555', fontSize:9.5 }}>{goldChange}</span>
+      </div>
+      {/* 은 (SILVER/oz) */}
+      <div style={itemStyle}>
+        <span style={lblStyle}>은 (SILVER/oz)</span>
+        <span style={priceStyle}>₩{silverKRW.toLocaleString('ko-KR')}</span>
+        <span style={{ color: silverUp ? '#5ead77' : '#e05555', fontSize:9.5 }}>{silverChange}</span>
+      </div>
+      {/* KRW/USD */}
+      <div style={itemStyle}>
+        <span style={lblStyle}>KRW/USD</span>
+        <span style={priceStyle}>₩{krwRate.toFixed(1)}</span>
+      </div>
+      {/* 한국금값 — red, shows premium you're avoiding */}
+      <div style={itemStyle}>
+        <span style={lblStyle}>한국금값</span>
+        <span style={{ color:'#e05555', fontWeight:500 }}>₩{krGoldKRW.toLocaleString('ko-KR')}</span>
+        <span style={{ color:'#444', fontSize:9 }}>/oz</span>
+      </div>
+      {/* Aurum 절약 — green, shows your saving */}
+      <div style={{ ...itemStyle, borderRight:'none' }}>
+        <span style={lblStyle}>Aurum 절약</span>
+        <span style={{ color:'#5ead77', fontWeight:500 }}>₩{savingsKRW.toLocaleString('ko-KR')} · {savingsPct}%</span>
+      </div>
+    </>
+  );
 
   return (
-    <div style={{ background: "linear-gradient(90deg,#0d0d0d,#141414,#0d0d0d)", borderBottom: "1px solid #1e1e1e", padding: isMobile ? "7px 12px" : "9px 0" }}>
-      <div style={{ display: "flex", justifyContent: isMobile ? "space-between" : "center", gap: isMobile ? 6 : 52, fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 10 : 12, flexWrap: isMobile ? "wrap" : "nowrap" }}>
-        {items.map((item, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 5, whiteSpace: "nowrap" }}>
-            <span style={{ color: "#a09080", fontSize: isMobile ? 9 : 11 }}>{item.label}</span>
-            {/* A-4: ₩ prefix for KRW */}
-            <span style={{ color: "#c5a572", fontWeight: 600 }}>
-              {item.isKrGold ? `₩${item.price.toLocaleString('ko-KR')}` : item.label === "USD/KRW" ? `₩${item.price.toFixed(1)}` : `$${item.price.toFixed(2)}`}
-            </span>
-            {!item.noChange && <span style={{ color: item.up ? "#4ade80" : "#f87171", fontSize: isMobile ? 8 : 10 }}>{item.change}</span>}
-          </div>
-        ))}
+    <div style={{ background:'linear-gradient(90deg,#0d0d0d,#141414,#0d0d0d)', borderBottom:'1px solid #1e1e1e', overflow:'hidden', height:34, display:'flex', alignItems:'center' }}>
+      <div className="ticker-wrap" style={{ overflow:'hidden', width:'100%' }}>
+        <div className="ticker-track">
+          <Items />
+          <Items />
+        </div>
       </div>
     </div>
   );
@@ -127,29 +125,30 @@ function Nav({ page, navigate, lang, setLang, user, setUser, setShowLogin, cart 
 
   const cartCount = cart.reduce((s, i) => s + i.qty, 0);
   const go = (k) => { navigate(k); setOpen(false); };
+  // Nav link order: 매장 · Founders Club (gold) · AGP · 보관 · 배우기
+  // "왜 금인가" removed — content merged into Learn page
   const links = [
-    { key: "shop", ko: "매장", en: "Shop" },
-    { key: "why", ko: "왜 금인가", en: "Why Gold" },
-    { key: "storage", ko: "보관", en: "Storage" },
-    { key: "agp", ko: "AGP", en: "AGP" },
-    { key: "learn", ko: "교육", en: "Learn" },
+    { key: "shop", ko: "매장", en: "Shop", gold: false },
+    { key: "founders", ko: "Founders Club", en: "Founders Club", gold: true },
+    { key: "agp", ko: "AGP", en: "AGP", gold: false },
+    { key: "storage", ko: "보관", en: "Storage", gold: false },
+    { key: "learn", ko: "배우기", en: "Learn", gold: false },
   ];
 
   const logoSize = isMobile ? 32 : 38;
   const Logo = () => (
-    <div onClick={() => go("home")} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", textDecoration: "none" }}>
+    <div onClick={() => go("home")} style={{ display: "flex", alignItems: "center", gap: 12, cursor: "pointer", textDecoration: "none", flexShrink: 0 }}>
       <div
         className="aurum-logo-mark"
         style={{
           width: logoSize, height: logoSize,
-          border: "1px solid rgba(197, 165, 114, 0.5)",
+          border: "1.5px solid rgba(197,165,114,.55)",
           display: "flex", alignItems: "center", justifyContent: "center",
           fontFamily: "'Cormorant Garamond', serif",
           fontSize: logoSize * 0.42, fontWeight: 500, color: "#C5A572",
-          letterSpacing: "0.04em", transition: "border-color 0.3s ease", flexShrink: 0,
+          letterSpacing: "0.06em", transition: "border-color 0.3s ease", flexShrink: 0,
         }}
       >AU</div>
-      <span style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 16 : 20, fontWeight: 500, letterSpacing: "0.30em", color: "#f5f0e8" }}>AURUM</span>
     </div>
   );
 
@@ -165,26 +164,29 @@ function Nav({ page, navigate, lang, setLang, user, setUser, setShowLogin, cart 
 
   if (isMobile) return (
     <>
-      <nav style={{ background: "#0a0a0a", borderBottom: "1px solid #1e1e1e", padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56, position: "sticky", top: 0, zIndex: 200 }}>
+      <nav style={{ background: "rgba(10,10,10,.93)", backdropFilter: "blur(14px) saturate(160%)", WebkitBackdropFilter: "blur(14px) saturate(160%)", borderBottom: "1px solid rgba(197,165,114,.18)", padding: "0 16px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 56, position: "sticky", top: 0, zIndex: 200 }}>
         <Logo />
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          {/* AGP gold CTA always visible on mobile */}
+          <button onClick={() => go("agp-enroll")} style={{ height: 32, padding: "0 12px", fontSize: 11, fontFamily: "'Outfit',sans-serif", fontWeight: 700, background: "#C5A572", color: "#0a0a0a", border: "none", cursor: "pointer", whiteSpace: "nowrap" }}>AGP 시작</button>
           <CartBtn />
-          <button onClick={() => setOpen(!open)} style={{ background: "none", border: "none", color: "#c5a572", fontSize: 22, cursor: "pointer", lineHeight: 1 }}>{open ? "✕" : "☰"}</button>
+          <button onClick={() => setOpen(!open)} style={{ background: "none", border: "none", color: "#C5A572", fontSize: 22, cursor: "pointer", lineHeight: 1, padding: "4px" }}>{open ? "✕" : "☰"}</button>
         </div>
       </nav>
       {open && (
-        <div style={{ position: "fixed", top: 56, left: 0, right: 0, bottom: 0, background: "#0a0a0a", zIndex: 199, padding: "16px 20px", display: "flex", flexDirection: "column", gap: 2, overflowY: "auto" }}>
-          {links.map(x => <button key={x.key} onClick={() => go(x.key)} style={{ background: page === x.key ? "rgba(197,165,114,0.08)" : "none", border: "none", color: page === x.key ? "#c5a572" : "#a09080", fontSize: 17, fontFamily: "'Outfit',sans-serif", padding: "13px 8px", textAlign: "left", cursor: "pointer", borderBottom: "1px solid #1e1e1e", borderRadius: 4 }}>{lang === "ko" ? x.ko : x.en}</button>)}
-          {user && <>
-            <button onClick={() => go("dashboard")} style={{ background: "none", border: "none", color: "#a09080", fontSize: 17, fontFamily: "'Outfit',sans-serif", padding: "13px 8px", textAlign: "left", cursor: "pointer", borderBottom: "1px solid #1e1e1e" }}>{lang === "ko" ? "내 보유자산" : "My Holdings"}</button>
-            <button onClick={() => go("orders")} style={{ background: "none", border: "none", color: "#a09080", fontSize: 17, fontFamily: "'Outfit',sans-serif", padding: "13px 8px", textAlign: "left", cursor: "pointer", borderBottom: "1px solid #1e1e1e" }}>{lang === "ko" ? "주문 내역" : "Orders"}</button>
-            <button onClick={() => go("account")} style={{ background: "none", border: "none", color: "#a09080", fontSize: 17, fontFamily: "'Outfit',sans-serif", padding: "13px 8px", textAlign: "left", cursor: "pointer", borderBottom: "1px solid #1e1e1e" }}>{lang === "ko" ? "내 계정" : "Account"}</button>
-          </>}
-          <div style={{ marginTop: 20, display: "flex", gap: 10 }}>
-            {user
-              ? <button onClick={() => { setUser(null); setOpen(false); }} style={{ flex: 1, background: "transparent", border: "1px solid #282828", color: "#6b6b6b", padding: 12, borderRadius: 6, fontSize: 14, cursor: "pointer" }}>{lang === "ko" ? "로그아웃" : "Logout"}</button>
-              : <button onClick={() => { setShowLogin(true); setOpen(false); }} style={{ flex: 1, background: "linear-gradient(135deg,#c5a572,#8a6914)", border: "none", color: "#ffffff", padding: 12, borderRadius: 6, fontSize: 14, fontWeight: 700, cursor: "pointer" }}>{lang === "ko" ? "로그인 / 회원가입" : "Login / Sign Up"}</button>}
-            <button onClick={() => { setLang(lang === "en" ? "ko" : "en"); setOpen(false); }} style={{ background: "none", border: "1px solid #282828", color: "#a09080", padding: "10px 14px", borderRadius: 6, fontSize: 12, cursor: "pointer" }}>{lang === "en" ? "한국어" : "EN"}</button>
+        <div style={{ position: "fixed", inset: 0, background: "rgba(10,10,10,.97)", zIndex: 199, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 28 }}>
+          <button onClick={() => setOpen(false)} style={{ position: "absolute", top: 20, right: 24, fontSize: 20, color: "#a09080", background: "none", border: "none", cursor: "pointer" }}>✕</button>
+          {/* 5 nav links — serif style */}
+          {links.map(x => (
+            <button key={x.key} onClick={() => go(x.key)} className="mobile-nav-link" style={{ color: x.gold ? "#C5A572" : (page === x.key ? "#C5A572" : "#f5f0e8") }}>
+              {lang === "ko" ? x.ko : x.en}
+            </button>
+          ))}
+          {/* Bottom actions */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, width: 240, marginTop: 12 }}>
+            <button onClick={() => go("agp-enroll")} style={{ width: "100%", padding: "14px", fontSize: 14, fontWeight: 700, fontFamily: "'Outfit',sans-serif", background: "#C5A572", color: "#0a0a0a", border: "none", cursor: "pointer" }}>AGP 가입하기 →</button>
+            <button onClick={() => { setShowLogin(true); setOpen(false); }} style={{ width: "100%", padding: "13px", fontSize: 13, fontFamily: "'Outfit',sans-serif", background: "transparent", color: "#a09080", border: "1px solid rgba(197,165,114,.35)", cursor: "pointer" }}>{lang === "ko" ? "로그인 / 회원가입" : "Login / Sign Up"}</button>
+            <button onClick={() => { setLang(lang === "en" ? "ko" : "en"); setOpen(false); }} style={{ background: "none", border: "1px solid rgba(197,165,114,.35)", color: "#C5A572", padding: "8px 0", fontFamily: "'JetBrains Mono',monospace", fontSize: 11, fontWeight: 700, letterSpacing: ".14em", cursor: "pointer" }}>{lang === "en" ? "한국어" : "KR / EN"}</button>
           </div>
         </div>
       )}
@@ -192,25 +194,30 @@ function Nav({ page, navigate, lang, setLang, user, setUser, setShowLogin, cart 
   );
 
   // Desktop nav — B-1: tighter gap and smaller font at narrow widths
-  const navFontSize = isNarrow ? 11 : 13;
-  const navGap = isNarrow ? 12 : 22;
+  const navFontSize = isNarrow ? 11 : 12;
+  const navGap = isNarrow ? 8 : 14;
 
   return (
-    <nav style={{ background: "#0a0a0a", borderBottom: "1px solid #1e1e1e", padding: isNarrow ? "0 20px" : "0 40px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 62, position: "sticky", top: 0, zIndex: 200, overflow: "hidden" }}>
+    <nav style={{ background: "rgba(10,10,10,.93)", backdropFilter: "blur(14px) saturate(160%)", WebkitBackdropFilter: "blur(14px) saturate(160%)", borderBottom: "1px solid rgba(197,165,114,.18)", padding: isNarrow ? "0 20px" : "0 40px", display: "flex", alignItems: "center", justifyContent: "space-between", height: 62, position: "sticky", top: 0, zIndex: 200, overflow: "hidden" }}>
       <Logo />
-      <div style={{ display: "flex", gap: navGap, alignItems: "center", flexWrap: "nowrap", overflow: "hidden" }}>
+      <div style={{ display: "flex", gap: navGap, alignItems: "center", flexWrap: "nowrap", overflow: "hidden", marginLeft: 20, flex: 1 }}>
         {links.map(x => (
-          <button key={x.key} onClick={() => navigate(x.key)} style={{ background: "none", border: "none", borderBottom: page === x.key ? "1px solid #c5a572" : "1px solid transparent", color: page === x.key ? "#c5a572" : "#a09080", cursor: "pointer", fontSize: navFontSize, fontFamily: "'Outfit',sans-serif", letterSpacing: 0.8, textTransform: "uppercase", paddingBottom: 3, transition: "color 0.15s", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}>{lang === "ko" ? x.ko : x.en}</button>
+          <button key={x.key} onClick={() => navigate(x.key)} style={{ background: "none", border: "none", borderBottom: page === x.key ? "1px solid #C5A572" : "1px solid transparent", color: x.gold ? "#C5A572" : (page === x.key ? "#C5A572" : "#666"), cursor: "pointer", fontSize: navFontSize, fontFamily: "'Outfit',sans-serif", letterSpacing: ".06em", paddingBottom: 3, transition: "color 0.15s", whiteSpace: "nowrap", textOverflow: "ellipsis", overflow: "hidden" }}
+            onMouseEnter={e => { if (!x.gold) e.currentTarget.style.color = "#f5f0e8"; }}
+            onMouseLeave={e => { if (!x.gold) e.currentTarget.style.color = page === x.key ? "#C5A572" : "#666"; }}
+          >{lang === "ko" ? x.ko : x.en}</button>
         ))}
-        <div style={{ width: 1, height: 18, background: "#282828", flexShrink: 0 }} />
+      </div>
+      {/* Right cluster — all buttons uniform height 34px */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
         <CartBtn />
         {user && <>
-          <button onClick={() => navigate("dashboard")} style={{ background: "none", border: "1px solid rgba(197,165,114,0.5)", color: "#c5a572", padding: isNarrow ? "5px 10px" : "5px 14px", borderRadius: 4, fontSize: isNarrow ? 11 : 12, cursor: "pointer", fontFamily: "'Outfit',sans-serif", whiteSpace: "nowrap" }}>{lang === "ko" ? "내 보유자산" : "Holdings"}</button>
-          <button onClick={() => navigate("orders")} style={{ background: "none", border: "none", color: "#a09080", cursor: "pointer", fontSize: isNarrow ? 11 : 12, fontFamily: "'Outfit',sans-serif", whiteSpace: "nowrap" }}>{lang === "ko" ? "주문내역" : "Orders"}</button>
-          <button onClick={() => navigate("account")} style={{ background: "#141414", border: "1px solid #282828", color: "#c5a572", padding: isNarrow ? "5px 8px" : "5px 12px", borderRadius: 4, fontSize: isNarrow ? 11 : 12, cursor: "pointer", fontFamily: "'Outfit',sans-serif", whiteSpace: "nowrap" }}>{user.name ? user.name.slice(0, 8) : user.email.split("@")[0]}</button>
+          <button onClick={() => navigate("dashboard")} className="nav-btn nav-btn-ghost" style={{ minWidth: isNarrow ? 60 : 80 }}>{lang === "ko" ? "내 보유자산" : "Holdings"}</button>
+          <button onClick={() => navigate("account")} className="nav-btn nav-btn-ghost">{user.name ? user.name.slice(0, 8) : user.email.split("@")[0]}</button>
         </>}
-        {!user && <button onClick={() => setShowLogin(true)} style={{ background: "linear-gradient(135deg,#c5a572,#8a6914)", border: "none", color: "#ffffff", padding: isNarrow ? "7px 14px" : "7px 20px", borderRadius: 4, fontSize: isNarrow ? 12 : 13, fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap" }}>{lang === "ko" ? "로그인" : "Login"}</button>}
-        <button onClick={() => setLang(lang === "en" ? "ko" : "en")} style={{ background: "none", border: "1px solid #282828", color: "#a09080", padding: "4px 10px", borderRadius: 4, fontSize: 12, cursor: "pointer", flexShrink: 0 }}>{lang === "en" ? "한국어" : "EN"}</button>
+        {!user && <button onClick={() => setShowLogin(true)} className="nav-btn nav-btn-ghost">{lang === "ko" ? "로그인" : "Login"}</button>}
+        <button onClick={() => navigate("agp-enroll")} className="nav-btn nav-btn-gold">AGP 시작 →</button>
+        <button onClick={() => setLang(lang === "en" ? "ko" : "en")} className="nav-btn nav-btn-lang">{lang === "en" ? "KR" : "EN"}</button>
       </div>
     </nav>
   );
