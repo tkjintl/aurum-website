@@ -45,19 +45,15 @@ function Dashboard({ lang, navigate, prices, krwRate, user, orders, holdings, to
 
   const goldOz = holdings.filter(h => h.metal === "gold").reduce((s, h) => s + h.weightOz, 0);
   const silverOz = holdings.filter(h => h.metal === "silver").reduce((s, h) => s + h.weightOz, 0);
-  // KRW-primary calculations — Aurum premium applied (matches ticker + product pages)
-  const KRW_RATE   = krwRate || 1378;
-  const GOLD_KRW   = prices.gold   * KRW_RATE * 1.08;
-  const SILVER_KRW = prices.silver * KRW_RATE * 1.15;
-  const goldVal    = goldOz   * GOLD_KRW;
-  const silverVal  = silverOz * SILVER_KRW;
-  const totalVal   = goldVal + silverVal;
-  const totalCost  = holdings.reduce((s, h) => s + h.purchasePrice * KRW_RATE, 0);
-  const totalPnL   = totalVal - totalCost;
-  const goldPct    = totalVal > 0 ? (goldVal / totalVal * 100).toFixed(0) : 0;
-  const silverPct  = totalVal > 0 ? (silverVal / totalVal * 100).toFixed(0) : 0;
+  const goldVal = goldOz * prices.gold;
+  const silverVal = silverOz * prices.silver;
+  const totalVal = goldVal + silverVal;
+  const totalCost = holdings.reduce((s, h) => s + h.purchasePrice, 0);
+  const totalPnL = totalVal - totalCost;
+  const goldPct = totalVal > 0 ? (goldVal / totalVal * 100).toFixed(0) : 0;
+  const silverPct = totalVal > 0 ? (silverVal / totalVal * 100).toFixed(0) : 0;
 
-  const curVal = (h) => (h.metal === "gold" ? GOLD_KRW : SILVER_KRW) * h.weightOz;
+  const curVal = (h) => (h.metal === "gold" ? prices.gold : prices.silver) * h.weightOz;
 
   const requestCert = async () => {
     setGenCert(true);
@@ -82,17 +78,17 @@ function Dashboard({ lang, navigate, prices, krwRate, user, orders, holdings, to
       </div>
 
       {/* Summary cards */}
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: isMobile ? 10 : 1, marginBottom: 20, background: "rgba(197,165,114,.18)", border: "1px solid rgba(197,165,114,.18)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(4,1fr)", gap: isMobile ? 10 : 16, marginBottom: 20 }}>
         {[
-          { label: lang === "ko" ? "총 가치" : "Total Value",  value: `₩${Math.round(totalVal).toLocaleString("ko-KR")}`,  sub: `$${(totalVal / KRW_RATE).toFixed(0)} USD`, col: "#c5a572" },
-          { label: lang === "ko" ? "금" : "Gold",              value: `${goldOz.toFixed(2)} oz`,                            sub: `₩${Math.round(goldVal).toLocaleString("ko-KR")}`, col: "#c5a572" },
-          { label: lang === "ko" ? "은" : "Silver",            value: `${silverOz.toFixed(0)} oz`,                          sub: `₩${Math.round(silverVal).toLocaleString("ko-KR")}`, col: "#aaa" },
-          { label: "P&L",                                       value: `${totalPnL >= 0 ? "+" : ""}₩${Math.round(Math.abs(totalPnL)).toLocaleString("ko-KR")}`, sub: `${totalCost > 0 ? ((totalPnL / totalCost) * 100).toFixed(1) : "0"}%`, col: totalPnL >= 0 ? "#4ade80" : "#f87171" },
+          { label: lang === "ko" ? "총 가치" : "Total Value", value: fUSD(totalVal), sub: fKRW(totalVal * krwRate), col: "#c5a572" },
+          { label: lang === "ko" ? "금" : "Gold", value: `${goldOz.toFixed(2)} oz`, sub: fUSD(goldVal), col: "#c5a572" },
+          { label: lang === "ko" ? "은" : "Silver", value: `${silverOz.toFixed(0)} oz`, sub: fUSD(silverVal), col: "#aaa" },
+          { label: "P&L", value: `${totalPnL >= 0 ? "+" : ""}${fUSD(totalPnL)}`, sub: `${totalCost > 0 ? ((totalPnL / totalCost) * 100).toFixed(1) : "0"}%`, col: totalPnL >= 0 ? "#4ade80" : "#f87171" },
         ].map((c, i) => (
-          <div key={i} style={{ background: "#111111", padding: isMobile ? 12 : 20 }}>
-            <div style={{ fontSize: 9, color: "#666", marginBottom: 7, fontFamily: "'JetBrains Mono',monospace", textTransform: "uppercase", letterSpacing: ".18em" }}>{c.label}</div>
-            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 13 : "clamp(16px,2vw,22px)", color: c.col, fontWeight: 600, lineHeight: 1 }}>{c.value}</div>
-            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: "#444", marginTop: 4 }}>{c.sub}</div>
+          <div key={i} style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 8, padding: isMobile ? 12 : 20 }}>
+            <div style={{ fontSize: 10, color: "#8a7d6b", marginBottom: 5, fontFamily: "'Outfit',sans-serif", textTransform: "uppercase", letterSpacing: 1 }}>{c.label}</div>
+            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 14 : 19, color: c.col, fontWeight: 600 }}>{c.value}</div>
+            <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: "#666", marginTop: 3 }}>{c.sub}</div>
           </div>
         ))}
       </div>
@@ -478,32 +474,6 @@ export default function App() {
     return cleanup;
   }, [page]);
 
-  // Scroll progress bar + back-to-top visibility
-  useEffect(() => {
-    const handleScroll = () => {
-      const scrolled = window.scrollY;
-      const total = document.body.scrollHeight - window.innerHeight;
-      const pct = total > 0 ? (scrolled / total) * 100 : 0;
-      const bar = document.getElementById("scroll-progress");
-      const btt = document.getElementById("back-to-top");
-      if (bar) bar.style.width = pct + "%";
-      if (btt) btt.classList.toggle("show", scrolled > 300);
-    };
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // IntersectionObserver — triggers .reveal.in on scroll enter
-  useEffect(() => {
-    const obs = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) { e.target.classList.add("in"); obs.unobserve(e.target); }
-      });
-    }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
-    document.querySelectorAll(".reveal").forEach(el => obs.observe(el));
-    return () => obs.disconnect();
-  }, [page]);
-
   // E-1: Composite cart key = ${productId}_${storageOption}
   const addToCart = useCallback((product, qty = 1, storageOption = "singapore") => {
     const price = calcPrice(product, { gold: prices.gold, silver: prices.silver, platinum: prices.platinum });
@@ -528,10 +498,6 @@ export default function App() {
 
   return (
     <div style={{ background: "#0a0a0a", color: "#f5f0e8", minHeight: "100vh", display: "flex", flexDirection: "column", fontFamily: "'Outfit','Pretendard Variable','Pretendard',sans-serif" }}>
-      {/* Scroll progress bar — fixed top edge, gold gradient */}
-      <div id="scroll-progress" />
-      {/* Back to top button — fixed bottom-right, fades in after 300px */}
-      <button id="back-to-top" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top">↑</button>
       <ToastContainer toasts={toasts} />
       <LoginModal show={showLogin} onClose={() => setShowLogin(false)} onLogin={onLogin} lang={lang} />
 
