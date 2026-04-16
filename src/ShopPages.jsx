@@ -78,63 +78,35 @@ function Home({ lang, navigate, prices, krwRate, currency, setCurrency }) {
     <div>
 
       {/* ── 1a. HERO — rewritten headline, subhead, eyebrow, CTAs ── */}
-      <div style={{ position: "relative", minHeight: isMobile ? 420 : 560, background: "linear-gradient(135deg,#0a0a0a,#1a1510 40%,#0d0b08)", display: "flex", alignItems: "center", padding: isMobile ? "60px 16px" : "0 80px", overflow: "hidden" }}>
-        {/* Subtle gold grid overlay */}
-        <div className="hero-bg-grid" />
-        {/* Right-side radial glow */}
-        <div className="hero-glow" />
+      <div style={{ position: "relative", minHeight: isMobile ? 420 : 540, background: "linear-gradient(135deg,#0a0a0a,#1a1510 40%,#0d0b08)", display: "flex", alignItems: "center", padding: isMobile ? "40px 16px" : "0 80px", overflow: "hidden" }}>
+        <div style={{ position: "absolute", inset: 0, opacity: 0.035, backgroundImage: "repeating-linear-gradient(45deg,#c5a572 0,#c5a572 1px,transparent 1px,transparent 40px)", pointerEvents: "none" }} />
         <div style={{ position: "relative", zIndex: 1, maxWidth: isMobile ? "100%" : 660 }}>
-          {/* Eyebrow with leading gold line */}
-          <div style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: "#c5a572", letterSpacing: ".26em", textTransform: "uppercase", marginBottom: isMobile ? 14 : 24 }}>
-            <span style={{ display: "block", width: 28, height: 1, background: "#c5a572", flexShrink: 0 }} />
-            {lang === "ko" ? "배분 보관 · 국제 현물가 · 한국 투자자 전용" : "Allocated Vault · International Spot · Korean Investors"}
+          {/* Eyebrow — updated */}
+          <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 10 : 12, color: "#c5a572", letterSpacing: isMobile ? 2 : 4, textTransform: "uppercase", marginBottom: isMobile ? 14 : 20 }}>
+            {lang === "ko" ? "배분 보관 · 국제 현물가 · 한국 투자자 전용" : "Allocated Vault Storage · International Spot Pricing · Korean Investors"}
           </div>
-          {/* H1 */}
-          <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 36 : "clamp(38px,5.5vw,72px)", fontWeight: 300, color: "#f5f0e8", lineHeight: 1.08, margin: "0 0 20px", letterSpacing: "-.01em" }}>
+          {/* H1 — updated */}
+          <h1 style={{ fontFamily: "'Cormorant Garamond',serif", fontSize: isMobile ? 34 : 54, fontWeight: 300, color: "#f5f0e8", lineHeight: 1.12, margin: "0 0 20px" }}>
             {lang === "ko"
-              ? <><span style={{ color: "#c5a572", fontStyle: "italic" }}>진짜 금. 진짜 은.</span><br />진짜 소유.</>
-              : <><span style={{ color: "#c5a572", fontStyle: "italic" }}>Real Gold. Real Silver.</span><br />Real Ownership.</>}
+              ? <><span style={{ color: "#c5a572", fontWeight: 600 }}>진짜 금. 진짜 은.</span><br />진짜 소유.</>
+              : <>Real Gold. Real Silver.<br /><span style={{ color: "#c5a572", fontWeight: 600 }}>Real Ownership.</span></>}
           </h1>
-          {/* Subhead */}
-          <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 14 : 16, color: "#a09080", lineHeight: 1.82, margin: "0 0 32px", maxWidth: 460 }}>
+          {/* Subhead — updated */}
+          <p style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 14 : 16, color: "#8a7d6b", lineHeight: 1.75, margin: "0 0 30px" }}>
             {lang === "ko"
               ? "은행 통장도 아니고, KRX 계좌도 아닙니다. 싱가포르 Malca-Amit 금고에 귀하의 이름으로 등록된 실물 금속 — 국제 현물가 기준."
-              : "Not a bank passbook. Not a KRX account. Allocated physical metal registered in your name at Malca-Amit Singapore — at international spot."}
+              : "Not a bank passbook. Not a KRX account. Allocated physical metal — registered in your name at Malca-Amit Singapore — priced at international spot."}
           </p>
-          {/* CTAs — equal flex:1, same padding */}
-          <div style={{ display: "flex", gap: 12, flexWrap: "wrap", marginBottom: 32 }}>
-            <button onClick={() => navigate("shop")} style={{ flex: 1, minWidth: 220, background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#ffffff", border: "none", padding: "15px 24px", fontSize: 14, fontFamily: "'Outfit',sans-serif", fontWeight: 700, cursor: "pointer", letterSpacing: ".04em", textAlign: "center" }}>
-              {lang === "ko" ? "지금 내 자산 배분 시작" : "Start Buying"}
+          {/* CTAs — updated labels */}
+          <div style={{ display: "flex", gap: 12, flexDirection: isMobile ? "column" : "row" }}>
+            <button onClick={() => navigate("shop")} style={{ flex: 1, background: "linear-gradient(135deg,#c5a572,#8a6914)", color: "#ffffff", border: "none", padding: "14px 20px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 700, borderRadius: 6, cursor: "pointer", letterSpacing: 0.5 }}>
+              {lang === "ko" ? "지금 내 자산 배분 시작" : "지금 내 자산 배분 시작"}
             </button>
-            <button onClick={() => navigate("agp")} style={{ flex: 1, minWidth: 220, background: "transparent", color: "#a09080", border: "1px solid rgba(197,165,114,.42)", padding: "15px 24px", fontSize: 14, fontFamily: "'Outfit',sans-serif", fontWeight: 500, cursor: "pointer", textAlign: "center" }}>
-              {lang === "ko" ? "AGP — 월 20만원 시작" : "AGP — from ₩200,000/mo"}
+            <button onClick={() => navigate("agp-intro")} style={{ flex: 1, background: "transparent", color: "#8a7d6b", border: "1px solid #2a2318", padding: "14px 20px", fontSize: 15, fontFamily: "'Outfit',sans-serif", fontWeight: 600, borderRadius: 6, cursor: "pointer" }}>
+              {lang === "ko" ? "AGP (골드프랜) – 월 20만원 시작" : "AGP (골드프랜) – 월 20만원 시작"}
             </button>
-          </div>
-          {/* Trust chips */}
-          <div style={{ display: "flex", gap: 20, flexWrap: "wrap", borderTop: "1px solid rgba(197,165,114,.18)", paddingTop: 20 }}>
-            {["Malca-Amit", "LBMA", "Lloyd's Insured", "Allocated"].map((t, i) => (
-              <span key={i} style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 9, letterSpacing: ".14em", textTransform: "uppercase", color: "#666", display: "flex", alignItems: "center", gap: 6 }}>
-                <span style={{ width: 4, height: 4, borderRadius: "50%", background: "#C5A572", display: "inline-block" }} />{t}
-              </span>
-            ))}
           </div>
         </div>
-      </div>
-
-      {/* ── STAT STRIP — customer-facing stats ── */}
-      <div className="stat-strip reveal">
-        {[
-          { val: "₩200,000", lbl: "최소 시작 금액", sub: "AGP 월 적립 기준" },
-          { val: "최대 12%", lbl: "한국 대비 절약", sub: "부가세 + 딜러 마진 없음" },
-          { val: "연 0.5%", lbl: "보관료", sub: "Lloyd's 보험 포함" },
-          { val: "70%", lbl: "AGP 완주율", sub: "12개월 기준" },
-        ].map((s, i) => (
-          <div key={i} className="stat-cell">
-            <div className="stat-num">{s.val}</div>
-            <div className="stat-lbl">{s.lbl}</div>
-            <div className="stat-sub">{s.sub}</div>
-          </div>
-        ))}
       </div>
 
       {/* ── 1c. PAPER vs PHYSICAL — new section after hero ── */}
@@ -530,39 +502,29 @@ function Shop({ lang, navigate, setProduct, prices, krwRate, addToCart, toast, c
         <Fb active={type === "bar"} onClick={() => setType("bar")}>{lang === "ko" ? "바" : "Bars"}</Fb>
         <Fb active={type === "coin"} onClick={() => setType("coin")}>{lang === "ko" ? "코인" : "Coins"}</Fb>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fill,minmax(260px,1fr))", gap: 1, background: "rgba(197,165,114,.18)", border: "1px solid rgba(197,165,114,.18)" }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr 1fr" : "repeat(auto-fill,minmax(260px,1fr))", gap: isMobile ? 12 : 20 }}>
         {filtered.map(p => {
-          const price    = calcPrice(p, prices);
-          const priceKRW = Math.round(price * krwRate);
-          // Savings vs Korean market
-          const spot     = price / (1 + p.premium);
-          const krPrem   = p.metal === "silver" ? KR_SILVER_PREMIUM : KR_GOLD_PREMIUM;
-          const krPriceKRW = Math.round(spot * (1 + krPrem) * krwRate);
-          const savingsPct = krPriceKRW > 0 ? ((krPriceKRW - priceKRW) / krPriceKRW * 100).toFixed(1) : "0";
+          const price = calcPrice(p, prices);
           return (
-            <div key={p.id} className="prod-card" style={{ background: "#0a0a0a", padding: isMobile ? 14 : 22, cursor: "pointer" }}
+            <div key={p.id} style={{ background: "#111008", border: "1px solid #1a1510", borderRadius: 10, padding: isMobile ? 14 : 22, cursor: "pointer", transition: "border-color 0.2s, transform 0.2s", position: "relative" }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(197,165,114,0.4)"; e.currentTarget.style.transform = "translateY(-2px)"; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = "#1a1510"; e.currentTarget.style.transform = "none"; }}
               onClick={() => { setProduct(p); navigate("product"); }}>
-              <span style={{ display: "inline-block", marginBottom: 8, background: p.metal === "gold" ? "rgba(197,165,114,0.12)" : "rgba(180,180,180,0.12)", color: p.metal === "gold" ? "#c5a572" : "#aaa", fontSize: 9, padding: "2px 8px", fontFamily: "'JetBrains Mono',monospace", letterSpacing: ".18em", textTransform: "uppercase" }}>
+              <span style={{ position: "absolute", top: 10, right: 10, background: p.metal === "gold" ? "rgba(197,165,114,0.15)" : "rgba(180,180,180,0.15)", color: p.metal === "gold" ? "#c5a572" : "#aaa", fontSize: 9, padding: "2px 7px", borderRadius: 3, fontFamily: "'Outfit',sans-serif", fontWeight: 600 }}>
                 {p.type === "bar" ? (lang === "ko" ? "바" : "BAR") : (lang === "ko" ? "코인" : "COIN")}
               </span>
-              <div style={{ fontSize: isMobile ? 36 : 44, marginBottom: 14 }}>{p.image}</div>
-              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 12 : 13, color: "#f5f0e8", fontWeight: 500, marginBottom: 4, lineHeight: 1.3 }}>{lang === "ko" ? p.nameKo : p.name}</div>
-              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: "#666", marginBottom: 14 }}>{p.mint} · {p.purity} · {p.weight}</div>
-              {/* KRW primary price */}
-              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 15 : 18, color: "#c5a572", fontWeight: 600, marginBottom: 3 }}>
-                ₩{priceKRW.toLocaleString("ko-KR")}
+              <div style={{ fontSize: isMobile ? 36 : 44, marginBottom: 12 }}>{p.image}</div>
+              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: isMobile ? 12 : 13, color: "#f5f0e8", fontWeight: 500, marginBottom: 2, lineHeight: 1.3 }}>{lang === "ko" ? p.nameKo : p.name}</div>
+              <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 10, color: "#8a7d6b", marginBottom: 14 }}>{p.mint} · {p.purity} · {p.weight}</div>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 }}>
+                <div>
+                  {/* D-1: toggle-aware primary price */}
+                  <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: isMobile ? 14 : 17, color: "#c5a572", fontWeight: 600 }}>{fPrice(price)}</div>
+                </div>
               </div>
-              {/* USD secondary — small dim */}
-              <div style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: "#555", marginBottom: 12 }}>
-                = ${price.toFixed(0)} USD
-              </div>
-              {/* Savings line */}
-              <div style={{ paddingTop: 10, borderTop: "1px dashed rgba(94,173,119,.2)", fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: "#5ead77", marginBottom: 14 }}>
-                ✓ 한국 대비 {savingsPct}% 절약
-              </div>
-              <button onClick={e => { e.stopPropagation(); addToCart(p, 1, "singapore"); toast(lang === "ko" ? "장바구니에 추가되었습니다." : "Added to cart."); }} style={{ width: "100%", background: "rgba(197,165,114,0.08)", border: "1px solid rgba(197,165,114,0.3)", color: "#c5a572", padding: "9px", fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit',sans-serif", transition: "all 0.15s" }}
-                onMouseEnter={e => { e.currentTarget.style.background = "rgba(197,165,114,0.18)"; }}
-                onMouseLeave={e => { e.currentTarget.style.background = "rgba(197,165,114,0.08)"; }}>
+              <button onClick={e => { e.stopPropagation(); addToCart(p, 1, "singapore"); toast(lang === "ko" ? "장바구니에 추가되었습니다." : "Added to cart."); }} style={{ width: "100%", background: "rgba(197,165,114,0.1)", border: "1px solid rgba(197,165,114,0.3)", color: "#c5a572", padding: "8px", borderRadius: 5, fontSize: 12, fontWeight: 600, cursor: "pointer", fontFamily: "'Outfit',sans-serif", transition: "all 0.15s" }}
+                onMouseEnter={e => { e.currentTarget.style.background = "rgba(197,165,114,0.2)"; }}
+                onMouseLeave={e => { e.currentTarget.style.background = "rgba(197,165,114,0.1)"; }}>
                 {lang === "ko" ? "장바구니 담기" : "Add to Cart"}
               </button>
             </div>
@@ -817,23 +779,6 @@ function CartPage({ lang, navigate, cart, removeFromCart, updateCartQty, prices,
               <span style={{ fontSize: 15, color: "#f5f0e8", fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>총 결제금액</span>
               <span style={{ fontFamily: "'JetBrains Mono',monospace", fontSize: 22, color: "#c5a572", fontWeight: 700 }}>{fPrice(subtotal + storageFee + subtotal * payFeeRates[cartPayMethod])}</span>
             </div>
-            {/* Savings callout */}
-            {(() => {
-              const koreaTotal = cart.reduce((sum, item) => {
-                const prod = PRODUCTS.find(p => p.id === item.id);
-                if (!prod) return sum;
-                const itemSpot = item.price / (1 + prod.premium);
-                const krPremium = prod.metal === "silver" ? KR_SILVER_PREMIUM : KR_GOLD_PREMIUM;
-                return sum + itemSpot * (1 + krPremium) * item.qty;
-              }, 0);
-              const savingsKRW = Math.round((koreaTotal - subtotal) * krwRate);
-              return savingsKRW > 0 ? (
-                <div style={{ textAlign: "center", marginTop: 10, fontFamily: "'JetBrains Mono',monospace", fontSize: 10, color: "#666" }}>
-                  한국 대비 절약{" "}
-                  <span style={{ color: "#5ead77" }}>₩{savingsKRW.toLocaleString("ko-KR")}</span>
-                </div>
-              ) : null;
-            })()}
           </div>
           <button onClick={() => navigate("checkout")} style={{ width: "100%", background: "linear-gradient(135deg,#c5a572,#8a6914)", border: "none", color: "#0a0a0a", padding: "14px", fontSize: 15, fontWeight: 700, borderRadius: 8, cursor: "pointer", fontFamily: "'Outfit',sans-serif" }}>
             {lang === "ko" ? "결제 진행" : "Proceed to Checkout"}
@@ -978,14 +923,14 @@ function Checkout({ lang, navigate, cart, clearCart, prices, krwRate, user, addO
           <h3 style={{ fontFamily: "'Outfit',sans-serif", fontSize: 16, color: "#c5a572", margin: "0 0 18px", fontWeight: 600 }}>{lang === "ko" ? "결제 수단 선택" : "Select Payment Method"}</h3>
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 24 }}>
             {payMethods.map(m => (
-              <button key={m.key} onClick={() => setPayMethod(m.key)} style={{ background: payMethod === m.key ? "rgba(197,165,114,0.06)" : "#111008", border: `1px solid ${payMethod === m.key ? "rgba(197,165,114,.42)" : "#2a2318"}`, borderLeft: payMethod === m.key ? "3px solid #C5A572" : "1px solid #2a2318", padding: "16px 18px", cursor: "pointer", textAlign: "left", position: "relative", transition: "all 0.2s" }}>
-                {m.badge && <span style={{ position: "absolute", top: 10, right: 10, background: "#c5a572", color: "#0a0a0a", fontSize: 9, padding: "2px 7px", fontWeight: 700, fontFamily: "'Outfit',sans-serif" }}>{m.badge}</span>}
+              <button key={m.key} onClick={() => setPayMethod(m.key)} style={{ background: payMethod === m.key ? "rgba(197,165,114,0.08)" : "#111008", border: `1.5px solid ${payMethod === m.key ? "#c5a572" : "#2a2318"}`, borderRadius: 10, padding: "16px 18px", cursor: "pointer", textAlign: "left", position: "relative", transition: "all 0.15s" }}>
+                {m.badge && <span style={{ position: "absolute", top: 10, right: 10, background: "#c5a572", color: "#0a0a0a", fontSize: 9, padding: "2px 7px", borderRadius: 3, fontWeight: 700, fontFamily: "'Outfit',sans-serif" }}>{m.badge}</span>}
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
                   <span style={{ fontSize: 22 }}>{m.icon}</span>
-                  <span style={{ fontSize: 15, color: payMethod === m.key ? "#C5A572" : "#f5f0e8", fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>{m.name}</span>
+                  <span style={{ fontSize: 15, color: "#f5f0e8", fontWeight: 600, fontFamily: "'Outfit',sans-serif" }}>{m.name}</span>
                 </div>
                 <div style={{ fontSize: 12, color: "#8a7d6b", fontFamily: "'Outfit',sans-serif", marginBottom: 2 }}>{m.desc}</div>
-                <div style={{ fontSize: 11, color: payMethod === m.key ? "#5ead77" : "#555", fontFamily: "'Outfit',sans-serif" }}>{m.sub}</div>
+                <div style={{ fontSize: 11, color: payMethod === m.key ? "#4ade80" : "#555", fontFamily: "'Outfit',sans-serif" }}>{m.sub}</div>
               </button>
             ))}
           </div>
