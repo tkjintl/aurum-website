@@ -48,7 +48,7 @@
 
 /* ─── Reset ──────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; font-size: 16px; }
+html { scroll-behavior: smooth; font-size: 16px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 
 body {
   background: var(--bg);
@@ -59,7 +59,7 @@ body {
   line-height: 1.6;
   min-height: 100vh;
   overflow-x: hidden;
-  font-weight: 300;
+  font-weight: 400;
 }
 
 #root {
@@ -83,7 +83,7 @@ body::before {
 body > * { position: relative; z-index: 2; }
 
 /* ─── Typography ─────────────────────────────────────────────── */
-h1 { font-family: var(--serif); font-size: clamp(38px, 5vw, 68px); font-weight: 300; line-height: 1.1; letter-spacing: -0.01em; }
+h1 { font-family: var(--serif); font-size: clamp(38px, 5vw, 68px); font-weight: 400; line-height: 1.1; letter-spacing: -0.01em; }
 h2 { font-family: var(--serif-kr); font-size: clamp(28px, 3.5vw, 46px); font-weight: 500; line-height: 1.2; }
 h3 { font-family: var(--serif-kr); font-size: clamp(20px, 2.5vw, 28px); font-weight: 500; line-height: 1.3; }
 p  { line-height: 1.8; }
@@ -272,7 +272,7 @@ main { animation: pageIn 0.3s ease-out; }
 .panel-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--gold-border); }
 .panel-title { font-family: var(--serif-kr); font-size: 20px; font-weight: 600; color: var(--text); }
 .panel-title .en { font-family: var(--serif); font-style: italic; font-size: 13px; color: var(--gold-dim); margin-left: 10px; font-weight: 400; }
-.panel-meta  { font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em; color: var(--gold); text-transform: uppercase; }
+.panel-meta  { font-family: var(--mono); font-size: 11px; letter-spacing: 0.22em; color: var(--gold); text-transform: uppercase; }
 
 /* ─── Live dot ───────────────────────────────────────────────── */
 .live-dot {
@@ -284,7 +284,7 @@ main { animation: pageIn 0.3s ease-out; }
 
 /* ─── Badge ──────────────────────────────────────────────────── */
 .badge {
-  font-family: var(--mono); font-size: 10px; letter-spacing: 0.2em;
+  font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em;
   color: var(--gold); border: 1px solid var(--gold-border); padding: 5px 12px;
   text-transform: uppercase; display: inline-block;
 }
@@ -348,10 +348,13 @@ main { animation: pageIn 0.3s ease-out; }
   .section   { padding: 40px 0; }
   .panel     { padding: 20px 16px; }
   .hide-mobile { display: none !important; }
+  input, textarea, select { font-size: 16px !important; }
   /* Better touch targets on mobile */
   .btn-primary, .btn-outline { min-height: 48px; font-size: 15px; }
   /* Korean text needs tighter leading on small screens */
   p, .text-body { line-height: 1.75; }
+  /* iOS Safari: prevent auto-zoom on input focus — inputs must be ≥16px */
+  input, textarea, select { font-size: 16px !important; }
 }
 @media (min-width: 768px) {
   .hide-desktop { display: none !important; }
@@ -389,17 +392,33 @@ main { animation: pageIn 0.3s ease-out; }
 
 /* ─── Desktop font scale ─────────────────────────────────────────── */
 @media (min-width: 1024px) {
-  html { zoom: 1.15; }
-
-  /* Stats / mono values — make them legible */
+  /* Stats / mono values */
   .stat-bar-value { font-size: 26px; }
-
-  /* Explicit body copy boost — inline 13px shows as ~15px with zoom */
   body { font-size: 15px; }
 }
 
-@media (min-width: 1280px) {
-  html { zoom: 1.2; }
+
+
+
+/* ─── Card elevation tiers ──────────────────────────────────────── */
+.card-elevated {
+  background: #141414;
+  border: 1px solid #1e1e1e;
+  border-radius: 0;
+}
+.card-elevated:hover {
+  border-color: rgba(197,165,114,0.25);
+  transition: border-color 0.2s;
+}
+.card-gold-accent {
+  background: #141414;
+  border: 1px solid rgba(197,165,114,0.3);
+  border-radius: 0;
+}
+.card-gold-accent:hover {
+  border-color: rgba(197,165,114,0.6);
+  box-shadow: 0 0 16px rgba(197,165,114,0.08);
+  transition: all 0.25s;
 }
 
 /* ─── Ticker marquee animation ───────────────────────────────────── */
@@ -413,6 +432,7 @@ main { animation: pageIn 0.3s ease-out; }
   width: max-content;
   will-change: transform;
 }
+.ticker-track > div { cursor: pointer; }
 .ticker-track:hover {
   animation-play-state: paused;
 }
@@ -424,4 +444,58 @@ main { animation: pageIn 0.3s ease-out; }
 }
 @media (max-width: 767px) {
   .page-section { padding-left: 16px; padding-right: 16px; }
+}
+
+/* ─── Gold top-line accent — universal card pattern ────────────── */
+/* Applied via .card-gold-line class — matches AGP Launch template  */
+.card-gold-line {
+  position: relative;
+  overflow: hidden;
+}
+.card-gold-line::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Eyebrow label — universal standard (matches AGP Launch) ──── */
+.eyebrow-mono {
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* ─── Mobile: stats bar 2-column bottom border ──────────────────── */
+@media (max-width: 767px) {
+  .stats-bar-mobile-row-1 {
+    border-bottom: 1px solid var(--border);
+  }
+  /* Trust badges centered on mobile */
+  .trust-badges-row {
+    justify-content: center;
+  }
+  /* Info page hero: tighter top padding on mobile */
+  .info-hero { padding-top: 48px !important; }
+}
+
+/* ─── Feature card — matches AGP card standard ────────────────── */
+.feature-card {
+  background: var(--bg-card);
+  border: 1px solid var(--gold-border);
+  padding: 28px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color var(--transition);
+}
+.feature-card:hover {
+  border-color: var(--gold-border-strong);
 }

@@ -17,40 +17,6 @@ const SERIF_KR = "'Noto Serif KR','Cormorant Garamond',serif";
 const GOLD_LINE = { position:'absolute',top:0,left:0,right:0,height:1,background:'linear-gradient(90deg,transparent,#c5a572,transparent)',pointerEvents:'none',zIndex:1 };
 const eyebrowStyle = { fontFamily:MONO,fontSize:11,color:'#8a7d6b',letterSpacing:'0.16em',textTransform:'uppercase',marginBottom:10,display:'block' };
 
-// ─── Scroll reveal hook — triggers once when element enters viewport ──────────
-function useScrollReveal(threshold = 0.12) {
-  const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) { setVisible(true); obs.unobserve(el); } },
-      { threshold }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
-  return [ref, visible];
-}
-
-// ─── Count-up hook — animates number from 0 to target ────────────────────────
-function useCountUp(target, duration = 1600, start = false) {
-  const [val, setVal] = useState(0);
-  useEffect(() => {
-    if (!start || !target) return;
-    const t0 = performance.now();
-    const tick = now => {
-      const p = Math.min((now - t0) / duration, 1);
-      const e = 1 - Math.pow(1 - p, 3);
-      setVal(Math.round(e * target));
-      if (p < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-  }, [start, target]);
-  return val;
-}
-
 // ─── Animated hero visual (canvas) ───────────────────────────────────────────
 function HeroAnimatedVisual({ prices }) {
   const canvasRef = useRef(null);
@@ -438,63 +404,52 @@ export default function HomePage({ navigate, prices, krwRate, currency, setCurre
       {/* ② AGP Launch Event — full-width pane */}
       <AGPLaunchPane lang={lang} navigate={navigate} />
 
-      {/* ③ Stats bar — animated CountUp on scroll */}
-      {(() => {
-        const stats = [
-          { num: 100, suffix: '%', label: lang === 'ko' ? '완전 배분 보관' : 'Fully Allocated', prefix: '' },
-          { num: 8,   suffix: '%', label: lang === 'ko' ? 'Aurum 금 투명 프리미엄' : 'Aurum Gold Premium', prefix: '+' },
-          { num: null, text: "Lloyd's", label: lang === 'ko' ? '기관급 전액 보험' : 'Full Insurance' },
-          { num: null, text: 'LBMA',    label: lang === 'ko' ? '승인 제련소' : 'Approved Bars' },
-        ];
-        function StatCell({ s, i, isMobile }) {
-          const [ref, vis] = useScrollReveal(0.3);
-          const count = useCountUp(s.num || 0, 1400, vis && !!s.num);
-          const display = s.num ? `${s.prefix}${count}${s.suffix}` : s.text;
-          return (
-            <div ref={ref} key={i} style={{
-              padding: isMobile ? '16px 10px' : '22px 24px', textAlign: 'center',
-              borderRight: isMobile ? (i%2===0?'1px solid #1e1e1e':'none') : (i<3?'1px solid #1e1e1e':'none'),
-              borderBottom: isMobile && i<2 ? '1px solid #1e1e1e' : 'none',
-              opacity: vis ? 1 : 0, transform: vis ? 'translateY(0)' : 'translateY(12px)',
-              transition: `opacity 0.6s ease ${i*0.1}s, transform 0.6s ease ${i*0.1}s`,
+      {/* ③ Stats bar — M-5: fixed border logic for 2-column mobile grid */}
+      <div style={{ background: '#141414', borderBottom: '1px solid rgba(197,165,114,0.08)' }}>
+        <div className="aurum-container" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)' }}>
+          {[['100%', lang === 'ko' ? '완전 배분 보관' : 'Fully Allocated'], ['+8%', lang === 'ko' ? 'Aurum 금 투명 프리미엄' : 'Aurum Gold Premium'], ["Lloyd's", lang === 'ko' ? '기관급 전액 보험' : 'Full Insurance'], ['LBMA', lang === 'ko' ? '승인 제련소' : 'Approved Bars']].map(([v, l], i) => (
+            <div key={i} style={{
+              padding: isMobile ? '16px 10px' : '18px 24px',
+              textAlign: 'center',
+              // M-5: correct border logic for 2-col mobile grid
+              borderRight: isMobile
+                ? (i % 2 === 0 ? '1px solid #1e1e1e' : 'none')
+                : (i < 3 ? '1px solid #1e1e1e' : 'none'),
+              // M-5: add row separator for mobile 2×2 grid
+              borderBottom: isMobile && i < 2 ? '1px solid #1e1e1e' : 'none',
             }}>
-              <div style={{ fontFamily: MONO, fontSize: isMobile ? 18 : 26, color: '#c5a572', fontWeight: 700, letterSpacing: '-0.02em' }}>{display}</div>
-              <div style={{ fontFamily: SANS, fontSize: 11, color: '#8a7d6b', marginTop: 4 }}>{s.label}</div>
+              <div style={{ fontFamily: MONO, fontSize: isMobile ? 16 : 20, color: '#c5a572', fontWeight: 700 }}>{v}</div>
+              <div style={{ fontFamily: SANS, fontSize: 11, color: '#8a7d6b', marginTop: 3 }}>{l}</div>
             </div>
-          );
-        }
-        return (
-          <div style={{ background: '#141414', borderBottom: '1px solid rgba(197,165,114,0.08)' }}>
-            <div className="aurum-container" style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4,1fr)' }}>
-              {stats.map((s, i) => <StatCell key={i} s={s} i={i} isMobile={isMobile} />)}
-            </div>
-          </div>
-        );
-      })()}
+          ))}
+        </div>
+      </div>
 
-      {/* ④ Savings comparison — with visual premium bars */}
-      {(() => {
-        const [ref, vis] = useScrollReveal(0.1);
-        return (
-        <div ref={ref} style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(197,165,114,0.08)', opacity: vis?1:0, transform: vis?'translateY(0)':'translateY(20px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+      {/* ④ Savings comparison — side by side */}
+      <div style={{ background: '#0a0a0a', borderBottom: '1px solid rgba(197,165,114,0.08)' }}>
         <div className="aurum-container" style={{ paddingTop: isMobile ? 40 : 72, paddingBottom: isMobile ? 32 : 60 }}>
+          {/* M-6: currency toggle — moved inside header block, alignSelf fix */}
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24, flexWrap: 'wrap', gap: 12 }}>
             <div>
+              {/* D-4: standardized eyebrow */}
               <span style={eyebrowStyle}>{lang === 'ko' ? '가격 비교' : 'Price Comparison'}</span>
               <h2 style={{ fontFamily: SERIF, fontSize: isMobile ? 28 : 38, color: '#f5f0e8', fontWeight: isMobile ? 300 : 400, margin: 0 }}>{lang === 'ko' ? '얼마나 절약하나요?' : 'How Much Do You Save?'}</h2>
               <p style={{ fontFamily: SANS, fontSize: 13, color: '#8a7d6b', margin: '6px 0 0' }}>{lang === 'ko' ? 'Aurum 매입가 vs 한국실금가 (국내 프리미엄+VAT)' : 'Aurum Price vs Korean Retail (domestic premium + VAT)'}</p>
             </div>
+            {/* M-6: alignSelf so it doesn't orphan left on mobile */}
             <button onClick={() => setCurrency(c => c === 'KRW' ? 'USD' : 'KRW')} style={{ background: 'rgba(197,165,114,0.08)', border: '1px solid rgba(197,165,114,0.4)', color: '#c5a572', padding: '5px 14px', cursor: 'pointer', fontFamily: MONO, fontSize: 11, borderRadius: 4, alignSelf: 'flex-start' }}>
               {currency === 'KRW' ? '₩ / $' : '$ / ₩'}
             </button>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
             {[
-              { label: lang === 'ko' ? '금 Gold' : 'Gold', unit: '1 oz', kr: goldKR, au: goldAU, save: goldSave, pct: goldSavePct, krPrem: 20, auPrem: 8 },
-              { label: lang === 'ko' ? '은 Silver' : 'Silver', unit: '1 kg', kr: silvKR, au: silvAU, save: silvSave, pct: silvSavePct, krPrem: 30, auPrem: 15 },
+              { label: lang === 'ko' ? '금 Gold' : 'Gold', unit: '1 oz', kr: goldKR, au: goldAU, save: goldSave, pct: goldSavePct },
+              { label: lang === 'ko' ? '은 Silver' : 'Silver', unit: '1 kg', kr: silvKR, au: silvAU, save: silvSave, pct: silvSavePct },
             ].map((c, i) => (
-              <div key={i} style={{ background: '#141414', border: '1px solid rgba(197,165,114,0.20)', padding: '22px 22px', position: 'relative', overflow: 'hidden' }}>
+              // D-5: gold top-line accent on savings cards
+              <div key={i} style={{ background: '#141414', border: '1px solid rgba(197,165,114,0.20)', borderRadius: 0, padding: '22px 22px', position: 'relative', overflow: 'hidden' }}>
                 <div style={GOLD_LINE} />
+                {/* D-4: eyebrow */}
                 <div style={{ fontFamily: MONO, fontSize: 11, color: '#8a7d6b', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 16 }}>{c.label} · {c.unit}</div>
                 {[
                   { l: lang === 'ko' ? '한국실금가 (국내 프리미엄+VAT)' : 'Korea Retail (premium+VAT)', v: fP(c.kr / krwRate), col: '#f87171' },
@@ -505,33 +460,7 @@ export default function HomePage({ navigate, prices, krwRate, currency, setCurre
                     <span style={{ fontFamily: MONO, fontSize: 16, color: r.col, fontWeight: 600 }}>{r.v}</span>
                   </div>
                 ))}
-                {/* ── Visual premium bars (desktop only) ── */}
-                {!isMobile && (
-                  <div style={{ margin: '16px 0 12px' }}>
-                    <div style={{ fontFamily: MONO, fontSize: 10, color: '#555', letterSpacing: '0.12em', marginBottom: 10, textTransform: 'uppercase' }}>
-                      {lang === 'ko' ? '프리미엄 시각화' : 'Premium Visualized'}
-                    </div>
-                    {[
-                      { label: lang === 'ko' ? '한국 시장' : 'Korea Retail', pct: c.krPrem, color: '#f87171', full: true },
-                      { label: 'Aurum', pct: c.auPrem, color: '#c5a572', full: false },
-                    ].map((bar, bi) => (
-                      <div key={bi} style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
-                        <span style={{ fontFamily: MONO, fontSize: 10, color: '#666', width: 72, flexShrink: 0 }}>{bar.label}</span>
-                        <div style={{ flex: 1, height: 5, background: '#1e1e1e', position: 'relative', overflow: 'hidden' }}>
-                          <div style={{
-                            position: 'absolute', left: 0, top: 0, height: '100%',
-                            background: `linear-gradient(90deg, ${bar.color}, ${bar.color}88)`,
-                            width: vis ? `${bar.full ? 100 : (bar.pct / c.krPrem) * 100}%` : '0%',
-                            transition: `width 1.2s cubic-bezier(0.25,1,0.5,1) ${0.3 + bi * 0.25}s`,
-                            boxShadow: `0 0 8px ${bar.color}44`,
-                          }} />
-                        </div>
-                        <span style={{ fontFamily: MONO, fontSize: 11, color: bar.color, width: 34, flexShrink: 0, textAlign: 'right' }}>+{bar.pct}%</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-                <div style={{ background: 'rgba(74,222,128,0.05)', border: '1px solid rgba(74,222,128,0.2)', padding: '12px 14px', marginTop: isMobile ? 12 : 0, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ background: 'rgba(74,222,128,0.05)', border: '1px solid rgba(74,222,128,0.2)', borderRadius: 0, padding: '12px 14px', marginTop: 12, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontFamily: SANS, fontSize: 12, color: '#f5f0e8', fontWeight: 600 }}>{lang === 'ko' ? '절감 금액' : 'Your Savings'}</span>
                   <div style={{ textAlign: 'right' }}>
                     <div style={{ fontFamily: MONO, fontSize: isMobile ? 18 : 22, color: '#4ade80', fontWeight: 700 }}>{fP(c.save / krwRate)}</div>
@@ -542,24 +471,20 @@ export default function HomePage({ navigate, prices, krwRate, currency, setCurre
             ))}
           </div>
           <p style={{ marginTop: 10, fontFamily: SANS, fontSize: 12, color: '#888', lineHeight: 1.6 }}>
-            {lang === 'ko' ? '* 국제 현물가 실시간 기준. 한국실금가 = 국제 현물가 + 20%(금)/+30%(은) 국내 프리미엄. Aurum = 국제 현물가 + 8%(금)/+15%(은).' : '* Based on live international spot price. Korean Retail = spot + 20% (gold) / +30% (silver) domestic premium. Aurum = spot + 8% (gold) / +15% (silver).'}
+{lang === 'ko' ? '* 국제 현물가 실시간 기준. 한국실금가 = 국제 현물가 + 20%(금)/+30%(은) 국내 프리미엄. Aurum = 국제 현물가 + 8%(금)/+15%(은).' : '* Based on live international spot price. Korean Retail = spot + 20% (gold) / +30% (silver) domestic premium. Aurum = spot + 8% (gold) / +15% (silver).'}
           </p>
         </div>
-        </div>
-        );
-      })()}
+      </div>
 
 
       {/* ④.5 Founders Club — full-width pane */}
       <FoundersClubPane lang={lang} navigate={navigate} />
 
-      {/* ⑤ Paper vs Physical — with SVG illustrations */}
-      {(() => {
-        const [ref, vis] = useScrollReveal(0.08);
-        return (
-        <div ref={ref} style={{ borderBottom: '1px solid rgba(197,165,114,0.08)', opacity: vis?1:0, transform: vis?'translateY(0)':'translateY(24px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+      {/* ⑤ Paper vs Physical */}
+      <div style={{ borderBottom: '1px solid rgba(197,165,114,0.08)' }}>
         <div className="aurum-container" style={{ paddingTop: isMobile ? 40 : 72, paddingBottom: isMobile ? 40 : 64 }}>
           <div style={{ textAlign: 'center', marginBottom: 32 }}>
+            {/* D-4: standardized eyebrow */}
             <span style={{ ...eyebrowStyle, display: 'block', textAlign: 'center' }}>{lang === 'ko' ? '근본적인 차이' : 'The Fundamental Difference'}</span>
             <h2 style={{ fontFamily: SERIF, fontSize: isMobile ? 28 : 38, color: '#f5f0e8', fontWeight: isMobile ? 300 : 400, margin: 0 }}>
               {lang === 'ko' ? <>금을 소유하는 두 가지 방법.<br /><span style={{ color: '#c5a572' }}>진짜는 하나입니다.</span></> : <>Two ways to own gold.<br /><span style={{ color: '#c5a572' }}>Only one is real.</span></>}
@@ -567,23 +492,7 @@ export default function HomePage({ navigate, prices, krwRate, currency, setCurre
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: 14 }}>
             {/* Paper gold card */}
-            <div style={{ background: '#141414', border: '1px solid #1e1e1e', padding: '26px', position: 'relative', overflow: 'hidden' }}>
-              {!isMobile && (
-                <div style={{ float: 'right', marginLeft: 20, marginBottom: 8 }}>
-                  <svg width="88" height="88" viewBox="0 0 88 88" fill="none">
-                    <rect x="16" y="22" width="52" height="42" rx="1" stroke="#f87171" strokeWidth="1" opacity="0.25"/>
-                    <rect x="10" y="16" width="52" height="42" rx="1" fill="#1a1010" stroke="#f87171" strokeWidth="1" opacity="0.5"/>
-                    <rect x="4" y="10" width="52" height="42" rx="1" fill="#1a1010" stroke="#f87171" strokeWidth="1"/>
-                    <line x1="12" y1="21" x2="48" y2="21" stroke="#f87171" strokeWidth="1.5" opacity="0.6"/>
-                    <line x1="12" y1="28" x2="42" y2="28" stroke="#f87171" strokeWidth="1" opacity="0.35"/>
-                    <line x1="12" y1="34" x2="45" y2="34" stroke="#f87171" strokeWidth="1" opacity="0.35"/>
-                    <line x1="12" y1="40" x2="38" y2="40" stroke="#f87171" strokeWidth="1" opacity="0.25"/>
-                    <circle cx="68" cy="68" r="14" fill="rgba(248,113,113,0.08)" stroke="#f87171" strokeWidth="1.5"/>
-                    <line x1="61" y1="61" x2="75" y2="75" stroke="#f87171" strokeWidth="2" strokeLinecap="round"/>
-                    <line x1="75" y1="61" x2="61" y2="75" stroke="#f87171" strokeWidth="2" strokeLinecap="round"/>
-                  </svg>
-                </div>
-              )}
+            <div style={{ background: '#141414', border: '1px solid #1e1e1e', borderRadius: 0, padding: '26px', position: 'relative', overflow: 'hidden' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                 <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#f87171' }} />
                 <span style={{ fontFamily: MONO, fontSize: 12, color: '#f87171', fontWeight: 600, textTransform: 'uppercase' }}>{lang === 'ko' ? '페이퍼 금·은' : 'Paper Gold/Silver'}</span>
@@ -596,29 +505,9 @@ export default function HomePage({ navigate, prices, krwRate, currency, setCurre
                 </div>
               ))}
             </div>
-            {/* Physical Aurum card */}
-            <div style={{ background: '#141414', border: '1px solid rgba(197,165,114,0.25)', padding: '26px', position: 'relative', overflow: 'hidden' }}>
+            {/* Aurum allocated card — D-5: gold top-line */}
+            <div style={{ background: '#141414', border: '1px solid rgba(197,165,114,0.25)', borderRadius: 0, padding: '26px', position: 'relative', overflow: 'hidden' }}>
               <div style={GOLD_LINE} />
-              {!isMobile && (
-                <div style={{ float: 'right', marginLeft: 20, marginBottom: 8 }}>
-                  <svg width="88" height="88" viewBox="0 0 88 88" fill="none">
-                    <circle cx="44" cy="44" r="38" stroke="rgba(197,165,114,0.2)" strokeWidth="1"/>
-                    <circle cx="44" cy="44" r="30" fill="rgba(197,165,114,0.05)" stroke="#c5a572" strokeWidth="1.5"/>
-                    <circle cx="44" cy="44" r="10" fill="none" stroke="#c5a572" strokeWidth="2"/>
-                    <line x1="44" y1="34" x2="44" y2="31" stroke="#c5a572" strokeWidth="2" strokeLinecap="round"/>
-                    <line x1="44" y1="54" x2="44" y2="57" stroke="#c5a572" strokeWidth="2" strokeLinecap="round"/>
-                    <line x1="34" y1="44" x2="31" y2="44" stroke="#c5a572" strokeWidth="2" strokeLinecap="round"/>
-                    <line x1="54" y1="44" x2="57" y2="44" stroke="#c5a572" strokeWidth="2" strokeLinecap="round"/>
-                    {[0,51.4,102.8,154.2,205.7,257.1,308.5].map((a,i) => {
-                      const x = 44 + 30 * Math.cos(a * Math.PI / 180);
-                      const y = 44 + 30 * Math.sin(a * Math.PI / 180);
-                      return <circle key={i} cx={x} cy={y} r="2.5" fill="rgba(197,165,114,0.6)"/>;
-                    })}
-                    <circle cx="68" cy="68" r="13" fill="rgba(74,222,128,0.1)" stroke="#4ade80" strokeWidth="1.5"/>
-                    <polyline points="62,68 66,73 75,62" stroke="#4ade80" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-                  </svg>
-                </div>
-              )}
               <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
                 <div style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80' }} />
                 <span style={{ fontFamily: MONO, fontSize: 12, color: '#4ade80', fontWeight: 600, textTransform: 'uppercase' }}>{lang === 'ko' ? '실물 배분 금속 (Aurum)' : 'Allocated Physical Metal (Aurum)'}</span>
@@ -633,104 +522,22 @@ export default function HomePage({ navigate, prices, krwRate, currency, setCurre
             </div>
           </div>
         </div>
-        </div>
-        );
-      })()}
+      </div>
 
-      {/* ⑥ Why Aurum — 2-col desktop: accordion left + account visual right */}
-      {(() => {
-        const [ref, vis] = useScrollReveal(0.06);
-        return (
-        <div ref={ref} style={{ borderBottom: '1px solid rgba(197,165,114,0.08)', opacity: vis?1:0, transform: vis?'translateY(0)':'translateY(24px)', transition: 'opacity 0.8s ease, transform 0.8s ease' }}>
+      {/* ⑥ Why Aurum accordion */}
+      <div style={{ borderBottom: '1px solid rgba(197,165,114,0.08)' }}>
         <div className="aurum-container" style={{ paddingTop: isMobile ? 40 : 72, paddingBottom: isMobile ? 40 : 64 }}>
-          <div style={{ display: isMobile ? 'block' : 'flex', gap: 64, alignItems: 'flex-start' }}>
-            {/* Left: accordion */}
-            <div style={{ flex: '1 1 0', minWidth: 0 }}>
-              <div style={{ marginBottom: 28 }}>
-                <span style={eyebrowStyle}>{lang === 'ko' ? '핵심 차별점' : 'Why Choose Aurum'}</span>
-                <h2 style={{ fontFamily: SERIF, fontSize: isMobile ? 28 : 38, color: '#f5f0e8', fontWeight: isMobile ? 300 : 400, margin: 0 }}>{lang === 'ko' ? '왜 Aurum이어야 하는가' : 'The Aurum Difference'}</h2>
-              </div>
-              <Accordion items={whyItems} />
-            </div>
-            {/* Right: animated account card (desktop only) */}
-            {!isMobile && (
-              <div style={{ flex: '0 0 320px', position: 'sticky', top: 100 }}>
-                <style>{`
-                  @keyframes card-scan { 0%{top:-100%} 100%{top:200%} }
-                  @keyframes blink-cursor { 0%,100%{opacity:1} 50%{opacity:0} }
-                `}</style>
-                <div style={{ background: 'rgba(197,165,114,0.04)', border: '1px solid rgba(197,165,114,0.25)', padding: 28, position: 'relative', overflow: 'hidden' }}>
-                  <div style={GOLD_LINE} />
-                  {/* Scan line effect */}
-                  <div style={{ position: 'absolute', left: 0, right: 0, height: 2, background: 'linear-gradient(90deg,transparent,rgba(197,165,114,0.3),transparent)', animation: 'card-scan 3s linear infinite', pointerEvents: 'none' }} />
-                  {/* Card header */}
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
-                    <div>
-                      <div style={{ fontFamily: MONO, fontSize: 10, color: '#8a7d6b', letterSpacing: '0.16em', textTransform: 'uppercase', marginBottom: 4 }}>Aurum Allocated Account</div>
-                      <div style={{ fontFamily: MONO, fontSize: 13, color: '#c5a572' }}>AU-0001234</div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
-                      <div style={{ width: 6, height: 6, borderRadius: '50%', background: '#4ade80', boxShadow: '0 0 6px #4ade80' }} />
-                      <span style={{ fontFamily: MONO, fontSize: 10, color: '#4ade80' }}>ACTIVE</span>
-                    </div>
-                  </div>
-                  {/* Metal detail */}
-                  <div style={{ background: 'rgba(197,165,114,0.06)', border: '1px solid rgba(197,165,114,0.15)', padding: '14px 16px', marginBottom: 16 }}>
-                    <div style={{ fontFamily: MONO, fontSize: 10, color: '#8a7d6b', letterSpacing: '0.14em', marginBottom: 8, textTransform: 'uppercase' }}>Allocated Metal</div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <div style={{ fontFamily: SERIF, fontSize: 22, color: '#E3C187', fontWeight: 500 }}>1 oz Gold Bar</div>
-                        <div style={{ fontFamily: MONO, fontSize: 10, color: '#8a7d6b', marginTop: 3 }}>PAMP Suisse · 999.9 Fine</div>
-                      </div>
-                      <svg width="40" height="28" viewBox="0 0 40 28" fill="none">
-                        <rect x="1" y="1" width="38" height="26" rx="2" fill="url(#ingot-g)" stroke="rgba(197,165,114,0.5)" strokeWidth="1"/>
-                        <defs>
-                          <linearGradient id="ingot-g" x1="0" y1="0" x2="40" y2="28" gradientUnits="userSpaceOnUse">
-                            <stop offset="0%" stopColor="#2a2418"/>
-                            <stop offset="45%" stopColor="#C5A572"/>
-                            <stop offset="55%" stopColor="#E3C187"/>
-                            <stop offset="100%" stopColor="#4a3e26"/>
-                          </linearGradient>
-                        </defs>
-                        <text x="20" y="17" textAnchor="middle" fontFamily="serif" fontSize="8" fill="rgba(20,18,14,0.8)" fontWeight="600">Au</text>
-                      </svg>
-                    </div>
-                  </div>
-                  {/* Serial number */}
-                  <div style={{ marginBottom: 14 }}>
-                    <div style={{ fontFamily: MONO, fontSize: 10, color: '#555', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 5 }}>Serial Number</div>
-                    <div style={{ fontFamily: MONO, fontSize: 12, color: '#c5a572', letterSpacing: '0.06em' }}>
-                      PAMP-2024-008-4219<span style={{ animation: 'blink-cursor 1s step-end infinite' }}>_</span>
-                    </div>
-                  </div>
-                  {/* Storage */}
-                  <div style={{ marginBottom: 14 }}>
-                    <div style={{ fontFamily: MONO, fontSize: 10, color: '#555', letterSpacing: '0.12em', textTransform: 'uppercase', marginBottom: 5 }}>Storage Location</div>
-                    <div style={{ fontFamily: SANS, fontSize: 13, color: '#a09080' }}>Malca-Amit FTZ · Singapore</div>
-                  </div>
-                  {/* Status row */}
-                  <div style={{ display: 'flex', gap: 8 }}>
-                    {['FULLY ALLOCATED', "LLOYD'S INSURED", 'LBMA APPROVED'].map((tag, i) => (
-                      <div key={i} style={{ fontFamily: MONO, fontSize: 10, color: '#8a7d6b', border: '1px solid rgba(197,165,114,0.15)', padding: '3px 6px', letterSpacing: '0.08em' }}>{tag}</div>
-                    ))}
-                  </div>
-                </div>
-                <p style={{ fontFamily: SANS, fontSize: 12, color: '#555', marginTop: 10, textAlign: 'center', fontStyle: 'italic' }}>
-                  {lang === 'ko' ? '* 귀하의 실제 계정 화면 예시' : '* Example of your actual account view'}
-                </p>
-              </div>
-            )}
+          <div style={{ marginBottom: 28 }}>
+            {/* D-4: standardized eyebrow */}
+            <span style={eyebrowStyle}>{lang === 'ko' ? '핵심 차별점' : 'Why Choose Aurum'}</span>
+            <h2 style={{ fontFamily: SERIF, fontSize: isMobile ? 28 : 38, color: '#f5f0e8', fontWeight: isMobile ? 300 : 400, margin: 0 }}>{lang === 'ko' ? '왜 Aurum이어야 하는가' : 'The Aurum Difference'}</h2>
           </div>
+          <Accordion items={whyItems} />
         </div>
-        </div>
-        );
-      })()}
+      </div>
 
-      {/* ⑦ Shop cards — with scroll reveal */}
-      {(() => {
-        const [ref, vis] = useScrollReveal(0.08);
-        return (
-        <div ref={ref} style={{ padding: pad, background: '#141414', borderBottom: '1px solid rgba(197,165,114,0.08)', opacity: vis?1:0, transform: vis?'translateY(0)':'translateY(24px)', transition: 'opacity 0.7s ease, transform 0.7s ease' }}>
+      {/* ⑦ Shop cards */}
+      <div style={{ padding: pad, background: '#141414', borderBottom: '1px solid rgba(197,165,114,0.08)' }}>
         <div className="aurum-container">
           <div style={{ textAlign: 'center', marginBottom: 28 }}>
             {/* D-4: standardized eyebrow */}
@@ -776,65 +583,25 @@ export default function HomePage({ navigate, prices, krwRate, currency, setCurre
             })}
           </div>
         </div>
-        </div>
-        );
-      })()}
+      </div>
 
-      {/* ⑧ Trust section — expanded premium partner section */}
-      {(() => {
-        const [ref, vis] = useScrollReveal(0.1);
-        const partners = [
-          {
-            abbr: 'SG', name: 'Malca-Amit FTZ', sub: lang==='ko'?'싱가포르 자유무역지대 전용 금고':'Singapore FTZ Dedicated Vault',
-            icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><rect x="3" y="6" width="18" height="15" rx="1"/><path d="M3 10h18"/><path d="M8 6V4a1 1 0 011-1h6a1 1 0 011 1v2"/><circle cx="12" cy="15" r="2"/><line x1="12" y1="17" x2="12" y2="19"/></svg>
-          },
-          {
-            abbr: "LL", name: "Lloyd's of London", sub: lang==='ko'?'기관급 전액 귀금속 보험':'Full Precious Metals Insurance',
-            icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
-          },
-          {
-            abbr: 'LB', name: 'LBMA', sub: lang==='ko'?'런던 귀금속 시장 협회 승인':'London Bullion Market Association',
-            icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M5 9h14l-1 9H6L5 9z"/><path d="M9 9V7a3 3 0 016 0v2"/><line x1="9" y1="14" x2="15" y2="14"/></svg>
-          },
-          {
-            abbr: 'AK', name: 'AML / KYC', sub: lang==='ko'?'싱가포르 MAS 규정 준수':'Singapore MAS Compliant',
-            icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/><polyline points="16 11 17.5 13 21 10"/></svg>
-          },
-          {
-            abbr: 'AU', name: lang==='ko'?'매일 감사':'Daily Audit', sub: lang==='ko'?'100% 실물 백킹 리포트':'100% Physical Backing Report',
-            icon: <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="8" y1="13" x2="16" y2="13"/><polyline points="10 17 9 17 8 17"/><polyline points="10 13 11.5 15 15 11"/></svg>
-          },
-        ];
-        return (
-        <div ref={ref} style={{ background: '#0a0a0a', borderTop: '1px solid rgba(197,165,114,0.08)', opacity: vis?1:0, transition: 'opacity 0.8s ease' }}>
-          {/* Top label */}
-          <div style={{ borderBottom: '1px solid rgba(197,165,114,0.06)', paddingTop: isMobile?20:28, paddingBottom: isMobile?16:20, textAlign: 'center' }}>
-            <span style={{ fontFamily: MONO, fontSize: 11, color: '#555', letterSpacing: '0.22em', textTransform: 'uppercase' }}>
-              {lang==='ko' ? '세계 최고 파트너사와 함께' : 'Powered by World-Class Partners'}
-            </span>
-          </div>
-          <div className="aurum-container">
-            <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3,1fr)' : 'repeat(5,1fr)', gap: 0 }}>
-              {partners.map((p, i) => (
-                <div key={i} style={{
-                  padding: isMobile ? '18px 8px' : '28px 16px', textAlign: 'center',
-                  borderRight: isMobile ? (i%3<2 ? '1px solid rgba(197,165,114,0.06)' : 'none') : (i<4 ? '1px solid rgba(197,165,114,0.06)' : 'none'),
-                  borderBottom: isMobile && i<3 ? '1px solid rgba(197,165,114,0.06)' : 'none',
-                  opacity: vis ? 1 : 0, transform: vis ? 'translateY(0)' : 'translateY(12px)',
-                  transition: `opacity 0.6s ease ${i*0.08}s, transform 0.6s ease ${i*0.08}s`,
-                  cursor: 'default',
-                }}>
-                  <div style={{ display: 'flex', justifyContent: 'center', marginBottom: isMobile?8:10, color: '#c5a572', opacity: 0.7 }}>{p.icon}</div>
-                  <div style={{ fontFamily: MONO, fontSize: isMobile?10:12, color: '#f5f0e8', fontWeight: 500, marginBottom: 4 }}>{p.name}</div>
-                  <div style={{ fontFamily: SANS, fontSize: isMobile?10:11, color: '#666', lineHeight: 1.4 }}>{p.sub}</div>
-                </div>
-              ))}
+      {/* ⑧ Trust strip */}
+      <div>
+        <div className="aurum-container" style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? 'repeat(3,1fr)' : 'repeat(5,1fr)',
+          gap: isMobile ? 12 : 0,
+          paddingTop: isMobile ? 24 : 36,
+          paddingBottom: isMobile ? 24 : 36,
+        }}>
+          {[['SG', 'Singapore FTZ', lang === 'ko' ? 'Malca-Amit 보관' : 'Malca-Amit Vault'], ['LL', "Lloyd's of London", lang === 'ko' ? '기관 전액 보험' : 'Full Institutional Cover'], ['LB', 'LBMA', lang === 'ko' ? '승인 제련소' : 'Approved Refiners'], ['AK', 'AML/KYC', lang === 'ko' ? '싱가포르 등록' : 'Singapore Registered'], ['AU', lang === 'ko' ? '매일 감사' : 'Daily Audit', lang === 'ko' ? '백킹 리포트' : 'Backing Report']].map(([, title, sub], i) => (
+            <div key={i} style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: MONO, fontSize: 12, color: '#f5f0e8', fontWeight: 500 }}>{title}</div>
+              <div style={{ fontFamily: MONO, fontSize: 11, color: '#8a7d6b', marginTop: 2, letterSpacing: '0.04em' }}>{sub}</div>
             </div>
-          </div>
-          <div style={{ height: 1, background: 'linear-gradient(90deg,transparent,rgba(197,165,114,0.12),transparent)', margin: '0 0 0' }} />
+          ))}
         </div>
-        );
-      })()}
+      </div>
     </div>
   );
 }

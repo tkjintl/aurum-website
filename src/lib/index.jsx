@@ -79,10 +79,22 @@ export const FALLBACK_PRICES = { gold: 3342.80, silver: 32.90, platinum: 980.00 
 export const FALLBACK_KRW    = 1368.00;
 
 // Shared premium constants (used in savings calculations across pages)
-export const KR_GOLD_PREMIUM   = 0.184;  // ~18.4% Korean retail premium
-export const KR_SILVER_PREMIUM = 0.30;   // ~30% Korean retail premium
-export const AURUM_GOLD_PREMIUM   = 0.02; // 2% Aurum premium
-export const AURUM_SILVER_PREMIUM = 0.06; // 6% Aurum premium
+export const KR_GOLD_PREMIUM   = 0.20;  // 20% Korean retail premium (kimchi premium + VAT)
+export const KR_SILVER_PREMIUM = 0.30;  // 30% Korean retail premium
+export const AURUM_GOLD_PREMIUM   = 0.08; // 8% Aurum premium (gold)
+export const AURUM_SILVER_PREMIUM = 0.15; // 15% Aurum premium (silver)
+
+// 1 돈 = 3.75 grams (traditional Korean gold weight unit)
+export const DON_IN_GRAMS = 3.75;
+export const OZ_IN_GRAMS  = 31.1035;
+
+// Price helpers using live prices
+export function goldPerDonKRW(goldSpotUSD, krwRate, premium = AURUM_GOLD_PREMIUM) {
+  return goldSpotUSD * (1 + premium) * krwRate / OZ_IN_GRAMS * DON_IN_GRAMS;
+}
+export function silverPerKgKRW(silverSpotUSD, krwRate, premium = AURUM_SILVER_PREMIUM) {
+  return silverSpotUSD * (1 + premium) * krwRate / OZ_IN_GRAMS * 1000;
+}
 
 // ─── Products ─────────────────────────────────────────────────────────────────
 export const PRODUCTS = [

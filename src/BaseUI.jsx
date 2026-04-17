@@ -73,18 +73,19 @@ function Ticker({ lang, prices, krwRate, dailyChanges }) {
     </div>
   );
 
-  // Mobile: horizontal scroll
+  // Mobile: horizontal scroll with hidden scrollbar
   if (isMobile) return (
     <div style={{ background:"#0d0d0d", borderBottom:"1px solid #1e1e1e", padding:"7px 12px", overflow:"hidden" }}>
-      <div style={{ display:"flex", gap:6, overflowX:"auto", WebkitOverflowScrolling:"touch" }}>
+      <style>{`.aurum-ticker-scroll::-webkit-scrollbar{display:none}`}</style>
+      <div className="aurum-ticker-scroll" style={{ display:"flex", gap:6, overflowX:"auto", WebkitOverflowScrolling:"touch", scrollbarWidth:"none", msOverflowStyle:"none" }}>
         {items.map((item, i) => (
           <div key={i} style={{ display:"flex", alignItems:"center", gap:4, whiteSpace:"nowrap", flexShrink:0 }}>
-            <span style={{ fontFamily:"'Outfit',sans-serif", fontSize:9, color:"#a09080", textTransform:"uppercase", letterSpacing:1 }}>{item.label}</span>
-            <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, color:"#c5a572", fontWeight:600 }}>
+            <span style={{ fontFamily:"'Outfit',sans-serif", fontSize:10, color:"#a09080", textTransform:"uppercase", letterSpacing:1 }}>{item.label}</span>
+            <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:11, color:"#c5a572", fontWeight:600 }}>
               {item.fmt(item.price)}
             </span>
             {!item.noChange && item.change !== '—' && (
-              <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:8, color:item.up ? "#4ade80" : "#f87171" }}>{item.change}</span>
+              <span style={{ fontFamily:"'JetBrains Mono',monospace", fontSize:10, color:item.up ? "#4ade80" : "#f87171" }}>{item.change}</span>
             )}
           </div>
         ))}
@@ -264,11 +265,11 @@ function LoginModal({ show, onClose, onLogin, lang }) {
   };
 
   if (!show) return null;
-  const inp = { width:"100%", background:"#1a1a1a", border:"1px solid #282828", borderRadius:8, padding:"12px 14px", color:"#f5f0e8", fontSize:14, fontFamily:"'Outfit',sans-serif", outline:"none", boxSizing:"border-box" };
+  const inp = { width:"100%", background:"#1a1a1a", border:"1px solid #282828", borderRadius:8, padding:"12px 14px", color:"#f5f0e8", fontSize:16, fontFamily:"'Outfit',sans-serif", outline:"none", boxSizing:"border-box" };
 
   return (
     <div style={{ position:"fixed", inset:0, zIndex:9000, background:"rgba(0,0,0,0.8)", backdropFilter:"blur(8px)", display:"flex", alignItems:"center", justifyContent:"center", padding:16 }} onClick={e => e.target===e.currentTarget && onClose()}>
-      <div style={{ background:"#111111", border:"1px solid #1e1e1e", borderRadius:12, padding:"28px 24px", width:"100%", maxWidth:400, position:"relative", maxHeight:"90vh", overflowY:"auto" }}>
+      <div style={{ background:"#111111", border:"1px solid #1e1e1e", borderRadius:12, padding:"24px 20px", width:"100%", maxWidth:400, position:"relative", maxHeight:"90vh", overflowY:"auto" }}>
         <button onClick={onClose} style={{ position:"absolute", top:14, right:16, background:"none", border:"none", fontSize:20, color:"#6b6b6b", cursor:"pointer", lineHeight:1 }}>×</button>
         <div style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:22, color:"#c5a572", fontWeight:400, marginBottom:20, letterSpacing:"0.05em" }}>AURUM KOREA</div>
         <div style={{ display:"flex", background:"#0a0a0a", borderRadius:8, padding:4, marginBottom:20, gap:4 }}>
