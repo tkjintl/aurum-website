@@ -1,0 +1,37 @@
+{
+  "version": 2,
+  "buildCommand": "",
+  "outputDirectory": ".",
+  "headers": [
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store, no-cache, must-revalidate" },
+        { "key": "X-Robots-Tag",  "value": "noindex" }
+      ]
+    },
+    {
+      "source": "/(admin|members|login|advisor|portfolio|memo|nda|ioi|code|main)(.*)",
+      "headers": [
+        { "key": "X-Robots-Tag",  "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "no-store" }
+      ]
+    }
+  ],
+  "rewrites": [
+    { "source": "/api/nda-template", "destination": "/api/nda.js?op=template" },
+    { "source": "/api/nda-upload",   "destination": "/api/nda.js?op=upload"   },
+    { "source": "/api/nda-status",   "destination": "/api/nda.js?op=status"   },
+    { "source": "/api/admin/:path*", "destination": "/api/admin.js?_r=:path*" },
+    { "source": "/api/advisor/:path*", "destination": "/api/advisor.js?_r=:path*" },
+
+    { "source": "/main",      "destination": "/api/doc?id=program-page"  },
+    { "source": "/nda",       "destination": "/api/doc?id=nda-page"      },
+    { "source": "/memo",      "destination": "/api/doc?id=memo-page"     },
+    { "source": "/ioi",       "destination": "/api/doc?id=ioi-page"      },
+    { "source": "/portfolio", "destination": "/api/doc?id=portfolio-page" },
+
+    { "source": "/advisor",   "destination": "/advisor.html" }
+  ],
+  "cleanUrls": true
+}
