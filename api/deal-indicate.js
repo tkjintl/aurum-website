@@ -19,7 +19,7 @@ export default async function handler(req, res) {
   if (!session || session.sub !== 'member' || !session.leadId) return unauthorized(res);
 
   const lead = await getLead(session.leadId).catch(()=>null);
-  if (!lead || lead.status !== 'admitted') return unauthorized(res);
+  if (!lead || !lead.wire || !lead.wire.cleared_at) return unauthorized(res);
 
   const body    = await readBody(req);
   const deal_id = String(body.deal_id||'').trim();
